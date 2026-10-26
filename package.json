@@ -23,6 +23,8 @@
     "@ondai/config": "workspace:*",
     "@types/node": "^22.19.0",
     "eslint": "^10.13.0",
+    "gifenc": "1.0.3",
+    "pngjs": "7.0.0",
     "prettier": "^3.9.10",
     "tsx": "^4.23.15",
     "turbo": "2.11.10",
