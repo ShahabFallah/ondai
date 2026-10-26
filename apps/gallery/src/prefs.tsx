@@ -13,7 +13,7 @@ export interface Prefs {
 const Ctx = createContext<Prefs | null>(null)
 
 export function PrefsProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState({ theme: 'void' as ThemeName, accent: 'ion' as AccentName, useMock: false, showLatency: true })
+  const [state, setState] = useState({ theme: 'void' as ThemeName, accent: 'ion' as AccentName, useMock: process.env.EXPO_PUBLIC_ONDAI_MOCK === '1', showLatency: true })
   const value = useMemo<Prefs>(() => ({ ...state, setPrefs: (p) => setState((s) => ({ ...s, ...p })) }), [state])
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

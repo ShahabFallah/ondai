@@ -10,7 +10,7 @@
   <a href="#"><img alt="runs on" src="https://img.shields.io/badge/runs%20on-Apple%20FM%20%C2%B7%20Gemini%20Nano%20%C2%B7%20llama.rn-7CF7FF?labelColor=07080A" /></a>
 </p>
 
-<p align="center"><img src="docs/design-review/command-bar.png" alt="CommandBar review grid" width="720" /></p>
+<p align="center"><img src="assets/recordings/command-bar-web.gif" alt="CommandBar: a natural-language request becomes an action on the scripted mock (web playground recording)" width="420" /></p>
 
 Ondai is **shadcn/ui for on-device AI in React Native**: a registry of copy-paste components, each a complete AI feature powered by the model already on the user's phone (Apple Foundation Models on iOS 26, Gemini Nano on Android, llama.rn as an opt-in fallback). Free: no API bill. Private: nothing leaves the device. Offline. Fast.
 
