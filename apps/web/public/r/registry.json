@@ -1,0 +1,419 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "ondai",
+  "homepage": "https://ondai.dev",
+  "items": [
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "availability-gate",
+      "type": "registry:component",
+      "title": "AvailabilityGate",
+      "description": "Renders children only when the on-device model is ready; otherwise an elegant empty state with a way to enable it.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens",
+        "lucide-react-native"
+      ],
+      "registryDependencies": [
+        "model-download",
+        "skeleton"
+      ],
+      "categories": [
+        "primitive"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "e133e0dfa0a5c6ff",
+          "priority": "P0",
+          "capabilities": [
+            "text"
+          ],
+          "variants": {
+            "variant": [
+              "card",
+              "inline",
+              "fullscreen"
+            ]
+          }
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/availability-gate/availability-gate.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/availability-gate/availability-gate.tsx"
+        },
+        {
+          "path": "registry/components/availability-gate/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/availability-gate/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "ion-border",
+      "type": "registry:component",
+      "title": "IonBorder",
+      "description": "The signature thinking border: a slow gradient light travels around any container while the AI works.",
+      "dependencies": [
+        "@ondai/tokens",
+        "react-native-reanimated",
+        "react-native-svg"
+      ],
+      "registryDependencies": [],
+      "categories": [
+        "primitive"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "9d975a53cf20287f",
+          "priority": "P0",
+          "capabilities": [],
+          "variants": {
+            "radius": [
+              "none",
+              "sm",
+              "md",
+              "lg",
+              "xl",
+              "pill"
+            ]
+          }
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/ion-border/ion-border.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/ion-border/ion-border.tsx"
+        },
+        {
+          "path": "registry/components/ion-border/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/ion-border/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "key-hint",
+      "type": "registry:component",
+      "title": "KeyHint",
+      "description": "Mono key caps for keyboard hints.",
+      "dependencies": [
+        "@ondai/tokens"
+      ],
+      "registryDependencies": [],
+      "categories": [
+        "primitive"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "42504405bdcc1de3",
+          "priority": "P0",
+          "capabilities": [],
+          "variants": {
+            "variant": [
+              "caps",
+              "plain"
+            ],
+            "size": [
+              "sm",
+              "md"
+            ]
+          }
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/key-hint/key-hint.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/key-hint/key-hint.tsx"
+        },
+        {
+          "path": "registry/components/key-hint/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/key-hint/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "latency-chip",
+      "type": "registry:component",
+      "title": "LatencyChip",
+      "description": "Dev-only metrics pill: latency, tokens per second, provider.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens"
+      ],
+      "registryDependencies": [],
+      "categories": [
+        "primitive"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "14da3c96ca54c7cf",
+          "priority": "P0",
+          "capabilities": [],
+          "variants": {
+            "size": [
+              "sm",
+              "md"
+            ]
+          }
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/latency-chip/latency-chip.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/latency-chip/latency-chip.tsx"
+        },
+        {
+          "path": "registry/components/latency-chip/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/latency-chip/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "model-download",
+      "type": "registry:component",
+      "title": "ModelDownload",
+      "description": "Ion progress line, ring or card with a mono percentage while a model downloads.",
+      "dependencies": [
+        "@ondai/tokens",
+        "react-native-reanimated",
+        "react-native-svg"
+      ],
+      "registryDependencies": [],
+      "categories": [
+        "primitive"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "795df67748d4728e",
+          "priority": "P0",
+          "capabilities": [],
+          "variants": {
+            "variant": [
+              "bar",
+              "ring",
+              "card"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
+            ]
+          }
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/model-download/model-download.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/model-download/model-download.tsx"
+        },
+        {
+          "path": "registry/components/model-download/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/model-download/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "on-device-badge",
+      "type": "registry:component",
+      "title": "OnDeviceBadge",
+      "description": "A quiet pill that says where inference runs: ON DEVICE · APPLE, LOCAL · LLAMA, CLOUD. The dot glows while thinking.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens",
+        "react-native-reanimated"
+      ],
+      "registryDependencies": [],
+      "categories": [
+        "primitive"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "75d86793e93edff6",
+          "priority": "P0",
+          "capabilities": [],
+          "variants": {
+            "variant": [
+              "pill",
+              "icon",
+              "text"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
+            ]
+          }
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/on-device-badge/on-device-badge.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/on-device-badge/on-device-badge.tsx"
+        },
+        {
+          "path": "registry/components/on-device-badge/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/on-device-badge/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "skeleton",
+      "type": "registry:component",
+      "title": "Skeleton",
+      "description": "Loading placeholder with an ion shimmer.",
+      "dependencies": [
+        "@ondai/tokens",
+        "react-native-reanimated",
+        "react-native-svg"
+      ],
+      "registryDependencies": [],
+      "categories": [
+        "primitive"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "a5e1cb3c4dd0fe38",
+          "priority": "P0",
+          "capabilities": [],
+          "variants": {
+            "radius": [
+              "sm",
+              "md",
+              "lg",
+              "pill"
+            ]
+          }
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/skeleton/skeleton.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/skeleton/skeleton.tsx"
+        },
+        {
+          "path": "registry/components/skeleton/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/skeleton/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "streaming-text",
+      "type": "registry:component",
+      "title": "StreamingText",
+      "description": "Token-by-token text rendering with a blinking accent caret and chunk fade-in.",
+      "dependencies": [
+        "@ondai/tokens",
+        "react-native-reanimated"
+      ],
+      "registryDependencies": [],
+      "categories": [
+        "primitive"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "7502e4c89f9401db",
+          "priority": "P0",
+          "capabilities": [],
+          "variants": {
+            "size": [
+              "xs",
+              "sm",
+              "md",
+              "lg",
+              "xl"
+            ]
+          }
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/streaming-text/streaming-text.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/streaming-text/streaming-text.tsx"
+        },
+        {
+          "path": "registry/components/streaming-text/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/streaming-text/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "thinking-indicator",
+      "type": "registry:component",
+      "title": "ThinkingIndicator",
+      "description": "Dots, orb, line or sweep: calm indicators that the on-device model is working.",
+      "dependencies": [
+        "@ondai/tokens",
+        "react-native-reanimated",
+        "react-native-svg"
+      ],
+      "registryDependencies": [],
+      "categories": [
+        "primitive"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "62ffc866dd7de427",
+          "priority": "P0",
+          "capabilities": [],
+          "variants": {
+            "variant": [
+              "dots",
+              "orb",
+              "line",
+              "sweep"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
+            ]
+          }
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/thinking-indicator/thinking-indicator.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/thinking-indicator/thinking-indicator.tsx"
+        },
+        {
+          "path": "registry/components/thinking-indicator/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/thinking-indicator/index.ts"
+        }
+      ]
+    }
+  ]
+}

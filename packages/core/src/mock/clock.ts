@@ -25,15 +25,17 @@ export function manualClock(start = 0): ManualClock {
   let t = start
   const queue: Array<{ at: number; resolve: () => void }> = []
   const runDue = async () => {
-    // Loop because resolving one sleep usually queues the next one.
-    for (let i = 0; i < 10_000; i++) {
+    // Loop because resolving one sleep usually queues the next one, sometimes a few ticks later.
+    let idle = 0
+    for (let i = 0; i < 20_000 && idle < 6; i++) {
       queue.sort((a, b) => a.at - b.at)
       const due = queue.filter((q) => q.at <= t)
       if (!due.length) {
+        idle++
         await tick()
-        if (!queue.some((q) => q.at <= t)) break
         continue
       }
+      idle = 0
       for (const q of due) {
         queue.splice(queue.indexOf(q), 1)
         q.resolve()

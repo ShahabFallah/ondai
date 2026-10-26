@@ -1,0 +1,46 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "key-hint",
+  "type": "registry:component",
+  "title": "KeyHint",
+  "description": "Mono key caps for keyboard hints.",
+  "dependencies": [
+    "@ondai/tokens"
+  ],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "registry/components/key-hint/key-hint.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/key-hint/key-hint.tsx",
+      "content": "import { Text, View, type StyleProp, type ViewStyle } from 'react-native'\nimport { hairlineWidth, typeStyle, useTheme } from '@ondai/tokens/react'\n\nexport interface KeyHintProps {\n  /** e.g. ['⌘', 'K'] or ['esc']. Common words are mapped to symbols: cmd, shift, enter, esc, tab, up, down. */\n  keys: string[]\n  size?: 'sm' | 'md'\n  /** `caps` draws key caps; `plain` is text only. */\n  variant?: 'caps' | 'plain'\n  style?: StyleProp<ViewStyle>\n  testID?: string\n}\n\nconst symbols: Record<string, string> = { cmd: '⌘', command: '⌘', shift: '⇧', alt: '⌥', option: '⌥', ctrl: '⌃', control: '⌃', enter: '↵', return: '↵', esc: 'esc', escape: 'esc', tab: '⇥', up: '↑', down: '↓', left: '←', right: '→', space: '␣', backspace: '⌫' }\n\n/** Mono key caps for keyboard hints on tablet, desktop and web. */\nexport function KeyHint({ keys, size = 'md', variant = 'caps', style, testID }: KeyHintProps) {\n  const t = useTheme()\n  const h = size === 'sm' ? 18 : 22\n  return (\n    <View testID={testID} accessibilityRole=\"text\" accessibilityLabel={keys.join(' ')} style={[{ flexDirection: 'row', alignItems: 'center', gap: 4 }, style]}>\n      {keys.map((k, i) => {\n        const label = symbols[k.toLowerCase()] ?? k\n        return (\n          <View\n            key={`${k}-${i}`}\n            style={\n              variant === 'caps'\n                ? { minWidth: h, height: h, paddingHorizontal: 5, borderRadius: 5, borderWidth: hairlineWidth, borderColor: t.colors.hairlineStrong, backgroundColor: t.colors.elevated, alignItems: 'center', justifyContent: 'center' }\n                : { paddingHorizontal: 1 }\n            }\n          >\n            <Text style={[typeStyle(t, size === 'sm' ? 'xs' : 'sm', { mono: true, weight: 'medium' }), { color: t.colors.textSecondary, lineHeight: h - 2 }]}>{label}</Text>\n          </View>\n        )\n      })}\n    </View>\n  )\n}\n\nexport default KeyHint\n"
+    },
+    {
+      "path": "registry/components/key-hint/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/key-hint/index.ts",
+      "content": "export { KeyHint, type KeyHintProps } from './key-hint'\n"
+    }
+  ],
+  "categories": [
+    "primitive"
+  ],
+  "meta": {
+    "ondai": {
+      "registryVersion": 1,
+      "hash": "42504405bdcc1de3",
+      "priority": "P0",
+      "capabilities": [],
+      "variants": {
+        "variant": [
+          "caps",
+          "plain"
+        ],
+        "size": [
+          "sm",
+          "md"
+        ]
+      }
+    }
+  }
+}

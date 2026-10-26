@@ -1,0 +1,1 @@
+{ "name": "latency-chip", "title": "LatencyChip", "description": "Dev-only metrics pill: latency, tokens per second, provider.", "category": "primitive", "priority": "P0", "capabilities": [], "variants": { "size": ["sm", "md"] }, "registryDependencies": [], "files": ["latency-chip.tsx", "index.ts"] }

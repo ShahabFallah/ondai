@@ -1,0 +1,50 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "on-device-badge",
+  "type": "registry:component",
+  "title": "OnDeviceBadge",
+  "description": "A quiet pill that says where inference runs: ON DEVICE · APPLE, LOCAL · LLAMA, CLOUD. The dot glows while thinking.",
+  "dependencies": [
+    "@ondai/core",
+    "@ondai/tokens",
+    "react-native-reanimated"
+  ],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "registry/components/on-device-badge/on-device-badge.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/on-device-badge/on-device-badge.tsx",
+      "content": "import { useEffect } from 'react'\nimport { Text, View, type StyleProp, type ViewStyle } from 'react-native'\nimport Animated, { Easing, cancelAnimation, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated'\nimport { badgeLabel, useLocalModel, type Locality, type ProviderId } from '@ondai/core'\nimport { createVariants, type AiState } from '@ondai/tokens'\nimport { hairlineWidth, typeStyle, useMotion, useTheme } from '@ondai/tokens/react'\n\nexport interface OnDeviceBadgeProps {\n  size?: 'sm' | 'md' | 'lg'\n  /** `pill` (dot + label), `icon` (dot only), `text` (label only, no border). */\n  variant?: 'pill' | 'icon' | 'text'\n  /** Pulse the dot while the AI works. */\n  state?: AiState\n  /** Override the detected provider (otherwise read from the router). */\n  provider?: ProviderId\n  locality?: Locality\n  label?: string\n  style?: StyleProp<ViewStyle>\n  testID?: string\n}\n\nconst variants = createVariants({\n  variants: {\n    size: {\n      sm: { height: 20, paddingHorizontal: 8, gap: 6 },\n      md: { height: 24, paddingHorizontal: 10, gap: 7 },\n      lg: { height: 28, paddingHorizontal: 12, gap: 8 },\n    },\n    variant: {\n      pill: {},\n      icon: { paddingHorizontal: 0, width: undefined },\n      text: { paddingHorizontal: 0, borderWidth: 0, backgroundColor: 'transparent' },\n    },\n  },\n  compound: [\n    { when: { variant: 'icon', size: 'sm' }, style: { width: 20 } },\n    { when: { variant: 'icon', size: 'md' }, style: { width: 24 } },\n    { when: { variant: 'icon', size: 'lg' }, style: { width: 28 } },\n  ],\n  defaults: { size: 'md', variant: 'pill' },\n})\n\nconst dotSize = { sm: 5, md: 6, lg: 7 } as const\n\n/** A quiet pill that says where inference runs: ON DEVICE · APPLE, LOCAL · LLAMA, CLOUD. The dot glows while thinking. */\nexport function OnDeviceBadge({ size = 'md', variant = 'pill', state = 'idle', provider, locality, label, style, testID }: OnDeviceBadgeProps) {\n  const t = useTheme()\n  const motion = useMotion()\n  const detected = useLocalModel('text')\n  const prov = provider ?? detected.provider\n  const loc = locality ?? detected.locality\n  const text = badgeLabel(prov, loc, label ?? (provider ? undefined : detected.label))\n  const active = state === 'thinking' || state === 'streaming' || state === 'tool' || state === 'preparing'\n  const ready = detected.isReady || !!provider\n\n  const pulse = useSharedValue(1)\n  useEffect(() => {\n    if (active && motion.enabled) {\n      pulse.value = withRepeat(withSequence(withTiming(0.35, { duration: t.durations.pulse / 2, easing: Easing.inOut(Easing.quad) }), withTiming(1, { duration: t.durations.pulse / 2, easing: Easing.inOut(Easing.quad) })), -1, false)\n    } else {\n      cancelAnimation(pulse)\n      pulse.value = withTiming(1, { duration: 200 })\n    }\n    return () => cancelAnimation(pulse)\n  }, [active, motion.enabled, pulse, t.durations.pulse])\n  const dotStyle = useAnimatedStyle(() => ({ opacity: pulse.value, transform: [{ scale: 0.85 + pulse.value * 0.15 }] }), [pulse])\n\n  const dotColor = loc === 'cloud' ? t.colors.warning : ready || active ? t.colors.accent.solid : t.colors.textTertiary\n  const d = dotSize[size]\n  return (\n    <View\n      testID={testID}\n      accessibilityRole=\"text\"\n      accessibilityLabel={`${text.replace('·', ',').toLowerCase()}${active ? ', working' : ''}`}\n      style={[\n        { flexDirection: 'row', alignItems: 'center', borderRadius: t.radii.pill, borderWidth: hairlineWidth, borderColor: t.colors.hairline, backgroundColor: t.colors.surface, justifyContent: 'center' },\n        ...variants({ size, variant }),\n        style,\n      ]}\n    >\n      {variant !== 'text' ? (\n        <View style={{ width: d * 2, height: d * 2, alignItems: 'center', justifyContent: 'center' }}>\n          {active ? <View style={{ position: 'absolute', width: d * 2, height: d * 2, borderRadius: d, backgroundColor: t.colors.accent.glow }} /> : null}\n          <Animated.View style={[{ width: d, height: d, borderRadius: d / 2, backgroundColor: dotColor }, dotStyle]} />\n        </View>\n      ) : null}\n      {variant !== 'icon' ? (\n        <Text numberOfLines={1} style={[typeStyle(t, size === 'lg' ? 'sm' : 'xs', { mono: true, tag: true, weight: 'medium' }), { color: t.colors.textSecondary }]}>\n          {text}\n        </Text>\n      ) : null}\n    </View>\n  )\n}\n\nexport default OnDeviceBadge\n"
+    },
+    {
+      "path": "registry/components/on-device-badge/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/on-device-badge/index.ts",
+      "content": "export { OnDeviceBadge, type OnDeviceBadgeProps } from './on-device-badge'\n"
+    }
+  ],
+  "categories": [
+    "primitive"
+  ],
+  "meta": {
+    "ondai": {
+      "registryVersion": 1,
+      "hash": "75d86793e93edff6",
+      "priority": "P0",
+      "capabilities": [],
+      "variants": {
+        "variant": [
+          "pill",
+          "icon",
+          "text"
+        ],
+        "size": [
+          "sm",
+          "md",
+          "lg"
+        ]
+      }
+    }
+  }
+}

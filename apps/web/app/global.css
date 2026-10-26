@@ -10,3 +10,36 @@ html > body[data-scroll-locked] {
   margin-right: 0px !important;
   --removed-body-scroll-bar-size: 0px !important;
 }
+
+/* ---------- Ondai site chrome: same tokens as the components ---------- */
+:root {
+  --font-sans: var(--font-geist-sans), var(--ondai-font-sans);
+  --font-mono: var(--font-geist-mono), var(--ondai-font-mono);
+}
+html,
+body {
+  background: var(--ondai-bg);
+  color: var(--ondai-text);
+  font-family: var(--font-sans);
+}
+.ondai-mono {
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+.ondai-hairline {
+  border: 1px solid var(--ondai-hairline);
+}
+.ondai-gradient-text {
+  background: var(--ondai-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.ondai-ion-glow {
+  box-shadow: 0 0 48px var(--ondai-accent-glow);
+}
+[data-ready='true'] .ondai-waiting {
+  display: none;
+}

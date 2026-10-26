@@ -1,0 +1,11 @@
+{
+  "name": "thinking-indicator",
+  "title": "ThinkingIndicator",
+  "description": "Dots, orb, line or sweep: calm indicators that the on-device model is working.",
+  "category": "primitive",
+  "priority": "P0",
+  "capabilities": [],
+  "variants": { "variant": ["dots", "orb", "line", "sweep"], "size": ["sm", "md", "lg"] },
+  "registryDependencies": [],
+  "files": ["thinking-indicator.tsx", "index.ts"]
+}

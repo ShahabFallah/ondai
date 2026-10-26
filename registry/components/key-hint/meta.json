@@ -1,0 +1,1 @@
+{ "name": "key-hint", "title": "KeyHint", "description": "Mono key caps for keyboard hints.", "category": "primitive", "priority": "P0", "capabilities": [], "variants": { "variant": ["caps", "plain"], "size": ["sm", "md"] }, "registryDependencies": [], "files": ["key-hint.tsx", "index.ts"] }

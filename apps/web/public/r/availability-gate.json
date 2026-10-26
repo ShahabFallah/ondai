@@ -1,0 +1,50 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "availability-gate",
+  "type": "registry:component",
+  "title": "AvailabilityGate",
+  "description": "Renders children only when the on-device model is ready; otherwise an elegant empty state with a way to enable it.",
+  "dependencies": [
+    "@ondai/core",
+    "@ondai/tokens",
+    "lucide-react-native"
+  ],
+  "registryDependencies": [
+    "model-download",
+    "skeleton"
+  ],
+  "files": [
+    {
+      "path": "registry/components/availability-gate/availability-gate.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/availability-gate/availability-gate.tsx",
+      "content": "import type { ReactNode } from 'react'\nimport { Linking, Pressable, Text, View, type StyleProp, type ViewStyle } from 'react-native'\nimport { ShieldOff } from 'lucide-react-native'\nimport { availabilityCopy, useLocalModel, type Availability, type Capability } from '@ondai/core'\nimport { hairlineWidth, typeStyle, useTheme } from '@ondai/tokens/react'\nimport { ModelDownload } from '../model-download/model-download'\nimport { Skeleton } from '../skeleton/skeleton'\n\nexport interface AvailabilityGateProps {\n  capability?: Capability\n  variant?: 'card' | 'inline' | 'fullscreen'\n  /** Force a state (playground / tests). */\n  availability?: Availability\n  children: ReactNode\n  /** Shown instead of children when unavailable; defaults to the built-in empty state. */\n  fallback?: ReactNode\n  /** Hide children entirely while checking (default: show a skeleton). */\n  hideWhileChecking?: boolean\n  onLearnMore?: (url: string) => void\n  style?: StyleProp<ViewStyle>\n  testID?: string\n}\n\n/** Renders children only when the on-device model is ready; otherwise an elegant empty state or download progress. */\nexport function AvailabilityGate({ capability = 'text', variant = 'card', availability, children, fallback, hideWhileChecking, onLearnMore, style, testID }: AvailabilityGateProps) {\n  const t = useTheme()\n  const model = useLocalModel(capability)\n  const av = availability ?? model.availability\n  const copy = availabilityCopy(av)\n\n  if (!av) {\n    if (hideWhileChecking) return null\n    return (\n      <View style={style} testID={testID}>\n        <Skeleton lines={2} />\n      </View>\n    )\n  }\n  if (av.status === 'ready') return <>{children}</>\n  if (fallback) return <>{fallback}</>\n\n  const learn = () => {\n    if (!copy.learnMore) return\n    if (onLearnMore) onLearnMore(copy.learnMore)\n    else void Linking.openURL(copy.learnMore).catch(() => {})\n  }\n  const body = (\n    <>\n      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>\n        <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: t.colors.input, alignItems: 'center', justifyContent: 'center' }}>\n          <ShieldOff size={14} strokeWidth={1.5} color={t.colors.textSecondary} />\n        </View>\n        <Text style={[typeStyle(t, variant === 'fullscreen' ? 'xl' : 'md', { weight: 'medium' }), { color: t.colors.text, flex: 1 }]}>{copy.title}</Text>\n      </View>\n      {av.status === 'preparing' ? (\n        <ModelDownload progress={av.progress} variant=\"bar\" size=\"sm\" label=\"Downloading\" detail={copy.description} />\n      ) : (\n        <Text style={[typeStyle(t, 'sm'), { color: t.colors.textSecondary }]}>{copy.description}</Text>\n      )}\n      <View style={{ flexDirection: 'row', gap: 16, alignItems: 'center' }}>\n        {copy.learnMore ? (\n          <Pressable onPress={learn} accessibilityRole=\"link\" style={{ minHeight: 32, justifyContent: 'center' }}>\n            <Text style={[typeStyle(t, 'sm', { weight: 'medium' }), { color: t.colors.text }]}>Learn how to enable →</Text>\n          </Pressable>\n        ) : null}\n        {copy.canRetry ? (\n          <Pressable onPress={() => void model.refresh()} accessibilityRole=\"button\" style={{ minHeight: 32, justifyContent: 'center' }}>\n            <Text style={[typeStyle(t, 'sm', { weight: 'medium' }), { color: t.colors.textSecondary }]}>Check again</Text>\n          </Pressable>\n        ) : null}\n      </View>\n    </>\n  )\n  if (variant === 'inline') {\n    return (\n      <View testID={testID} style={[{ gap: 8, paddingVertical: 8 }, style]}>\n        {body}\n      </View>\n    )\n  }\n  return (\n    <View\n      testID={testID}\n      style={[\n        { gap: 12, padding: t.spacing[4], borderRadius: t.radii.lg, borderWidth: hairlineWidth, borderColor: t.colors.hairline, backgroundColor: t.colors.surface },\n        variant === 'fullscreen' && { flex: 1, justifyContent: 'center', padding: t.spacing[6], borderWidth: 0, backgroundColor: 'transparent' },\n        style,\n      ]}\n    >\n      {body}\n    </View>\n  )\n}\n\nexport default AvailabilityGate\n"
+    },
+    {
+      "path": "registry/components/availability-gate/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/availability-gate/index.ts",
+      "content": "export { AvailabilityGate, type AvailabilityGateProps } from './availability-gate'\n"
+    }
+  ],
+  "categories": [
+    "primitive"
+  ],
+  "meta": {
+    "ondai": {
+      "registryVersion": 1,
+      "hash": "e133e0dfa0a5c6ff",
+      "priority": "P0",
+      "capabilities": [
+        "text"
+      ],
+      "variants": {
+        "variant": [
+          "card",
+          "inline",
+          "fullscreen"
+        ]
+      }
+    }
+  }
+}

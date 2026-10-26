@@ -1,0 +1,11 @@
+{
+  "name": "on-device-badge",
+  "title": "OnDeviceBadge",
+  "description": "A quiet pill that says where inference runs: ON DEVICE · APPLE, LOCAL · LLAMA, CLOUD. The dot glows while thinking.",
+  "category": "primitive",
+  "priority": "P0",
+  "capabilities": [],
+  "variants": { "variant": ["pill", "icon", "text"], "size": ["sm", "md", "lg"] },
+  "registryDependencies": [],
+  "files": ["on-device-badge.tsx", "index.ts"]
+}

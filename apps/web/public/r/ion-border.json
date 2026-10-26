@@ -1,0 +1,48 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "ion-border",
+  "type": "registry:component",
+  "title": "IonBorder",
+  "description": "The signature thinking border: a slow gradient light travels around any container while the AI works.",
+  "dependencies": [
+    "@ondai/tokens",
+    "react-native-reanimated",
+    "react-native-svg"
+  ],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "registry/components/ion-border/ion-border.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/ion-border/ion-border.tsx",
+      "content": "import { useEffect, useState, type ReactNode } from 'react'\nimport { Platform, StyleSheet, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native'\nimport Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming, cancelAnimation } from 'react-native-reanimated'\nimport Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg'\nimport { hairlineWidth, useMotion, useTheme } from '@ondai/tokens/react'\nimport type { RadiusKey } from '@ondai/tokens'\n\nexport interface IonBorderProps {\n  /** Show the traveling light (thinking / streaming). */\n  active?: boolean\n  /** Fade the border in when focused: a faint static ring. */\n  focused?: boolean\n  radius?: RadiusKey | number\n  /** Ring thickness in pt. */\n  width?: number\n  /** Seconds per lap. */\n  speed?: number\n  /** Background behind children. Defaults to the theme surface. */\n  fill?: string\n  /** Soft outer glow while active (elevation 3). */\n  glow?: boolean\n  style?: StyleProp<ViewStyle>\n  contentStyle?: StyleProp<ViewStyle>\n  children?: ReactNode\n  testID?: string\n}\n\n/**\n * The signature \"thinking\" border: a slow gradient light travels around the edge of any container.\n * Idle: hairline. Focus: faint ring. Active: the ion sweep. Done: fades out within 300ms.\n */\nexport function IonBorder({ active = false, focused = false, radius = 'lg', width = 1.5, speed, fill, glow = false, style, contentStyle, children, testID }: IonBorderProps) {\n  const t = useTheme()\n  const motion = useMotion()\n  const r = typeof radius === 'number' ? radius : t.radii[radius]\n  const [size, setSize] = useState({ w: 0, h: 0 })\n  const rotation = useSharedValue(0)\n  const opacity = useSharedValue(active ? 1 : 0)\n  const lapMs = (speed ?? t.durations.sweep / 1000) * 1000\n\n  useEffect(() => {\n    if (active && motion.enabled) {\n      rotation.value = 0\n      rotation.value = withRepeat(withTiming(360, { duration: lapMs, easing: Easing.linear }), -1, false)\n    } else {\n      cancelAnimation(rotation)\n    }\n    return () => cancelAnimation(rotation)\n  }, [active, motion.enabled, lapMs, rotation])\n\n  useEffect(() => {\n    opacity.value = motion.enabled ? withTiming(active ? 1 : 0, { duration: active ? 200 : t.durations.settle }) : active ? 1 : 0\n  }, [active, motion.enabled, opacity, t.durations.settle])\n\n  const spin = useAnimatedStyle(() => ({ transform: [{ rotate: `${rotation.value}deg` }] }), [rotation])\n  const fade = useAnimatedStyle(() => ({ opacity: opacity.value }), [opacity])\n\n  const onLayout = (e: LayoutChangeEvent) => {\n    const { width: w, height: h } = e.nativeEvent.layout\n    if (w !== size.w || h !== size.h) setSize({ w, h })\n  }\n  const d = Math.ceil(Math.hypot(size.w, size.h)) + 8\n  const bg = fill ?? t.colors.surface\n  const g = t.colors.accent\n  const glowStyle: ViewStyle =\n    glow && active\n      ? Platform.OS === 'web'\n        ? ({ boxShadow: `0 0 24px ${g.glow}` } as unknown as ViewStyle)\n        : { shadowColor: g.solid, shadowOpacity: 0.35, shadowRadius: 16, shadowOffset: { width: 0, height: 0 } }\n      : {}\n\n  return (\n    <View style={[glowStyle, { borderRadius: r }, style]} testID={testID}>\n      <View onLayout={onLayout} style={[styles.clip, { borderRadius: r, backgroundColor: bg, borderWidth: hairlineWidth, borderColor: focused ? t.colors.accent.ring : t.colors.hairline }]}>\n        {size.w > 0 ? (\n          <Animated.View pointerEvents=\"none\" style={[StyleSheet.absoluteFill, styles.center, fade]}>\n            <Animated.View style={spin}>\n              <Svg width={d} height={d}>\n                <Defs>\n                  <LinearGradient id=\"ondai-ion\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\">\n                    <Stop offset=\"0\" stopColor={g.a} stopOpacity={0} />\n                    <Stop offset=\"0.3\" stopColor={g.a} stopOpacity={0.15} />\n                    <Stop offset=\"0.5\" stopColor={g.b} stopOpacity={1} />\n                    <Stop offset=\"0.62\" stopColor={g.c} stopOpacity={0.9} />\n                    <Stop offset=\"0.8\" stopColor={g.c} stopOpacity={0} />\n                  </LinearGradient>\n                </Defs>\n                <Rect x={0} y={0} width={d} height={d} fill=\"url(#ondai-ion)\" />\n              </Svg>\n            </Animated.View>\n          </Animated.View>\n        ) : null}\n        <View pointerEvents=\"none\" style={[StyleSheet.absoluteFill, { margin: width, borderRadius: Math.max(0, r - width), backgroundColor: bg }]} />\n        <View style={[styles.content, contentStyle]}>{children}</View>\n      </View>\n    </View>\n  )\n}\n\nconst styles = StyleSheet.create({\n  clip: { overflow: 'hidden' },\n  center: { alignItems: 'center', justifyContent: 'center' },\n  content: { position: 'relative' },\n})\n\nexport default IonBorder\n"
+    },
+    {
+      "path": "registry/components/ion-border/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/ion-border/index.ts",
+      "content": "export { IonBorder, type IonBorderProps } from './ion-border'\n"
+    }
+  ],
+  "categories": [
+    "primitive"
+  ],
+  "meta": {
+    "ondai": {
+      "registryVersion": 1,
+      "hash": "9d975a53cf20287f",
+      "priority": "P0",
+      "capabilities": [],
+      "variants": {
+        "radius": [
+          "none",
+          "sm",
+          "md",
+          "lg",
+          "xl",
+          "pill"
+        ]
+      }
+    }
+  }
+}

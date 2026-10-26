@@ -1,0 +1,1 @@
+{ "name": "model-download", "title": "ModelDownload", "description": "Ion progress line, ring or card with a mono percentage while a model downloads.", "category": "primitive", "priority": "P0", "capabilities": [], "variants": { "variant": ["bar", "ring", "card"], "size": ["sm", "md", "lg"] }, "registryDependencies": [], "files": ["model-download.tsx", "index.ts"] }

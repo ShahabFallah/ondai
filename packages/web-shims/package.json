@@ -10,11 +10,20 @@
     "./expo-haptics": "./src/expo-haptics.ts",
     "./expo-blur": "./src/expo-blur.tsx",
     "./expo-clipboard": "./src/expo-clipboard.ts",
-    "./expo-image-picker": "./src/expo-image-picker.ts"
+    "./expo-image-picker": "./src/expo-image-picker.ts",
+    "./react-native": "./src/react-native.ts"
   },
-  "scripts": { "typecheck": "tsc --noEmit", "lint": "eslint src" },
-  "dependencies": { "react-native-svg": "catalog:" },
-  "peerDependencies": { "react": ">=19", "react-native-web": ">=0.21" },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "react-native-svg": "catalog:"
+  },
+  "peerDependencies": {
+    "react": ">=19",
+    "react-native-web": ">=0.21"
+  },
   "devDependencies": {
     "@ondai/config": "workspace:*",
     "@types/react": "catalog:",

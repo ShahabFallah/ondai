@@ -1,0 +1,11 @@
+{
+  "name": "streaming-text",
+  "title": "StreamingText",
+  "description": "Token-by-token text rendering with a blinking accent caret and chunk fade-in.",
+  "category": "primitive",
+  "priority": "P0",
+  "capabilities": [],
+  "variants": { "size": ["xs", "sm", "md", "lg", "xl"] },
+  "registryDependencies": [],
+  "files": ["streaming-text.tsx", "index.ts"]
+}

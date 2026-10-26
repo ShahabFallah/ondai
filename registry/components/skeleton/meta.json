@@ -1,0 +1,1 @@
+{ "name": "skeleton", "title": "Skeleton", "description": "Loading placeholder with an ion shimmer.", "category": "primitive", "priority": "P0", "capabilities": [], "variants": { "radius": ["sm", "md", "lg", "pill"] }, "registryDependencies": [], "files": ["skeleton.tsx", "index.ts"] }

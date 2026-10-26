@@ -46,7 +46,7 @@ export interface Ondai {
 export function createOndai(config: OndaiConfig): Ondai {
   const policy: Policy = { ...defaultPolicy, ...config.policy }
   const adapters = new Map<ProviderId, ProviderAdapter>()
-  for (const [id, a] of Object.entries(config.providers)) if (a) adapters.set(id, { ...a, id: a.id ?? id })
+  for (const [id, a] of Object.entries(config.providers)) if (a) adapters.set(id, { ...a, id })
   const cache = new Map<ProviderId, Availability>()
   const inflight = new Map<ProviderId, Promise<Availability>>()
   const listeners = new Set<Listener>()
