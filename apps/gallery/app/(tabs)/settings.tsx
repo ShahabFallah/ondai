@@ -1,6 +1,6 @@
 import { View } from 'react-native'
 import { Body, Card, Label, Screen, Segmented } from '@/ui'
-import { usePrefs } from '@/prefs'
+import { isSimulator, usePrefs } from '@/prefs'
 
 export default function SettingsScreen() {
   const p = usePrefs()
@@ -16,6 +16,7 @@ export default function SettingsScreen() {
         <Label>Model</Label>
         <Segmented options={['real', 'mock'] as const} value={p.useMock ? 'mock' : 'real'} onChange={(v) => p.setPrefs({ useMock: v === 'mock' })} />
         <Body size="sm">Real uses the device model (Apple Intelligence or Gemini Nano). Mock uses scripted output so every screen works anywhere.</Body>
+        {isSimulator ? <Body size="sm">This is a simulator: Apple Foundation Models report available here but generation fails (host/runtime model-asset mismatch), so the mock is the default. See the Device tab for the raw state.</Body> : null}
         <Label>Latency chip</Label>
         <Segmented options={['show', 'hide'] as const} value={p.showLatency ? 'show' : 'hide'} onChange={(v) => p.setPrefs({ showLatency: v === 'show' })} />
       </Card>

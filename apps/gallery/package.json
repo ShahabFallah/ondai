@@ -58,7 +58,8 @@
     "react-native-web": "catalog:",
     "react-native-worklets": "catalog:",
     "zod": "catalog:",
-    "@ondai/evals": "workspace:*"
+    "@ondai/evals": "workspace:*",
+    "expo-device": "~8.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",

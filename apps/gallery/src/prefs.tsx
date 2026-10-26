@@ -1,5 +1,9 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
+import * as Device from 'expo-device'
 import type { AccentName, ThemeName } from '@ondai/tokens'
+
+/** Simulators cannot run Apple Foundation Models reliably; start them on the scripted mock. */
+export const isSimulator = !Device.isDevice
 
 export interface Prefs {
   theme: ThemeName
@@ -13,7 +17,7 @@ export interface Prefs {
 const Ctx = createContext<Prefs | null>(null)
 
 export function PrefsProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState({ theme: 'void' as ThemeName, accent: 'ion' as AccentName, useMock: process.env.EXPO_PUBLIC_ONDAI_MOCK === '1', showLatency: true })
+  const [state, setState] = useState({ theme: 'void' as ThemeName, accent: 'ion' as AccentName, useMock: process.env.EXPO_PUBLIC_ONDAI_MOCK === '1' || (process.env.EXPO_PUBLIC_ONDAI_MOCK !== '0' && isSimulator), showLatency: true })
   const value = useMemo<Prefs>(() => ({ ...state, setPrefs: (p) => setState((s) => ({ ...s, ...p })) }), [state])
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

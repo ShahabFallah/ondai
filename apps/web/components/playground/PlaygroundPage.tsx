@@ -46,7 +46,7 @@ export function PlaygroundPage({ name }: { name: string }) {
 
   return (
     <div className={embed ? '' : 'flex flex-col lg:flex-row min-h-[calc(100vh-56px)]'}>
-      <section className={embed ? 'flex justify-center' : 'flex-1 flex items-center justify-center p-6 lg:p-12 bg-[color:var(--ondai-bg)]'}>
+      <section className={embed ? 'flex justify-center' : 'flex-1 flex items-center justify-center p-4 lg:p-12 bg-[color:var(--ondai-bg)] min-w-0'}>
         <Preview def={def} query={query} />
       </section>
       {!embed ? (

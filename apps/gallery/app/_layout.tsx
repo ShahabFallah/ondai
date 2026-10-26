@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react'
-import { Stack } from 'expo-router'
+import { Stack, useRouter } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import * as SplashScreen from 'expo-splash-screen'
 import { useFonts, Geist_400Regular, Geist_500Medium, Geist_600SemiBold } from '@expo-google-fonts/geist'
@@ -26,8 +26,23 @@ function Shell() {
   )
 }
 
+/** Dev-only screenshot tour: EXPO_PUBLIC_ONDAI_TOUR="/a,/b" cycles through routes every 5s. */
+function useTour() {
+  const router = useRouter()
+  useEffect(() => {
+    const routes = (process.env.EXPO_PUBLIC_ONDAI_TOUR ?? '').split(',').map((r: string) => r.trim()).filter(Boolean)
+    if (!routes.length) return
+    let i = 0
+    const h = setInterval(() => {
+      router.replace(routes[i++ % routes.length] as never)
+    }, 5000)
+    return () => clearInterval(h)
+  }, [router])
+}
+
 function Chrome() {
   const t = useTheme()
+  useTour()
   return (
     <View style={{ flex: 1, backgroundColor: t.colors.bg }}>
       <StatusBar style={t.scheme === 'dark' ? 'light' : 'dark'} />

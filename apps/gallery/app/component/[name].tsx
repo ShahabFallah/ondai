@@ -32,7 +32,7 @@ export default function ComponentScreen() {
     <View style={{ flex: 1, backgroundColor: t.colors.bg, paddingTop: insets.top }}>
       <Stack.Screen options={{ headerShown: false }} />
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, height: 48 }}>
-        <Pressable onPress={() => router.back()} accessibilityRole="button" accessibilityLabel="Back" hitSlop={10} style={{ width: 36, height: 36, alignItems: 'center', justifyContent: 'center' }}>
+        <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)'))} accessibilityRole="button" accessibilityLabel="Back" hitSlop={10} style={{ width: 36, height: 36, alignItems: 'center', justifyContent: 'center' }}>
           <ChevronLeft size={20} strokeWidth={1.5} color={t.colors.text} />
         </Pressable>
         <Text style={[typeStyle(t, 'lg', { weight: 'medium' }), { color: t.colors.text, flex: 1 }]} numberOfLines={1}>{meta?.title ?? name}</Text>

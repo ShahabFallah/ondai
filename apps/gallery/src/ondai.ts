@@ -4,9 +4,10 @@ import { mockAdapter, mockScript } from '@ondai/core/mock'
 
 /**
  * Real providers are required lazily per platform so the other platform's native module is never touched.
- * Gemini Nano needs a physical Android 14+ device; Apple needs iOS 26+ with Apple Intelligence (simulator OK on Apple-silicon Macs).
+ * Gemini Nano needs a physical Android 14+ device. Apple needs iOS 26+ with Apple Intelligence on a physical iPhone:
+ * the iOS 26.2 simulator reports available but fails every generation (see docs/ECOSYSTEM.md), so simulators default to the mock.
  */
-function realProviders(): Record<string, ProviderAdapter> {
+export function realProviders(): Record<string, ProviderAdapter> {
   const providers: Record<string, ProviderAdapter> = {}
   if (Platform.OS === 'ios') {
     const { appleAdapter } = require('@ondai/core/apple') as typeof import('@ondai/core/apple')

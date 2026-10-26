@@ -85,7 +85,7 @@ function Frame({ frame, style, children }: { frame: PlaygroundDef['frame']; styl
     <View
       testID="playground-frame"
       style={[
-        { width: frame.width, minHeight: frame.height, padding: frame.padding, backgroundColor: bg, justifyContent: frame.center === false ? 'flex-start' : 'center' },
+        { width: frame.width, maxWidth: '100%', minHeight: frame.height, padding: frame.padding, backgroundColor: bg, justifyContent: frame.center === false ? 'flex-start' : 'center' },
         style,
       ]}
     >

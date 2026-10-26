@@ -56,11 +56,11 @@ export default function ReviewGrid({ component, theme, motion, clock }: { compon
                 {c.def.title}
               </h2>
             ) : null}
-            <div className="flex items-start gap-4">
-              <span className="ondai-mono w-28 shrink-0 pt-2 text-[color:var(--ondai-text-tertiary)]">
+            <div className="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 min-w-0">
+              <span className="ondai-mono sm:w-28 shrink-0 pt-2 text-[color:var(--ondai-text-tertiary)]">
                 {c.query.state} · {c.query.theme}
               </span>
-              <div data-theme={c.query.theme} className="rounded-[16px] ondai-hairline overflow-hidden" style={{ background: c.query.theme === 'paper' ? '#FAFAFA' : '#07080A' }}>
+              <div data-theme={c.query.theme} className="rounded-[16px] ondai-hairline overflow-hidden max-w-full" style={{ background: c.query.theme === 'paper' ? '#FAFAFA' : '#07080A' }}>
                 <PlaygroundHost def={c.def} query={c.query} onReady={onReady} />
               </div>
             </div>

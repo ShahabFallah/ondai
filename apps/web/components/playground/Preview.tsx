@@ -12,7 +12,7 @@ export function Preview({ def, query }: { def: PlaygroundDef; query: PlaygroundQ
   const bg = query.theme === 'paper' ? '#FAFAFA' : '#07080A'
   if (frame === 'none') {
     return (
-      <div data-theme={query.theme} className="rounded-[22px] ondai-hairline overflow-hidden" style={{ background: bg }}>
+      <div data-theme={query.theme} className="rounded-[22px] ondai-hairline overflow-hidden max-w-full" style={{ background: bg }}>
         <PreviewTree def={def} query={query} />
       </div>
     )

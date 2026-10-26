@@ -5,7 +5,7 @@ import { playgroundDefaults, queryDefaults, type Control, type PlaygroundDef, ty
 import { PlaygroundHost } from '@ondai/playground/host'
 import { OndaiProvider, useOndai } from '@ondai/core'
 import { hairlineWidth, typeStyle, useTheme } from '@ondai/tokens/react'
-import { Label, Segmented } from '@/ui'
+import { Button, Label, Segmented } from '@/ui'
 import { usePrefs } from '@/prefs'
 
 /** Renders a component with the gallery's real Ondai instance (no mock). */
@@ -22,7 +22,11 @@ function RealHost({ def, query }: { def: PlaygroundDef; query: PlaygroundQuery }
   )
 }
 
-export function Story({ def }: { def: PlaygroundDef }) {
+/** Phone screens are short: cap tall playground frames (CommandBar asks for 560) so the controls stay reachable. */
+const MAX_FRAME_HEIGHT = 480
+
+export function Story({ def: input }: { def: PlaygroundDef }) {
+  const def = useMemo<PlaygroundDef>(() => (input.frame.height && input.frame.height > MAX_FRAME_HEIGHT ? { ...input, frame: { ...input.frame, height: MAX_FRAME_HEIGHT } } : input), [input])
   const t = useTheme()
   const prefs = usePrefs()
   const [state, setState] = useState(def.defaultState)
@@ -76,13 +80,23 @@ export function Story({ def }: { def: PlaygroundDef }) {
                 <Switch value={!!v} onValueChange={(x) => setProp(k, x)} trackColor={{ true: t.colors.accent.solid }} />
               </View>
             )
-          if (c.kind === 'number')
+          if (c.kind === 'number') {
+            const step = c.step ?? 1
+            const min = c.min ?? 0
+            const max = c.max ?? 100
+            const n = Number(v)
+            const bump = (d: number) => setProp(k, Math.min(max, Math.max(min, Math.round((n + d * step) / step) * step)))
             return (
-              <View key={k} style={{ gap: 6 }}>
-                <Label>{`${c.label ?? k} · ${String(v)}`}</Label>
-                <Segmented options={[String(c.min ?? 0), String(c.default), String(c.max ?? 100)] as [string, ...string[]]} value={String(v)} onChange={(x) => setProp(k, Number(x))} />
+              <View key={k} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Label>{c.label ?? k}</Label>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <Button title="−" tone="outline" onPress={() => bump(-1)} disabled={n <= min} />
+                  <Text style={[typeStyle(t, 'sm', { mono: true }), { color: t.colors.text, minWidth: 44, textAlign: 'center' }]}>{String(v)}</Text>
+                  <Button title="+" tone="outline" onPress={() => bump(1)} disabled={n >= max} />
+                </View>
               </View>
             )
+          }
           return (
             <View key={k} style={{ gap: 6 }}>
               <Label>{c.label ?? k}</Label>
