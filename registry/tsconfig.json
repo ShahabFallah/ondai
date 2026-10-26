@@ -1,0 +1,5 @@
+{
+  "extends": "@ondai/config/tsconfig.react-native.json",
+  "compilerOptions": { "types": ["jest"] },
+  "include": ["components", "generated", "jest.setup.ts"]
+}

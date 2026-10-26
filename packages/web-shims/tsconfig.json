@@ -1,0 +1,4 @@
+{
+  "extends": "@ondai/config/tsconfig.web.json",
+  "include": ["src"]
+}

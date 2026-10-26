@@ -1,0 +1,32 @@
+{
+  "name": "ondai",
+  "version": "0.1.0",
+  "description": "Add beautiful on-device AI components to your React Native app. npx ondai add command-bar",
+  "license": "MIT",
+  "type": "module",
+  "bin": { "ondai": "./dist/index.js" },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.8.1",
+    "commander": "^15.0.0",
+    "diff": "^9.0.0",
+    "picocolors": "^1.1.1",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@ondai/config": "workspace:*",
+    "@types/diff": "^8.0.0",
+    "@types/node": "^22.19.0",
+    "tsdown": "catalog:",
+    "tsx": "^4.23.15",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "name": "@ondai/registry",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./components/*": "./components/*/index.ts",
+    "./playgrounds": "./generated/playgrounds.ts",
+    "./manifest": "./generated/manifest.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "lint": "eslint components"
+  },
+  "dependencies": {
+    "@ondai/core": "workspace:*",
+    "@ondai/playground": "workspace:*",
+    "@ondai/tokens": "workspace:*",
+    "expo-blur": "catalog:",
+    "expo-clipboard": "catalog:",
+    "expo-haptics": "catalog:",
+    "expo-image-picker": "catalog:",
+    "lucide-react-native": "catalog:",
+    "react-hook-form": "^7.91.0",
+    "react-native-reanimated": "catalog:",
+    "react-native-svg": "catalog:",
+    "zod": "catalog:"
+  },
+  "peerDependencies": { "react": ">=19", "react-native": ">=0.76" },
+  "devDependencies": {
+    "@ondai/config": "workspace:*",
+    "@testing-library/react-native": "^14.1.0",
+    "@types/jest": "^30.0.0",
+    "@types/react": "catalog:",
+    "jest": "^30.5.2",
+    "jest-expo": "~58.0.12",
+    "react": "catalog:",
+    "react-native": "catalog:",
+    "react-native-worklets": "catalog:",
+    "react-test-renderer": "catalog:",
+    "typescript": "catalog:"
+  }
+}

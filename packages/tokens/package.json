@@ -1,0 +1,42 @@
+{
+  "name": "@ondai/tokens",
+  "version": "0.1.0",
+  "description": "Design tokens for Ondai: themes, accents, type, spacing, motion. Works on iOS, Android and web.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./react": "./src/react.tsx",
+    "./tailwind-preset": "./src/tailwind-preset.ts",
+    "./css": "./src/css.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js", "default": "./dist/index.js" },
+      "./react": { "types": "./dist/react.d.ts", "import": "./dist/react.js", "default": "./dist/react.js" },
+      "./tailwind-preset": { "types": "./dist/tailwind-preset.d.ts", "import": "./dist/tailwind-preset.js", "require": "./dist/tailwind-preset.cjs", "default": "./dist/tailwind-preset.js" },
+      "./css": { "types": "./dist/css.d.ts", "import": "./dist/css.js", "default": "./dist/css.js" }
+    },
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts"
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "eslint src"
+  },
+  "peerDependencies": { "react": ">=19", "react-native": ">=0.76" },
+  "peerDependenciesMeta": { "react-native": { "optional": true } },
+  "devDependencies": {
+    "@ondai/config": "workspace:*",
+    "@types/react": "catalog:",
+    "react": "catalog:",
+    "react-native": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

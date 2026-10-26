@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "Ondai",
+    "slug": "ondai-gallery",
+    "version": "0.1.0",
+    "scheme": "ondai",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": { "image": "./assets/splash.png", "resizeMode": "contain", "backgroundColor": "#07080A" },
+    "ios": {
+      "bundleIdentifier": "dev.ondai.gallery",
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Ondai scans receipts and cards on device. Nothing leaves your phone.",
+        "NSPhotoLibraryUsageDescription": "Ondai reads photos on device to extract data. Nothing leaves your phone.",
+        "NSMicrophoneUsageDescription": "Ondai transcribes speech on device.",
+        "NSSpeechRecognitionUsageDescription": "Ondai transcribes speech on device."
+      }
+    },
+    "android": {
+      "package": "dev.ondai.gallery",
+      "adaptiveIcon": { "foregroundImage": "./assets/icon.png", "backgroundColor": "#07080A" },
+      "edgeToEdgeEnabled": true
+    },
+    "web": { "bundler": "metro", "output": "static", "favicon": "./assets/favicon.png" },
+    "plugins": [
+      "expo-router",
+      "expo-dev-client",
+      "expo-sqlite",
+      ["expo-camera", { "cameraPermission": "Ondai scans receipts and cards on device." }],
+      ["expo-image-picker", { "photosPermission": "Ondai reads photos on device to extract data." }],
+      ["expo-build-properties", {
+        "android": {
+          "minSdkVersion": 26,
+          "packagingOptions": { "exclude": ["META-INF/INDEX.LIST", "META-INF/DEPENDENCIES"] }
+        }
+      }]
+    ],
+    "experiments": { "typedRoutes": false }
+  }
+}

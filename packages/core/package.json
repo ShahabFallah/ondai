@@ -1,0 +1,104 @@
+{
+  "name": "@ondai/core",
+  "version": "0.1.0",
+  "description": "On-device AI runtime for React Native: capability router, availability, hooks, small-model helpers and a scripted mock provider.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./mock": "./src/mock/index.ts",
+    "./apple": "./src/providers/apple.ts",
+    "./adk": "./src/providers/adk.ts",
+    "./llama": "./src/providers/llama.ts",
+    "./expo": "./src/expo/index.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "react-native": "./dist/index.js",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      },
+      "./mock": {
+        "types": "./dist/mock.d.ts",
+        "import": "./dist/mock.js",
+        "default": "./dist/mock.js"
+      },
+      "./apple": {
+        "types": "./dist/apple.d.ts",
+        "react-native": "./dist/apple.js",
+        "default": "./dist/apple.js"
+      },
+      "./adk": {
+        "types": "./dist/adk.d.ts",
+        "react-native": "./dist/adk.js",
+        "default": "./dist/adk.js"
+      },
+      "./llama": {
+        "types": "./dist/llama.d.ts",
+        "react-native": "./dist/llama.js",
+        "default": "./dist/llama.js"
+      },
+      "./expo": {
+        "types": "./dist/expo.d.ts",
+        "react-native": "./dist/expo.js",
+        "default": "./dist/expo.js"
+      }
+    },
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@ai-sdk/provider": "catalog:",
+    "@ai-sdk/provider-utils": "catalog:",
+    "ai": "catalog:",
+    "zod": "catalog:",
+    "@ondai/tokens": "workspace:*"
+  },
+  "peerDependencies": {
+    "@react-native-ai/adk": "^0.12.0",
+    "@react-native-ai/apple": "^0.12.0",
+    "@react-native-ai/llama": "^0.12.0",
+    "expo-sqlite": ">=15",
+    "react": ">=19",
+    "react-native": ">=0.76"
+  },
+  "peerDependenciesMeta": {
+    "@react-native-ai/adk": {
+      "optional": true
+    },
+    "@react-native-ai/apple": {
+      "optional": true
+    },
+    "@react-native-ai/llama": {
+      "optional": true
+    },
+    "expo-sqlite": {
+      "optional": true
+    },
+    "react-native": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@ondai/config": "workspace:*",
+    "@types/react": "catalog:",
+    "react": "catalog:",
+    "react-native": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

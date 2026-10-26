@@ -1,0 +1,29 @@
+{
+  "name": "ondai",
+  "private": true,
+  "packageManager": "pnpm@10.33.2",
+  "engines": { "node": ">=22.13.0" },
+  "scripts": {
+    "dev": "turbo run dev --filter=@ondai/web",
+    "dev:web": "turbo run dev --filter=@ondai/web",
+    "dev:gallery": "pnpm --filter @ondai/gallery start",
+    "storybook": "pnpm --filter @ondai/gallery storybook",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "test:visual": "turbo run test:visual",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "registry:build": "tsx scripts/build-registry.ts",
+    "format": "prettier --write \"**/*.{ts,tsx,js,mjs,json,md,mdx,css,yaml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,mjs,json,md,mdx,css,yaml}\""
+  },
+  "devDependencies": {
+    "@ondai/config": "workspace:*",
+    "@types/node": "^22.19.0",
+    "eslint": "^10.13.0",
+    "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
+    "turbo": "2.11.10",
+    "typescript": "catalog:"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "ui": "stream",
+  "globalEnv": ["NODE_ENV", "CI"],
+  "globalPassThroughEnv": ["ONDAI_REGISTRY", "EXPO_TOKEN", "NEXT_BUNDLER", "PLAYWRIGHT_BASE_URL"],
+  "tasks": {
+    "//#registry:build": {
+      "inputs": ["registry/components/**", "scripts/build-registry.ts", "scripts/check-registry-imports.ts"],
+      "outputs": ["registry/registry.json", "registry/generated/**", "apps/web/public/r/**"]
+    },
+    "build": {
+      "dependsOn": ["^build", "//#registry:build"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+    },
+    "dev": { "cache": false, "persistent": true, "dependsOn": ["//#registry:build"] },
+    "typecheck": { "dependsOn": ["//#registry:build"] },
+    "lint": { "dependsOn": ["//#registry:build"] },
+    "test": { "dependsOn": ["//#registry:build"], "outputs": ["coverage/**"] },
+    "test:visual": {
+      "dependsOn": ["build"],
+      "outputs": ["playwright-report/**", "test-results/**"],
+      "env": ["CI", "PLAYWRIGHT_BASE_URL"]
+    }
+  }
+}
