@@ -1,0 +1,46 @@
+# Dependencies and build output
+node_modules/
+dist/
+.turbo/
+coverage/
+*.tsbuildinfo
+.pnpm-store/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Logs and OS files
+*.log
+.DS_Store
+
+# Editors
+.idea/
+.vscode/
+*.swp
+
+# AI assistants and agent tooling (local only)
+.claude/
+.cursor/
+.windsurf/
+.agents/
+.aider*
+.codex/
+.gemini/
+.github/copilot-instructions.md
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+skills-lock.json
+HANDOFF-*.md
+
+# Deploy tooling (local only)
+.vercel/
+.vercelignore
+.netlify/
+
+# Local notes and scratch
+/docs/
+/insp/
+/scratch/

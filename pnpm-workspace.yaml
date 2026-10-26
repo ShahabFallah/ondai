@@ -1,0 +1,20 @@
+packages:
+  - packages/*
+
+nodeLinker: hoisted
+
+onlyBuiltDependencies:
+  - esbuild
+  - unrs-resolver
+
+catalog:
+  react: 19.3.0
+  react-native: 0.88.0
+  zod: ^4.6.7
+  ai: ^6.0.315
+  '@ai-sdk/provider': ^3.0.19
+  '@ai-sdk/provider-utils': ^4.0.62
+  typescript: ~6.0.3
+  '@types/react': ~19.3.0
+  vitest: ^5.0.5
+  tsdown: ^0.23.2
