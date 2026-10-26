@@ -1,0 +1,63 @@
+---
+title: "SemanticSearch"
+description: "Search by meaning over the app's own records with a local vector index and hybrid keyword matching, showing why each result matched."
+---
+
+<ComponentPreview name="semantic-search" state="results" height={420} />
+
+## Install
+
+```bash
+npx ondai add semantic-search
+```
+
+## Usage
+
+```tsx
+import { SemanticSearch } from '@/components/ondai/semantic-search'
+import { sqliteStorage } from '@ondai/core/expo'
+import { openDatabaseAsync } from 'expo-sqlite'
+
+<SemanticSearch
+  items={notes.map((n) => ({ id: n.id, text: n.body, metadata: n }))}
+  storage={sqliteStorage({ open: openDatabaseAsync })}
+  presentation="bar" resultStyle="list"
+  onSelect={(hit) => router.push(`/notes/${hit.id}`)}
+/>
+```
+
+- Embeddings come from Apple NLContextualEmbedding (512 dims, iOS 17+) or a llama embedding model; without them, keyword search still works.
+- Hybrid scoring blends cosine similarity and keyword overlap; "why it matched" shows the terms.
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `presentation` | `bar`, `spotlight`, `header` |
+| `resultStyle` | `list`, `cards`, `grouped` |
+
+Every variant is live in the [playground](/playground/semantic-search).
+
+## Runs on
+
+| Capability | Apple FM | Gemini Nano | Llama | Cloud |
+| --- | --- | --- | --- | --- |
+| embeddings | ✅ | — | ✅ | ✅ |
+
+## Token budget
+
+Input budget: **512 tokens**. Embeddings only (Apple NLContextualEmbedding, 512 dims); no LLM call. Keyword fallback without embeddings.
+
+## Fallback
+
+When no provider is ready the component renders the unavailable state (`AvailabilityGate` copy) and, where a deterministic path exists, keeps working without the model.
+
+## Eval score
+
+No model-driven fixtures for this component.
+
+## Files
+
+Registry dependencies: [chip](/docs/components/chip), [field](/docs/components/field), [model-download](/docs/components/model-download), [on-device-badge](/docs/components/on-device-badge), [sheet](/docs/components/sheet), [skeleton](/docs/components/skeleton)
+
+npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-haptics`, `lucide-react-native`, `react-native-reanimated`

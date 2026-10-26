@@ -47,9 +47,9 @@ export function Chip({ label, meta, icon, variant = 'soft', size = 'md', selecte
       testID={testID}
       hitSlop={6}
       style={({ pressed }) => [
-        { flexDirection: 'row', alignItems: 'center', borderRadius: t.radii.pill, borderWidth: hairlineWidth, borderColor: border, backgroundColor: bg, opacity: disabled ? 0.4 : ghost ? 0.55 : pressed ? 0.75 : 1 },
+        { flexDirection: 'row', alignItems: 'center', borderRadius: t.radii.pill, borderWidth: hairlineWidth, opacity: disabled ? 0.4 : ghost ? 0.55 : pressed ? 0.75 : 1 },
         ...variants({ size, variant }),
-        on && { borderColor: t.colors.text },
+        { backgroundColor: bg, borderColor: on ? t.colors.text : border },
         style,
       ]}
     >

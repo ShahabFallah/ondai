@@ -1,0 +1,56 @@
+---
+title: "SmartReply"
+description: "Three reply suggestions for the last message in a thread - chips, a stack, or ghost text inside the input, with an optional tone picker."
+---
+
+<ComponentPreview name="smart-reply" state="done" height={400} />
+
+## Install
+
+```bash
+npx ondai add smart-reply
+```
+
+## Usage
+
+```tsx
+import { SmartReply } from '@/components/ondai/smart-reply'
+
+<SmartReply thread={messages} presentation="chips" onSelect={(text) => composer.setText(text)} />
+```
+
+- Only the last six messages are sent, trimmed from the start.
+- The `ghost` presentation shows the first suggestion as faded text inside the input; Tab or the arrow accepts it.
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `presentation` | `chips`, `stack`, `ghost` |
+| `tone` | `neutral`, `friendly`, `formal`, `brief` |
+
+Every variant is live in the [playground](/playground/smart-reply).
+
+## Runs on
+
+| Capability | Apple FM | Gemini Nano | Llama | Cloud |
+| --- | --- | --- | --- | --- |
+| structured, text | ✅ | ✅ | ✅ | ✅ |
+
+## Token budget
+
+Input budget: **1200 tokens**. Only the last 6 messages are sent, trimmed from the start.
+
+## Fallback
+
+When no provider is ready the component renders the unavailable state (`AvailabilityGate` copy) and, where a deterministic path exists, keeps working without the model.
+
+## Eval score
+
+Fixtures: `evals/smart-reply/fixtures.json`.
+
+## Files
+
+Registry dependencies: [chip](/docs/components/chip), [on-device-badge](/docs/components/on-device-badge), [skeleton](/docs/components/skeleton)
+
+npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-haptics`, `lucide-react-native`, `react-native-reanimated`, `zod`

@@ -1,0 +1,47 @@
+---
+title: "KeyHint"
+description: "Mono key caps for keyboard hints."
+---
+
+<ComponentPreview name="key-hint" state="default" height={140} />
+
+## Install
+
+```bash
+npx ondai add key-hint
+```
+
+## Usage
+
+```tsx
+import { KeyHint } from '@/components/ondai/key-hint'
+
+<KeyHint keys={['cmd', 'K']} />
+```
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `variant` | `caps`, `plain` |
+| `size` | `sm`, `md` |
+
+Every variant is live in the [playground](/playground/key-hint).
+
+## Runs on
+
+| Capability | Apple FM | Gemini Nano | Llama | Cloud |
+| --- | --- | --- | --- | --- |
+| none (pure UI) | ✅ | ✅ | ✅ | ✅ |
+
+## Fallback
+
+Pure UI: no model required.
+
+## Eval score
+
+No model-driven fixtures for this component.
+
+## Files
+
+npm dependencies: `@ondai/tokens`

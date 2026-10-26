@@ -61,6 +61,9 @@ export function matchEnum<T extends string>(
   opts: MatchEnumOptions = {},
 ): EnumMatch<T> | null {
   if (!input || !options.length) return null
+  // Raw equality first: options like "$" or "$$" vanish under normalization.
+  const rawTrim = input.trim()
+  for (const o of options) if (o === rawTrim || o.toLowerCase() === rawTrim.toLowerCase()) return { value: o, score: 1, via: 'exact' }
   const q = normalizeText(input)
   if (!q) return null
   const threshold = opts.threshold ?? 0.5
@@ -76,6 +79,7 @@ export function matchEnum<T extends string>(
       if (na === q) consider(o, 0.98, 'alias')
       else if (na.includes(q) || q.includes(na)) consider(o, 0.85, 'alias')
     }
+    if (!no) continue
     if (no.startsWith(q) || q.startsWith(no)) consider(o, 0.9, 'prefix')
     else if (no.includes(q) || q.includes(no)) consider(o, 0.8, 'contains')
     consider(o, similarity(q, no), 'fuzzy')

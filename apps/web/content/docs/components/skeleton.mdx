@@ -1,0 +1,46 @@
+---
+title: "Skeleton"
+description: "Loading placeholder with an ion shimmer."
+---
+
+<ComponentPreview name="skeleton" state="loading" height={200} />
+
+## Install
+
+```bash
+npx ondai add skeleton
+```
+
+## Usage
+
+```tsx
+import { Skeleton } from '@/components/ondai/skeleton'
+
+<Skeleton lines={3} />
+```
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `radius` | `sm`, `md`, `lg`, `pill` |
+
+Every variant is live in the [playground](/playground/skeleton).
+
+## Runs on
+
+| Capability | Apple FM | Gemini Nano | Llama | Cloud |
+| --- | --- | --- | --- | --- |
+| none (pure UI) | ✅ | ✅ | ✅ | ✅ |
+
+## Fallback
+
+Pure UI: no model required.
+
+## Eval score
+
+No model-driven fixtures for this component.
+
+## Files
+
+npm dependencies: `@ondai/tokens`, `react-native-reanimated`, `react-native-svg`

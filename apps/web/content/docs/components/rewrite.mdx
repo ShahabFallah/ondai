@@ -1,0 +1,56 @@
+---
+title: "Rewrite"
+description: "Shorten, expand, friendlier, formal or fix grammar, streamed on device, with replace / diff / side-by-side results and accept/reject."
+---
+
+<ComponentPreview name="rewrite" state="done" height={460} query="resultView=diff" />
+
+## Install
+
+```bash
+npx ondai add rewrite
+```
+
+## Usage
+
+```tsx
+import { Rewrite } from '@/components/ondai/rewrite'
+
+<Rewrite value={draft} onAccept={setDraft} presentation="toolbar" resultView="diff" />
+```
+
+- Modes: shorten, expand, friendlier, formal, fix grammar, or `custom` with your own instruction.
+- Result views: replace, word-level diff, or side by side.
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `presentation` | `toolbar`, `menu`, `chips` |
+| `resultView` | `replace`, `diff`, `sideBySide` |
+
+Every variant is live in the [playground](/playground/rewrite).
+
+## Runs on
+
+| Capability | Apple FM | Gemini Nano | Llama | Cloud |
+| --- | --- | --- | --- | --- |
+| text | ✅ | ✅ | ✅ | ✅ |
+
+## Token budget
+
+Input budget: **1800 tokens**. Input is truncated to half the window so the rewrite fits in the rest.
+
+## Fallback
+
+When no provider is ready the component renders the unavailable state (`AvailabilityGate` copy) and, where a deterministic path exists, keeps working without the model.
+
+## Eval score
+
+Fixtures: `evals/rewrite/fixtures.json`.
+
+## Files
+
+Registry dependencies: [button](/docs/components/button), [chip](/docs/components/chip), [ion-border](/docs/components/ion-border), [on-device-badge](/docs/components/on-device-badge), [sheet](/docs/components/sheet), [streaming-text](/docs/components/streaming-text)
+
+npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-haptics`, `lucide-react-native`, `react-native-reanimated`

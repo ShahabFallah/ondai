@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Typecheck, lint, unit tests, registry, web build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm registry:build
+      - run: git diff --exit-code -- registry/registry.json registry/generated apps/web/public/r
+      - run: pnpm turbo typecheck lint test --filter='!@ondai/gallery'
+      - run: pnpm --filter @ondai/web build
+      - run: pnpm tsx scripts/run-evals.ts
+
+  components:
+    name: Component tests (jest-expo)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm registry:build
+      - run: pnpm --filter @ondai/registry test
+
+  visual:
+    name: Visual regression + axe (Playwright)
+    # Baselines are generated on macOS Chromium; keep the runner on macOS so anti-aliasing matches.
+    runs-on: macos-15
+    needs: check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm registry:build
+      - run: pnpm --filter @ondai/web exec playwright install chromium
+      - run: pnpm --filter @ondai/web build
+      - run: pnpm --filter @ondai/web start &
+      - run: npx wait-on http://localhost:3000/review?component=key-hint --timeout 180000
+      - run: pnpm --filter @ondai/web test:visual
+        env:
+          PLAYWRIGHT_BASE_URL: http://localhost:3000
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            apps/web/playwright-report
+            apps/web/test-results
+
+  gallery:
+    name: Gallery (expo-doctor, typecheck, web export)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm registry:build
+      - run: pnpm --filter @ondai/gallery typecheck
+      - run: pnpm --filter @ondai/gallery exec expo export --platform web

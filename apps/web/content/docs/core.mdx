@@ -1,0 +1,61 @@
+---
+title: "Core runtime"
+description: "createOndai, the capability router, availability, hooks and small-model helpers in @ondai/core."
+---
+
+## createOndai
+
+```ts
+const ai = createOndai({
+  providers: { apple, nano, llama, cloud },
+  policy: { order: ['apple', 'nano', 'llama', 'cloud'], allowCloud: false, prewarm: 'on-focus', tokenBudget: 4096 },
+  onMetric: (m) => console.log(m), // local only; Ondai never sends anything
+})
+```
+
+Requests declare a **capability** (`text`, `structured`, `tools`, `vision`, `embeddings`, `transcription`, `speech`). The router picks the first provider in `policy.order` that is ready and supports it, and returns the provider id so the UI can show `ON DEVICE · APPLE`. Cloud is only ever used when `allowCloud` is true and you configured a cloud model; components can be marked `localOnly`.
+
+## Availability
+
+```ts
+type Availability =
+  | { status: 'ready'; provider }
+  | { status: 'preparing'; provider; progress? }
+  | { status: 'unavailable'; reason: 'device-not-eligible' | 'not-enabled' | 'model-downloading' | 'unsupported-os' | 'unsupported-language' | 'background-blocked' | 'quota' | 'no-provider' | 'unknown'; detail? }
+```
+
+Apple's provider (0.12) exposes only a boolean, so reasons are inferred defensively and the raw value is logged; `availabilityCopy()` turns any state into calm UI text.
+
+## Hooks
+
+| Hook | Returns |
+| --- | --- |
+| `useLocalModel(capability)` | `{ availability, isReady, provider, locality, label, prewarm, refresh }` |
+| `useStreamText({ system, prompt })` | `{ text, status, isStreaming, run, stop, error, metrics }` |
+| `useStructured({ schema, instructions, refine })` | `{ object, confidence, isLoading, run, error }` |
+| `useToolAgent({ tools, meta })` | `{ run, steps, pendingConfirmation, confirm, cancel, text }` |
+| `useEmbeddings()` | `{ embed, embedOne, similarity, available }` |
+| `useTranscribe()` / `useSpeak()` | on-device speech-to-text / text-to-speech |
+
+Every hook shares one state machine (`idle → thinking → streaming → done | error | refusal | unavailable`) and reports local metrics (latency, time to first token, tokens per second).
+
+## Small-model helpers
+
+- `estimateTokens`, `chunk`, `truncateToBudget`, `mapReduce` for the 4,096-token budget.
+- `matchEnum` / `matchEnumList` fuzzy-match model output to your own lists; `parseDate`, `parseMoney`, `parseNumber` parse in code instead of trusting the model.
+- `describeSchema` / `refineObject` turn a zod object into prompt text and deterministic per-field refinement with confidence.
+- `withToolPolicy` wraps tools with `auto | ask | never` policies; `preselectTools` keeps only the top 3–5 relevant tools per request.
+- `createVectorIndex` keeps a local vector index (in memory, or SQLite via `@ondai/core/expo`) with hybrid keyword search.
+
+## Errors
+
+Every error becomes an `OndaiError` with a `kind` (`context-overflow`, `refusal`, `unsupported-language`, `quota`, `unavailable`, `cancelled`, `invalid-output`, `tool-error`, `network`, `unknown`), a human message and the raw cause. Only context overflow and invalid output are retried, exactly once, with a smaller budget. Never in a loop.
+
+## Mock provider
+
+```ts
+import { mockAdapter, mockScript } from '@ondai/core/mock'
+const mock = mockAdapter({ script: mockScript.thinking(800).stream('Hello from the phone.', 40) })
+```
+
+The mock is a real AI SDK `LanguageModelV3`, so `generateText`, `streamText`, structured output and tool calls run the genuine code path on the web and in tests. Scripts can stream at a configurable rate, return objects, call tools, fail, refuse, or report an unavailable device, with deterministic seeds and a manual clock for screenshots.

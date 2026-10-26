@@ -32,7 +32,7 @@ export const errorMessages: Record<OndaiErrorKind, string> = {
 
 const patterns: Array<[OndaiErrorKind, RegExp]> = [
   ['cancelled', /abort|cancel/i],
-  ['context-overflow', /context ?window|exceeded.*context|too (many|long)|token limit|exceededContextWindowSize/i],
+  ['context-overflow', /context ?window|exceeded.*context|exceeds the maximum|too (many|long)|token limit|exceededContextWindowSize/i],
   ['refusal', /guardrail|safety|refus|unsafe|sensitive content|violat/i],
   ['unsupported-language', /unsupported ?language|locale|language.*not supported/i],
   ['quota', /rate ?limit|quota|busy|throttl|RATE_LIMITED|BUSY/i],

@@ -1,0 +1,47 @@
+---
+title: "ModelDownload"
+description: "Ion progress line, ring or card with a mono percentage while a model downloads."
+---
+
+<ComponentPreview name="model-download" state="preparing" height={200} />
+
+## Install
+
+```bash
+npx ondai add model-download
+```
+
+## Usage
+
+```tsx
+import { ModelDownload } from '@/components/ondai/model-download'
+
+<ModelDownload progress={0.42} variant="bar" label="Preparing model" detail="1.2 GB · Wi-Fi only" />
+```
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `variant` | `bar`, `ring`, `card` |
+| `size` | `sm`, `md`, `lg` |
+
+Every variant is live in the [playground](/playground/model-download).
+
+## Runs on
+
+| Capability | Apple FM | Gemini Nano | Llama | Cloud |
+| --- | --- | --- | --- | --- |
+| none (pure UI) | ✅ | ✅ | ✅ | ✅ |
+
+## Fallback
+
+Pure UI: no model required.
+
+## Eval score
+
+No model-driven fixtures for this component.
+
+## Files
+
+npm dependencies: `@ondai/tokens`, `react-native-reanimated`, `react-native-svg`

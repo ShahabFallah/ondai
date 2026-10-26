@@ -1,0 +1,54 @@
+---
+title: "AutoTag"
+description: "Tag and category suggestions constrained to the app's own list, fuzzy-matched after the model answers."
+---
+
+<ComponentPreview name="auto-tag" state="done" height={360} />
+
+## Install
+
+```bash
+npx ondai add auto-tag
+```
+
+## Usage
+
+```tsx
+import { AutoTag } from '@/components/ondai/auto-tag'
+
+<AutoTag text={note.body} tags={allTags} selected={note.tags} onChange={setTags} presentation="chips" max={3} />
+```
+
+- The model can only pick from your list; results are fuzzy-matched back to it, so "Travel" becomes `travel`.
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `presentation` | `chips`, `inlineGhost`, `dropdown` |
+
+Every variant is live in the [playground](/playground/auto-tag).
+
+## Runs on
+
+| Capability | Apple FM | Gemini Nano | Llama | Cloud |
+| --- | --- | --- | --- | --- |
+| structured | ✅ | ✅ | ✅ | ✅ |
+
+## Token budget
+
+Input budget: **1500 tokens**. One structured call with an enum-constrained array; results fuzzy-matched to the list.
+
+## Fallback
+
+When no provider is ready the component renders the unavailable state (`AvailabilityGate` copy) and, where a deterministic path exists, keeps working without the model.
+
+## Eval score
+
+Fixtures: `evals/auto-tag/fixtures.json`.
+
+## Files
+
+Registry dependencies: [chip](/docs/components/chip), [on-device-badge](/docs/components/on-device-badge), [skeleton](/docs/components/skeleton)
+
+npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-haptics`, `lucide-react-native`, `react-native-reanimated`, `zod`

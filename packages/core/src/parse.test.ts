@@ -11,6 +11,12 @@ describe('matchEnum', () => {
     expect(matchEnum('spaceship', cats)).toBeNull()
     expect(matchEnum('', cats)).toBeNull()
   })
+  it('symbol-only options survive normalization', () => {
+    const prices = ['$', '$$', '$$$'] as const
+    expect(matchEnum('$', prices)?.value).toBe('$')
+    expect(matchEnum('$$$', prices)?.value).toBe('$$$')
+    expect(matchEnum('cheap', prices, { aliases: { $: ['cheap', 'budget'] } })?.value).toBe('$')
+  })
   it('lists', () => {
     expect(matchEnumList('Transport, dining; nonsense', cats)).toEqual(['transport', 'dining'])
   })
@@ -52,7 +58,7 @@ describe('parseDate', () => {
   it('weekdays go forward', () => {
     expect(d('friday')!.date.getDate()).toBe(30)
     expect(d('next friday')!.date.getDate()).toBe(30)
-    expect(d('monday')!.date.getDate()).toBe(2) // next Monday, Nov 2
+    expect(d('monday')!.date.getDate()).toBe(2)
     expect(d('this monday')!.date.getDate()).toBe(26)
   })
   it('times', () => {

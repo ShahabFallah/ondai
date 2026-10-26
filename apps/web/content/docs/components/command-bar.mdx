@@ -1,0 +1,69 @@
+---
+title: "CommandBar"
+description: "Spotlight for your app - natural language becomes one of your registered actions or routes, chosen by on-device tool calling, with preview and confirmation."
+---
+
+<ComponentPreview name="command-bar" state="tool" height={520} />
+
+## Install
+
+```bash
+npx ondai add command-bar
+```
+
+## Usage
+
+```tsx
+import { CommandBar, defineActions, defineAction } from '@/components/ondai/command-bar'
+import { z } from 'zod'
+
+const actions = defineActions([
+  defineAction({
+    id: 'task.create', title: 'Create task', keywords: ['todo', 'remind'],
+    params: z.object({ title: z.string(), due: z.string().optional() }),
+    preview: (p) => `Create task · ${p.title}`,
+    run: (p) => tasks.add(p),
+  }),
+  defineAction({ id: 'email.send', title: 'Send email', risk: 'high', params: z.object({ to: z.string(), subject: z.string() }), run: sendEmail }),
+])
+
+<CommandBar actions={actions} presentation="spotlight" variant="glass" open={open} onOpenChange={setOpen} />
+```
+
+- Ladder: on-device tool calling → structured enum choice → keyword search. Something always answers.
+- Actions with `risk: "high"` pause in a ToolConfirmCard before running.
+- Use `routesToActions(routes, router.push)` to expose expo-router screens.
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `presentation` | `spotlight`, `sheet`, `inline`, `pill`, `fullscreen` |
+| `variant` | `glass`, `solid`, `minimal` |
+| `size` | `sm`, `md`, `lg` |
+
+Every variant is live in the [playground](/playground/command-bar).
+
+## Runs on
+
+| Capability | Apple FM | Gemini Nano | Llama | Cloud |
+| --- | --- | --- | --- | --- |
+| tools, structured, text | ✅ | ✅ | ✅ | ✅ |
+
+## Token budget
+
+Input budget: **1200 tokens**. Top 5 tools preselected by keyword relevance; the query is truncated to the budget.
+
+## Fallback
+
+When no provider is ready the component renders the unavailable state (`AvailabilityGate` copy) and, where a deterministic path exists, keeps working without the model.
+
+## Eval score
+
+Fixtures: `evals/command-bar/fixtures.json`.
+
+## Files
+
+Registry dependencies: [ion-border](/docs/components/ion-border), [key-hint](/docs/components/key-hint), [on-device-badge](/docs/components/on-device-badge), [sheet](/docs/components/sheet), [streaming-text](/docs/components/streaming-text), [thinking-indicator](/docs/components/thinking-indicator), [tool-confirm-card](/docs/components/tool-confirm-card)
+
+npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-haptics`, `lucide-react-native`, `react-native-reanimated`, `zod`

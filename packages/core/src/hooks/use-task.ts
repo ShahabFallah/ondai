@@ -50,7 +50,11 @@ export function useTask(component?: string): TaskController {
     mounted.current = true
     return () => {
       mounted.current = false
-      abortRef.current?.abort()
+      // Defer so React StrictMode's simulated unmount/remount does not cancel a request that just started.
+      const ac = abortRef.current
+      setTimeout(() => {
+        if (!mounted.current) ac?.abort()
+      }, 0)
     }
   }, [])
   const update = useCallback((patch: Partial<TaskState>) => {

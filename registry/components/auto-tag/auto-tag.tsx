@@ -30,8 +30,10 @@ export function AutoTag({ text, selected, onChange, presentation = 'chips', mult
   const last = useRef('')
   useEffect(() => {
     if (!autoRun || !text.trim() || last.current === text) return
-    last.current = text
-    const h = setTimeout(() => void at.run(text).catch(() => {}), 350)
+    const h = setTimeout(() => {
+      last.current = text
+      void at.run(text).catch(() => {})
+    }, 350)
     return () => clearTimeout(h)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text, autoRun])

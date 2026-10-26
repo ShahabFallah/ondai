@@ -1,13 +1,27 @@
 ---
-title: Hello World
-description: Your first document
+title: "Introduction"
+description: "Ondai is shadcn/ui for on-device AI in React Native. Copy-paste components, each a complete AI feature powered by the model already on the phone."
 ---
 
-Welcome to the docs! You can start writing documents in `/content/docs`.
+Phones ship with local language models: Apple Foundation Models on iOS 26, Gemini Nano on recent Android flagships. They are small (about 3B parameters, a 4,096-token context), bad at long reasoning and very good at short, focused tasks: extraction, classification, rewriting, short summaries, choosing among a few tools.
 
-## What is Next?
+Ondai is the experience layer on top of those engines. You run `npx ondai add command-bar`, and minutes later your app has a working natural-language command bar that is **free** (no API bill), **private** (nothing leaves the phone), **offline** and **fast**.
 
-<Cards>
-  <Card title="Learn more about Next.js" href="https://nextjs.org/docs" />
-  <Card title="Learn more about Fumadocs" href="https://fumadocs.dev" />
-</Cards>
+<ComponentPreview name="command-bar" state="tool" height={420} query="presentation=inline" />
+
+## What you get
+
+- **Components you own.** The CLI copies TypeScript source into `components/ondai/`, like shadcn/ui. Change anything.
+- **A small runtime.** `@ondai/core` routes each request to the best provider on the device by capability (text, structured output, tools, embeddings, transcription, speech), handles availability, cold starts, token budgets, refusals and errors, and ships a scripted mock provider for tests and the web.
+- **One design language.** Quiet, monochrome UI that only glows while the AI works. Void (dark), Paper (light) and Glass themes, four accent presets, and the same state language in every component: idle, focus, thinking, streaming, tool, confirm, done, error, refusal, unavailable, preparing.
+- **Honesty built in.** Every component shows where it runs (`ON DEVICE · APPLE`) and degrades gracefully when no model is available.
+
+## Built on
+
+Ondai does not build model runtimes. It sits on [Callstack's react-native-ai](https://github.com/callstackincubator/ai) providers via the [Vercel AI SDK](https://ai-sdk.dev), and will add [Expo's expo-ai](https://github.com/expo/expo) when it ships. When their engines improve, Ondai improves.
+
+## Next
+
+- [Installation](/docs/installation)
+- [Core runtime](/docs/core)
+- [Components](/docs/components/command-bar)

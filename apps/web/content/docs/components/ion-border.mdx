@@ -1,0 +1,48 @@
+---
+title: "IonBorder"
+description: "The signature thinking border - a slow gradient light travels around any container while the AI works."
+---
+
+<ComponentPreview name="ion-border" state="thinking" height={240} />
+
+## Install
+
+```bash
+npx ondai add ion-border
+```
+
+## Usage
+
+```tsx
+import { IonBorder } from '@/components/ondai/ion-border'
+
+<IonBorder active={isThinking} radius="lg" glow>
+  <YourCard />
+</IonBorder>
+```
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `radius` | `none`, `sm`, `md`, `lg`, `xl`, `pill` |
+
+Every variant is live in the [playground](/playground/ion-border).
+
+## Runs on
+
+| Capability | Apple FM | Gemini Nano | Llama | Cloud |
+| --- | --- | --- | --- | --- |
+| none (pure UI) | ✅ | ✅ | ✅ | ✅ |
+
+## Fallback
+
+Pure UI: no model required.
+
+## Eval score
+
+No model-driven fixtures for this component.
+
+## Files
+
+npm dependencies: `@ondai/tokens`, `react-native-reanimated`, `react-native-svg`

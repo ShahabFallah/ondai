@@ -1,0 +1,57 @@
+---
+title: "Summarize"
+description: "A TL;DR for long text - card, inline, sheet or tooltip. Streams, and map-reduces input that does not fit the on-device context."
+---
+
+<ComponentPreview name="summarize" state="done" height={360} />
+
+## Install
+
+```bash
+npx ondai add summarize
+```
+
+## Usage
+
+```tsx
+import { Summarize } from '@/components/ondai/summarize'
+
+<Summarize text={thread.text} presentation="card" length="bullets" style="plain" />
+```
+
+- Short input streams in one pass; long input is chunked, summarized per chunk and reduced (progress shown).
+- `useSummarize()` exposes the same logic headlessly.
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `presentation` | `card`, `inline`, `sheet`, `tooltip` |
+| `length` | `oneLine`, `bullets`, `paragraph` |
+| `style` | `plain`, `quote`, `highlighted` |
+
+Every variant is live in the [playground](/playground/summarize).
+
+## Runs on
+
+| Capability | Apple FM | Gemini Nano | Llama | Cloud |
+| --- | --- | --- | --- | --- |
+| text | ✅ | ✅ | ✅ | ✅ |
+
+## Token budget
+
+Input budget: **3400 tokens**. Single streamed pass when the text fits; otherwise map (bullets per chunk) then reduce (streamed).
+
+## Fallback
+
+When no provider is ready the component renders the unavailable state (`AvailabilityGate` copy) and, where a deterministic path exists, keeps working without the model.
+
+## Eval score
+
+Fixtures: `evals/summarize/fixtures.json`.
+
+## Files
+
+Registry dependencies: [button](/docs/components/button), [ion-border](/docs/components/ion-border), [model-download](/docs/components/model-download), [on-device-badge](/docs/components/on-device-badge), [sheet](/docs/components/sheet), [skeleton](/docs/components/skeleton), [streaming-text](/docs/components/streaming-text)
+
+npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-haptics`, `lucide-react-native`, `react-native-reanimated`

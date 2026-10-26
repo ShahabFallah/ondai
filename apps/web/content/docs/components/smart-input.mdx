@@ -1,0 +1,65 @@
+---
+title: "SmartInput"
+description: "Text, voice or photo fills your zod form on device, with per-field confidence, deterministic refinement and confirm/undo."
+---
+
+<ComponentPreview name="smart-input" state="filled" height={560} query="presentation=overlay" />
+
+## Install
+
+```bash
+npx ondai add smart-input
+```
+
+## Usage
+
+```tsx
+import { SmartInput } from '@/components/ondai/smart-input'
+import { z } from 'zod'
+
+const expense = z.object({
+  merchant: z.string(),
+  amount: z.number(),
+  category: z.enum(['food', 'transport', 'home', 'other']),
+  date: z.string().describe('date').optional(),
+})
+
+<SmartInput schema={expense} presentation="field" onFill={(values) => form.reset(values)} aliases={{ category: { food: ['lunch', 'dinner'] } }} />
+```
+
+- Enums are fuzzy-matched, numbers and money parsed, dates resolved from phrases ("yesterday") in code after the model answers.
+- Per-field confidence drives highlight / badge / underline styles and confirm/undo.
+- For react-hook-form: `form.apply((name, value) => setValue(name, value))`.
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `presentation` | `field`, `composer`, `overlay`, `card` |
+| `confidenceStyle` | `highlight`, `badge`, `underline` |
+
+Every variant is live in the [playground](/playground/smart-input).
+
+## Runs on
+
+| Capability | Apple FM | Gemini Nano | Llama | Cloud |
+| --- | --- | --- | --- | --- |
+| structured | ✅ | ✅ | ✅ | ✅ |
+
+## Token budget
+
+Input budget: **1500 tokens**. One structured call; enum/number/date fields are refined deterministically after parsing.
+
+## Fallback
+
+When no provider is ready the component renders the unavailable state (`AvailabilityGate` copy) and, where a deterministic path exists, keeps working without the model.
+
+## Eval score
+
+Fixtures: `evals/smart-input/fixtures.json`.
+
+## Files
+
+Registry dependencies: [button](/docs/components/button), [chip](/docs/components/chip), [field](/docs/components/field), [ion-border](/docs/components/ion-border), [on-device-badge](/docs/components/on-device-badge)
+
+npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-haptics`, `lucide-react-native`, `react-native-reanimated`, `zod`

@@ -1,0 +1,46 @@
+---
+title: "StreamingText"
+description: "Token-by-token text rendering with a blinking accent caret and chunk fade-in."
+---
+
+<ComponentPreview name="streaming-text" state="streaming" height={220} />
+
+## Install
+
+```bash
+npx ondai add streaming-text
+```
+
+## Usage
+
+```tsx
+import { StreamingText } from '@/components/ondai/streaming-text'
+
+<StreamingText text={text} streaming={isStreaming} />
+```
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `size` | `xs`, `sm`, `md`, `lg`, `xl` |
+
+Every variant is live in the [playground](/playground/streaming-text).
+
+## Runs on
+
+| Capability | Apple FM | Gemini Nano | Llama | Cloud |
+| --- | --- | --- | --- | --- |
+| none (pure UI) | ✅ | ✅ | ✅ | ✅ |
+
+## Fallback
+
+Pure UI: no model required.
+
+## Eval score
+
+No model-driven fixtures for this component.
+
+## Files
+
+npm dependencies: `@ondai/tokens`, `react-native-reanimated`

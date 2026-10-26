@@ -1,0 +1,52 @@
+---
+title: "ToolConfirmCard"
+description: "Approval for any tool call - action, parameters and risk level, with approve / edit / cancel."
+---
+
+<ComponentPreview name="tool-confirm-card" state="confirm" height={360} />
+
+## Install
+
+```bash
+npx ondai add tool-confirm-card
+```
+
+## Usage
+
+```tsx
+import { ToolConfirmCard } from '@/components/ondai/tool-confirm-card'
+
+const agent = useToolAgent({ tools, meta: { sendEmail: { policy: 'ask', risk: 'high' } } })
+
+<ToolConfirmCard pending={agent.pendingConfirmation} presentation="card" />
+```
+
+- Works with provider-executed tool loops (Apple, Nano) because approval happens inside the tool's execute.
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `presentation` | `card`, `sheet`, `banner` |
+
+Every variant is live in the [playground](/playground/tool-confirm-card).
+
+## Runs on
+
+| Capability | Apple FM | Gemini Nano | Llama | Cloud |
+| --- | --- | --- | --- | --- |
+| tools | ✅ | ✅ | ✅ | ✅ |
+
+## Fallback
+
+When no provider is ready the component renders the unavailable state (`AvailabilityGate` copy) and, where a deterministic path exists, keeps working without the model.
+
+## Eval score
+
+No model-driven fixtures for this component.
+
+## Files
+
+Registry dependencies: [button](/docs/components/button), [sheet](/docs/components/sheet)
+
+npm dependencies: `@ondai/core`, `@ondai/tokens`, `lucide-react-native`, `react-native-reanimated`

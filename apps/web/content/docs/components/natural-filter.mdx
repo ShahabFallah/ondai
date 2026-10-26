@@ -1,0 +1,60 @@
+---
+title: "NaturalFilter"
+description: "A natural-language search request becomes a typed filter/sort object with editable chips."
+---
+
+<ComponentPreview name="natural-filter" state="done" height={520} />
+
+## Install
+
+```bash
+npx ondai add natural-filter
+```
+
+## Usage
+
+```tsx
+import { NaturalFilter } from '@/components/ondai/natural-filter'
+import { z } from 'zod'
+
+const filters = z.object({ cuisine: z.enum(['italian', 'japanese']).optional(), price: z.enum(['$', '$$', '$$$']).optional(), openNow: z.boolean().optional() })
+
+<NaturalFilter schema={filters} presentation="bar" onChange={(f) => setFilter(f)}>
+  <RestaurantList filter={filter} />
+</NaturalFilter>
+```
+
+- Chips are editable (tap an enum chip to cycle values) and removable.
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `presentation` | `bar`, `sheet`, `inline` |
+| `chipStyle` | `soft`, `outline` |
+
+Every variant is live in the [playground](/playground/natural-filter).
+
+## Runs on
+
+| Capability | Apple FM | Gemini Nano | Llama | Cloud |
+| --- | --- | --- | --- | --- |
+| structured | ✅ | ✅ | ✅ | ✅ |
+
+## Token budget
+
+Input budget: **600 tokens**. One structured call; enums, numbers and booleans refined deterministically.
+
+## Fallback
+
+When no provider is ready the component renders the unavailable state (`AvailabilityGate` copy) and, where a deterministic path exists, keeps working without the model.
+
+## Eval score
+
+Fixtures: `evals/natural-filter/fixtures.json`.
+
+## Files
+
+Registry dependencies: [button](/docs/components/button), [chip](/docs/components/chip), [field](/docs/components/field), [on-device-badge](/docs/components/on-device-badge), [sheet](/docs/components/sheet), [skeleton](/docs/components/skeleton)
+
+npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-haptics`, `lucide-react-native`, `react-native-reanimated`, `zod`

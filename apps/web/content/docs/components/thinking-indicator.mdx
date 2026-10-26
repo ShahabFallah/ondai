@@ -1,0 +1,47 @@
+---
+title: "ThinkingIndicator"
+description: "Dots, orb, line or sweep - calm indicators that the on-device model is working."
+---
+
+<ComponentPreview name="thinking-indicator" state="thinking" height={160} />
+
+## Install
+
+```bash
+npx ondai add thinking-indicator
+```
+
+## Usage
+
+```tsx
+import { ThinkingIndicator } from '@/components/ondai/thinking-indicator'
+
+<ThinkingIndicator variant="dots" label="Thinking" />
+```
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `variant` | `dots`, `orb`, `line`, `sweep` |
+| `size` | `sm`, `md`, `lg` |
+
+Every variant is live in the [playground](/playground/thinking-indicator).
+
+## Runs on
+
+| Capability | Apple FM | Gemini Nano | Llama | Cloud |
+| --- | --- | --- | --- | --- |
+| none (pure UI) | ✅ | ✅ | ✅ | ✅ |
+
+## Fallback
+
+Pure UI: no model required.
+
+## Eval score
+
+No model-driven fixtures for this component.
+
+## Files
+
+npm dependencies: `@ondai/tokens`, `react-native-reanimated`, `react-native-svg`

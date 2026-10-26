@@ -1,0 +1,50 @@
+---
+title: "AvailabilityGate"
+description: "Renders children only when the on-device model is ready; otherwise an elegant empty state with a way to enable it."
+---
+
+<ComponentPreview name="availability-gate" state="not-eligible" height={300} />
+
+## Install
+
+```bash
+npx ondai add availability-gate
+```
+
+## Usage
+
+```tsx
+import { AvailabilityGate } from '@/components/ondai/availability-gate'
+
+<AvailabilityGate capability="text" variant="card">
+  <YourAiFeature />
+</AvailabilityGate>
+```
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `variant` | `card`, `inline`, `fullscreen` |
+
+Every variant is live in the [playground](/playground/availability-gate).
+
+## Runs on
+
+| Capability | Apple FM | Gemini Nano | Llama | Cloud |
+| --- | --- | --- | --- | --- |
+| text | ✅ | ✅ | ✅ | ✅ |
+
+## Fallback
+
+When no provider is ready the component renders the unavailable state (`AvailabilityGate` copy) and, where a deterministic path exists, keeps working without the model.
+
+## Eval score
+
+No model-driven fixtures for this component.
+
+## Files
+
+Registry dependencies: [model-download](/docs/components/model-download), [skeleton](/docs/components/skeleton)
+
+npm dependencies: `@ondai/core`, `@ondai/tokens`, `lucide-react-native`

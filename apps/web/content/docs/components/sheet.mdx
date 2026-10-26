@@ -1,0 +1,47 @@
+---
+title: "Sheet"
+description: "Animated container - bottom sheet, floating spotlight panel or fullscreen; glass or solid."
+---
+
+<ComponentPreview name="sheet" state="open" height={560} />
+
+## Install
+
+```bash
+npx ondai add sheet
+```
+
+## Usage
+
+```tsx
+import { Sheet } from '@/components/ondai/sheet'
+
+<Sheet open={open} onClose={close} presentation="sheet" variant="glass">…</Sheet>
+```
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `presentation` | `sheet`, `spotlight`, `fullscreen` |
+| `variant` | `glass`, `solid` |
+
+Every variant is live in the [playground](/playground/sheet).
+
+## Runs on
+
+| Capability | Apple FM | Gemini Nano | Llama | Cloud |
+| --- | --- | --- | --- | --- |
+| none (pure UI) | ✅ | ✅ | ✅ | ✅ |
+
+## Fallback
+
+Pure UI: no model required.
+
+## Eval score
+
+No model-driven fixtures for this component.
+
+## Files
+
+npm dependencies: `@ondai/tokens`, `expo-blur`, `react-native-reanimated`

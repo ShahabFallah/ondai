@@ -1,0 +1,20 @@
+---
+title: "Variants"
+description: "Every component exposes typed variants: presentation, variant, size, radius, accent, density and theme."
+---
+
+Variants are implemented with a tiny cva-style helper over React Native style objects, so the same code runs on iOS, Android and the web with no compiler plugin:
+
+```ts
+import { createVariants } from '@ondai/tokens'
+
+const chip = createVariants({
+  base: { borderRadius: 999 },
+  variants: { size: { sm: { height: 28 }, md: { height: 34 } }, variant: { soft: {}, outline: {} } },
+  defaults: { size: 'md', variant: 'soft' },
+})
+chip({ size: 'sm' }) // → style[]
+chip.options.size     // → ['sm', 'md']
+```
+
+Each component documents its own `presentation` (structural type: spotlight, sheet, inline, pill…), `variant` (visual: glass, solid, minimal, soft, outline, ghost…) and `size`. All of them are visible in the [playground](/playground), and the [review grid](/review) shows every component in Void and Paper.

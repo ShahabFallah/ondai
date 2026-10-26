@@ -1,0 +1,25 @@
+---
+title: "Device support"
+description: "Which devices have a built-in model, and what happens on the ones that do not."
+---
+
+> Device lists grow with every launch; Apple and Google publish the current ones.
+
+## Apple Foundation Models (iOS 26+, Apple Intelligence on)
+
+- iPhone 15 Pro / Pro Max; iPhone 16, 16 Plus, 16 Pro, 16 Pro Max, 16e; iPhone 17, 17e, 17 Pro, 17 Pro Max, Air.
+- iPad Pro and iPad Air with M1 or later, iPad mini (A17 Pro).
+- Apple silicon Macs.
+- Not available in mainland China; language support varies by region.
+- The iOS Simulator can run the model on an Apple-silicon Mac with Apple Intelligence enabled, when the simulator runtime matches the host's model assets (see ECOSYSTEM.md for the mismatch we hit with an iOS 26.2 runtime on macOS 26.6).
+
+## Gemini Nano (ML Kit GenAI Prompt API, Android 14+ with AICore)
+
+- nano-v4: Pixel 11 series; Galaxy Z Flip8 / Z Fold8.
+- nano-v3: Pixel 9 and 10 series; Galaxy S26 series; OnePlus 15/15R; OPPO Find X8/X9; vivo X200/X300; Honor Magic 8 Pro; Sony Xperia 1 VIII; others.
+- nano-v2: Galaxy Z Fold7; OnePlus 13/13s; Xiaomi 15/17 series; Honor Magic 7; Motorola Razr 60 Ultra; others.
+- Foreground only; per-app quotas; output quality varies by Nano version.
+
+## Everything else
+
+The router falls back in order: Apple → Nano → Llama (opt-in GGUF download) → cloud (only if you allow it). With no provider, `AvailabilityGate` renders an elegant empty state with a "Learn how to enable" link, and components that have a deterministic fallback (CommandBar keyword search, SemanticSearch keyword matching) keep working.

@@ -1,0 +1,33 @@
+---
+title: "Theming"
+description: "Void, Paper and Glass themes, accent presets, and the token package."
+---
+
+Everything is built from `@ondai/tokens`: a 12-step cool gray scale, one accent gradient reserved for AI states, semantic colors, Geist Sans and Geist Mono, a 4pt grid, radii, elevation and springs.
+
+```tsx
+<OndaiProvider value={ai} theme="void" accent="ion">
+```
+
+| Theme | Use |
+| --- | --- |
+| `void` | Dark, the default. `#07080A` background, hairline borders. |
+| `paper` | Light. |
+| `glass` | Translucent surfaces with blur over app content. |
+| `system` | Follows the OS. |
+
+Accents: `ion` (cyan → violet → magenta, the default), `mono` (white or black only), `aurora` (green-teal), `ember` (orange-red), or `custom` with three stops.
+
+The accent is used **only** for AI states: thinking borders, the streaming caret, the badge dot, focus rings on AI inputs. Static UI stays monochrome.
+
+## Using the tokens in your own UI
+
+```ts
+import { useTheme, typeStyle } from '@ondai/tokens/react'
+const t = useTheme()
+<Text style={[typeStyle(t, 'md', { weight: 'medium' }), { color: t.colors.text }]} />
+```
+
+For NativeWind or react-native-reusables projects, `@ondai/tokens/tailwind-preset` maps the same palette onto the shadcn variable names, and `@ondai/tokens/css` generates the CSS variables for the web.
+
+Try every theme and accent live on the [Themes](/themes) page.

@@ -1,0 +1,61 @@
+---
+title: "ScanToData"
+description: "Camera or photo becomes structured data (receipt, business card, event, or your own schema) via on-device OCR and the local model."
+---
+
+<ComponentPreview name="scan-to-data" state="done" height={620} />
+
+## Install
+
+```bash
+npx ondai add scan-to-data
+```
+
+## Usage
+
+```tsx
+import { ScanToData } from '@/components/ondai/scan-to-data'
+import TextRecognition from '@react-native-ml-kit/text-recognition'
+
+<ScanToData
+  preset="receipt"
+  ocr={async (img) => (await TextRecognition.recognize(img.uri)).text}
+  onData={(receipt) => expenses.add(receipt)}
+/>
+```
+
+- OCR runs on device through the `ocr` function you pass (ML Kit, Apple Vision). The model only sees text, which also keeps the request inside the 4K budget.
+- Presets: `receipt`, `businessCard`, `event`; or `preset="custom"` with your own zod schema.
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `presentation` | `camera`, `picker`, `card` |
+| `preset` | `receipt`, `businessCard`, `event`, `custom` |
+
+Every variant is live in the [playground](/playground/scan-to-data).
+
+## Runs on
+
+| Capability | Apple FM | Gemini Nano | Llama | Cloud |
+| --- | --- | --- | --- | --- |
+| structured, vision | ✅ | ✅ | ✅ | ✅ |
+
+## Token budget
+
+Input budget: **1500 tokens**. OCR text (not the image) goes to the model; fields refined deterministically.
+
+## Fallback
+
+When no provider is ready the component renders the unavailable state (`AvailabilityGate` copy) and, where a deterministic path exists, keeps working without the model.
+
+## Eval score
+
+Fixtures: `evals/scan-to-data/fixtures.json`.
+
+## Files
+
+Registry dependencies: [button](/docs/components/button), [field](/docs/components/field), [ion-border](/docs/components/ion-border), [on-device-badge](/docs/components/on-device-badge), [skeleton](/docs/components/skeleton)
+
+npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-haptics`, `expo-image-picker`, `lucide-react-native`, `react-native-reanimated`, `zod`

@@ -1,0 +1,47 @@
+---
+title: "OnDeviceBadge"
+description: "A quiet pill that says where inference runs - ON DEVICE · APPLE, LOCAL · LLAMA, CLOUD. The dot glows while thinking."
+---
+
+<ComponentPreview name="on-device-badge" state="thinking" height={160} />
+
+## Install
+
+```bash
+npx ondai add on-device-badge
+```
+
+## Usage
+
+```tsx
+import { OnDeviceBadge } from '@/components/ondai/on-device-badge'
+
+<OnDeviceBadge size="sm" state={status} />
+```
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `variant` | `pill`, `icon`, `text` |
+| `size` | `sm`, `md`, `lg` |
+
+Every variant is live in the [playground](/playground/on-device-badge).
+
+## Runs on
+
+| Capability | Apple FM | Gemini Nano | Llama | Cloud |
+| --- | --- | --- | --- | --- |
+| none (pure UI) | ✅ | ✅ | ✅ | ✅ |
+
+## Fallback
+
+Pure UI: no model required.
+
+## Eval score
+
+No model-driven fixtures for this component.
+
+## Files
+
+npm dependencies: `@ondai/core`, `@ondai/tokens`, `react-native-reanimated`

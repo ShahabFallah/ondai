@@ -1,0 +1,47 @@
+---
+title: "Chip"
+description: "Compact selectable pill for tags, filters, suggestions and replies."
+---
+
+<ComponentPreview name="chip" state="idle" height={160} />
+
+## Install
+
+```bash
+npx ondai add chip
+```
+
+## Usage
+
+```tsx
+import { Chip } from '@/components/ondai/chip'
+
+<Chip label="Groceries" selected onPress={toggle} />
+```
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `variant` | `soft`, `outline`, `solid`, `ghost` |
+| `size` | `sm`, `md` |
+
+Every variant is live in the [playground](/playground/chip).
+
+## Runs on
+
+| Capability | Apple FM | Gemini Nano | Llama | Cloud |
+| --- | --- | --- | --- | --- |
+| none (pure UI) | ✅ | ✅ | ✅ | ✅ |
+
+## Fallback
+
+Pure UI: no model required.
+
+## Eval score
+
+No model-driven fixtures for this component.
+
+## Files
+
+npm dependencies: `@ondai/tokens`, `lucide-react-native`
