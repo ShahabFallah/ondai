@@ -1,0 +1,13 @@
+{
+  "name": "smart-reply",
+  "title": "SmartReply",
+  "description": "Three reply suggestions for the last message in a thread: chips, a stack, or ghost text inside the input, with an optional tone picker.",
+  "category": "text",
+  "priority": "P0",
+  "capabilities": ["structured", "text"],
+  "variants": { "presentation": ["chips", "stack", "ghost"], "tone": ["neutral", "friendly", "formal", "brief"] },
+  "registryDependencies": ["chip", "on-device-badge", "skeleton"],
+  "files": ["smart-reply.tsx", "use-smart-reply.ts", "prompts.ts", "schema.ts", "index.ts"],
+  "budget": { "input": 1200, "strategy": "Only the last 6 messages are sent, trimmed from the start." },
+  "runsOn": ["apple", "nano", "llama", "cloud"]
+}

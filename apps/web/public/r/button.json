@@ -1,0 +1,51 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "button",
+  "type": "registry:component",
+  "title": "Button",
+  "description": "Minimal button with solid, soft, outline, ghost, accent and danger variants.",
+  "dependencies": [
+    "@ondai/tokens"
+  ],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "registry/components/button/button.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/button/button.tsx",
+      "content": "import type { ReactNode } from 'react'\nimport { ActivityIndicator, Pressable, Text, View, type StyleProp, type ViewStyle } from 'react-native'\nimport { createVariants } from '@ondai/tokens'\nimport { hairlineWidth, typeStyle, useTheme } from '@ondai/tokens/react'\n\nexport interface ButtonProps {\n  title?: string\n  icon?: ReactNode\n  variant?: 'solid' | 'soft' | 'outline' | 'ghost' | 'accent' | 'danger'\n  size?: 'sm' | 'md' | 'lg'\n  loading?: boolean\n  disabled?: boolean\n  /** Fill the row. */\n  block?: boolean\n  onPress?: () => void\n  style?: StyleProp<ViewStyle>\n  testID?: string\n  accessibilityLabel?: string\n}\n\nconst variants = createVariants({\n  variants: {\n    size: {\n      sm: { height: 32, paddingHorizontal: 12, gap: 6, borderRadius: 10 },\n      md: { height: 40, paddingHorizontal: 14, gap: 8, borderRadius: 12 },\n      lg: { height: 48, paddingHorizontal: 18, gap: 8, borderRadius: 14 },\n    },\n  },\n  defaults: { size: 'md' },\n})\n\n/** Minimal button. `solid` is monochrome; `accent` is the only one that glows, for the single primary AI action. */\nexport function Button({ title, icon, variant = 'solid', size = 'md', loading, disabled, block, onPress, style, testID, accessibilityLabel }: ButtonProps) {\n  const t = useTheme()\n  const palette = {\n    solid: { bg: t.colors.text, fg: t.colors.bg, border: 'transparent' },\n    soft: { bg: t.colors.elevated, fg: t.colors.text, border: t.colors.hairline },\n    outline: { bg: 'transparent', fg: t.colors.text, border: t.colors.hairlineStrong },\n    ghost: { bg: 'transparent', fg: t.colors.textSecondary, border: 'transparent' },\n    accent: { bg: t.colors.accent.solid, fg: t.colors.onAccent, border: 'transparent' },\n    danger: { bg: t.colors.dangerSoft, fg: t.colors.danger, border: 'transparent' },\n  }[variant]\n  const iconOnly = !title\n  return (\n    <Pressable\n      onPress={onPress}\n      disabled={disabled || loading}\n      accessibilityRole=\"button\"\n      accessibilityLabel={accessibilityLabel ?? title}\n      accessibilityState={{ disabled: disabled || loading, busy: loading }}\n      testID={testID}\n      style={({ pressed }) => [\n        { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderWidth: hairlineWidth, borderColor: palette.border, backgroundColor: palette.bg, opacity: disabled ? 0.4 : pressed ? 0.8 : 1, minWidth: 44 },\n        ...variants({ size }),\n        iconOnly && { paddingHorizontal: 0, width: size === 'sm' ? 32 : size === 'md' ? 40 : 48 },\n        block && { alignSelf: 'stretch' },\n        style,\n      ]}\n    >\n      {loading ? <ActivityIndicator size=\"small\" color={palette.fg} /> : icon ? <View>{icon}</View> : null}\n      {title ? (\n        <Text numberOfLines={1} style={[typeStyle(t, size === 'sm' ? 'sm' : 'md', { weight: 'medium' }), { color: palette.fg }]}>\n          {title}\n        </Text>\n      ) : null}\n    </Pressable>\n  )\n}\n\nexport default Button\n"
+    },
+    {
+      "path": "registry/components/button/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/button/index.ts",
+      "content": "export { Button, type ButtonProps } from './button'\n"
+    }
+  ],
+  "categories": [
+    "primitive"
+  ],
+  "meta": {
+    "ondai": {
+      "registryVersion": 1,
+      "hash": "2ec978187a9a0946",
+      "priority": "P0",
+      "capabilities": [],
+      "variants": {
+        "variant": [
+          "solid",
+          "soft",
+          "outline",
+          "ghost",
+          "accent",
+          "danger"
+        ],
+        "size": [
+          "sm",
+          "md",
+          "lg"
+        ]
+      }
+    }
+  }
+}

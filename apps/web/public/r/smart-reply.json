@@ -1,0 +1,89 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "smart-reply",
+  "type": "registry:component",
+  "title": "SmartReply",
+  "description": "Three reply suggestions for the last message in a thread: chips, a stack, or ghost text inside the input, with an optional tone picker.",
+  "dependencies": [
+    "@ondai/core",
+    "@ondai/tokens",
+    "expo-haptics",
+    "lucide-react-native",
+    "react-native-reanimated",
+    "zod"
+  ],
+  "registryDependencies": [
+    "chip",
+    "on-device-badge",
+    "skeleton"
+  ],
+  "files": [
+    {
+      "path": "registry/components/smart-reply/smart-reply.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/smart-reply/smart-reply.tsx",
+      "content": "import { useEffect, useRef, useState, type ComponentRef } from 'react'\nimport { Pressable, ScrollView, Text, TextInput, View, type StyleProp, type ViewStyle } from 'react-native'\nimport Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated'\nimport * as Haptics from 'expo-haptics'\nimport { CornerDownRight, RefreshCw } from 'lucide-react-native'\nimport { hairlineWidth, typeStyle, useMotion, useTheme } from '@ondai/tokens/react'\nimport { Chip } from '../chip/chip'\nimport { OnDeviceBadge } from '../on-device-badge/on-device-badge'\nimport { Skeleton } from '../skeleton/skeleton'\nimport { replyTones, type ReplyTone } from './prompts'\nimport { useSmartReply, type ThreadMessage, type UseSmartReplyOptions } from './use-smart-reply'\n\nexport interface SmartReplyProps extends UseSmartReplyOptions {\n  /** The conversation (last message is replied to) or just the last message. */\n  thread: ThreadMessage[] | string\n  onSelect: (text: string) => void\n  presentation?: 'chips' | 'stack' | 'ghost'\n  /** Show a tone picker. */\n  showTone?: boolean\n  autoRun?: boolean\n  showBadge?: boolean\n  /** Ghost presentation: current input value and change handler. */\n  value?: string\n  onChangeText?: (text: string) => void\n  placeholder?: string\n  style?: StyleProp<ViewStyle>\n  testID?: string\n}\n\n/** Three reply suggestions as chips, a stack, or ghost text inside the input. */\nexport function SmartReply({ thread, onSelect, presentation = 'chips', showTone = false, autoRun = true, showBadge = true, value = '', onChangeText, placeholder = 'Reply…', style, testID, ...hookOptions }: SmartReplyProps) {\n  const t = useTheme()\n  const motion = useMotion()\n  const sr = useSmartReply(hookOptions)\n  const [tone, setTone] = useState<ReplyTone>(hookOptions.tone ?? 'neutral')\n  const key = typeof thread === 'string' ? thread : thread.map((m) => m.text).join('|')\n  const last = useRef<string>('')\n  const inputRef = useRef<ComponentRef<typeof TextInput>>(null)\n  useEffect(() => {\n    if (!autoRun || !key || last.current === `${key}:${tone}`) return\n    last.current = `${key}:${tone}`\n    void sr.run(thread, tone).catch(() => {})\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, [key, tone, autoRun])\n\n  const pick = (text: string) => {\n    void Haptics.selectionAsync().catch(() => {})\n    onSelect(text)\n  }\n  const toneRow = showTone ? (\n    <View style={{ flexDirection: 'row', gap: 6 }}>\n      {replyTones.map((x) => (\n        <Chip key={x.id} label={x.label} size=\"sm\" variant=\"ghost\" selected={tone === x.id} onPress={() => setTone(x.id)} />\n      ))}\n    </View>\n  ) : null\n  const footer = (\n    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>\n      {showBadge ? <OnDeviceBadge size=\"sm\" state={sr.status} provider={sr.provider} locality={sr.locality as never} /> : <View />}\n      {!sr.isBusy ? (\n        <Pressable accessibilityRole=\"button\" accessibilityLabel=\"More suggestions\" hitSlop={8} onPress={() => void sr.run(thread, tone).catch(() => {})} style={{ flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: 28 }}>\n          <RefreshCw size={12} strokeWidth={1.5} color={t.colors.textTertiary} />\n          <Text style={[typeStyle(t, 'xs', { mono: true }), { color: t.colors.textTertiary }]}>more</Text>\n        </Pressable>\n      ) : null}\n    </View>\n  )\n  const errorView = sr.error ? <Text style={[typeStyle(t, 'sm'), { color: t.colors.textSecondary }]}>{sr.error.message}</Text> : null\n\n  if (presentation === 'ghost') {\n    const suggestion = sr.replies[0] ?? ''\n    const ghost = !value && suggestion\n    return (\n      <View style={[{ gap: 8 }, style]} testID={testID}>\n        {toneRow}\n        <View style={{ minHeight: 48, borderRadius: t.radii.lg, borderWidth: hairlineWidth, borderColor: t.colors.hairline, backgroundColor: t.colors.input, paddingHorizontal: 14, justifyContent: 'center' }}>\n          {ghost ? (\n            <Text pointerEvents=\"none\" style={[typeStyle(t, 'md'), { position: 'absolute', left: 14, right: 48, color: t.colors.textTertiary }]} numberOfLines={1}>\n              {suggestion}\n            </Text>\n          ) : null}\n          <TextInput\n            ref={inputRef}\n            value={value}\n            onChangeText={onChangeText}\n            placeholder={ghost ? '' : placeholder}\n            placeholderTextColor={t.colors.textTertiary}\n            onKeyPress={(e) => {\n              if (e.nativeEvent.key === 'Tab' && ghost) {\n                e.preventDefault?.()\n                pick(suggestion)\n              }\n            }}\n            style={[typeStyle(t, 'md'), { color: t.colors.text, paddingVertical: 12, paddingRight: 40, outlineStyle: 'none' } as never]}\n          />\n          {ghost ? (\n            <Pressable accessibilityRole=\"button\" accessibilityLabel=\"Accept suggestion\" onPress={() => pick(suggestion)} hitSlop={8} style={{ position: 'absolute', right: 8, top: 8, width: 32, height: 32, borderRadius: 16, backgroundColor: t.colors.accent.soft, alignItems: 'center', justifyContent: 'center' }}>\n              <CornerDownRight size={14} strokeWidth={1.75} color={t.colors.accent.solid} />\n            </Pressable>\n          ) : null}\n        </View>\n        {errorView}\n        {footer}\n      </View>\n    )\n  }\n  if (presentation === 'stack') {\n    return (\n      <View style={[{ gap: 8 }, style]} testID={testID}>\n        {toneRow}\n        {sr.isBusy && !sr.replies.length ? <Skeleton lines={3} height={36} radius=\"md\" /> : null}\n        {errorView}\n        {sr.replies.map((r, i) => (\n          <Animated.View key={`${r}-${i}`} entering={motion.enabled ? FadeInDown.delay(i * 60).duration(200) : undefined}>\n            <Pressable onPress={() => pick(r)} accessibilityRole=\"button\" style={({ pressed }) => ({ minHeight: 44, justifyContent: 'center', paddingHorizontal: 14, paddingVertical: 10, borderRadius: t.radii.md, borderWidth: hairlineWidth, borderColor: t.colors.hairline, backgroundColor: pressed ? t.colors.elevatedHover : t.colors.surface })}>\n              <Text style={[typeStyle(t, 'md'), { color: t.colors.text }]}>{r}</Text>\n            </Pressable>\n          </Animated.View>\n        ))}\n        {footer}\n      </View>\n    )\n  }\n  return (\n    <View style={[{ gap: 8 }, style]} testID={testID}>\n      {toneRow}\n      <ScrollView horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps=\"handled\" contentContainerStyle={{ gap: 8, paddingVertical: 2 }}>\n        {sr.isBusy && !sr.replies.length ? (\n          <>\n            <Skeleton width={120} height={34} radius=\"pill\" />\n            <Skeleton width={160} height={34} radius=\"pill\" />\n            <Skeleton width={100} height={34} radius=\"pill\" />\n          </>\n        ) : null}\n        {sr.replies.map((r, i) => (\n          <Animated.View key={`${r}-${i}`} entering={motion.enabled ? FadeInRight.delay(i * 60).duration(200) : undefined}>\n            <Chip label={r} variant=\"soft\" onPress={() => pick(r)} />\n          </Animated.View>\n        ))}\n      </ScrollView>\n      {errorView}\n      {footer}\n    </View>\n  )\n}\n\nexport default SmartReply\n"
+    },
+    {
+      "path": "registry/components/smart-reply/use-smart-reply.ts",
+      "type": "registry:hook",
+      "target": "components/ondai/smart-reply/use-smart-reply.ts",
+      "content": "import { useCallback, useRef, useState } from 'react'\nimport { generateText, Output, truncateToBudget, useLocalModel, useOndai, useTask, type TaskController } from '@ondai/core'\nimport { parseReplyLines, smartReplyInstructions, type ReplyTone } from './prompts'\nimport { repliesSchema } from './schema'\n\nexport interface ThreadMessage {\n  from: 'me' | 'them' | string\n  text: string\n}\n\nexport interface UseSmartReplyOptions {\n  count?: number\n  tone?: ReplyTone\n  instructions?: string\n  component?: string\n  localOnly?: boolean\n}\n\nexport interface SmartReplyState extends Omit<TaskController, 'execute' | 'signal' | 'setStatus'> {\n  replies: string[]\n  isBusy: boolean\n  run: (thread: ThreadMessage[] | string, tone?: ReplyTone) => Promise<string[]>\n}\n\nexport function threadToPrompt(thread: ThreadMessage[] | string): string {\n  if (typeof thread === 'string') return `Last message:\\n${thread}`\n  const last = thread.slice(-6)\n  return last.map((m) => `${m.from === 'me' ? 'Me' : m.from === 'them' ? 'Them' : m.from}: ${m.text}`).join('\\n')\n}\n\n/** Three reply suggestions for the last message in a thread. Structured output, line parsing as fallback. */\nexport function useSmartReply(options: UseSmartReplyOptions = {}): SmartReplyState {\n  const ondai = useOndai()\n  const task = useTask(options.component ?? 'smart-reply')\n  const structured = useLocalModel('structured')\n  const [replies, setReplies] = useState<string[]>([])\n  const optionsRef = useRef(options)\n  optionsRef.current = options\n\n  const run = useCallback(\n    async (thread: ThreadMessage[] | string, toneOverride?: ReplyTone) => {\n      const o = optionsRef.current\n      const count = o.count ?? 3\n      const tone = toneOverride ?? o.tone ?? 'neutral'\n      setReplies([])\n      return task.execute(\n        'text',\n        async (ctx) => {\n          const window = ctx.resolved.adapter.contextWindow ?? ondai.policy.tokenBudget\n          const model = ctx.resolved.adapter.languageModel!()\n          const system = smartReplyInstructions(count, tone, o.instructions)\n          const prompt = truncateToBudget(threadToPrompt(thread), Math.max(300, window - 500), 'end')\n          let out: string[] = []\n          if (structured.isReady && ctx.resolved.adapter.capabilities.has('structured')) {\n            try {\n              const r = await generateText({ model, system: `${system} Return JSON with a \"replies\" array.`, prompt, output: Output.object({ schema: repliesSchema }), abortSignal: ctx.signal, temperature: 0.6 })\n              out = r.output.replies.map((s) => s.trim()).filter(Boolean)\n            } catch (e) {\n              if (ondai.classify(e, ctx.resolved.provider) !== 'invalid-output') throw e\n            }\n          }\n          if (!out.length) {\n            const r = await generateText({ model, system: `${system} One reply per line.`, prompt, abortSignal: ctx.signal, temperature: 0.6 })\n            out = parseReplyLines(r.text, count)\n          }\n          ctx.firstToken()\n          const unique = [...new Set(out)].slice(0, count)\n          setReplies(unique)\n          return unique\n        },\n        { localOnly: o.localOnly },\n      )\n    },\n    [task, ondai, structured.isReady],\n  )\n\n  return { ...task, replies, isBusy: task.status === 'thinking' || task.status === 'streaming', run, reset: () => (task.reset(), setReplies([])) }\n}\n"
+    },
+    {
+      "path": "registry/components/smart-reply/prompts.ts",
+      "type": "registry:component",
+      "target": "components/ondai/smart-reply/prompts.ts",
+      "content": "export type ReplyTone = 'neutral' | 'friendly' | 'formal' | 'brief'\n\nexport const replyTones: Array<{ id: ReplyTone; label: string }> = [\n  { id: 'neutral', label: 'Neutral' },\n  { id: 'friendly', label: 'Friendly' },\n  { id: 'formal', label: 'Formal' },\n  { id: 'brief', label: 'Brief' },\n]\n\nexport function smartReplyInstructions(count: number, tone: ReplyTone, extra?: string): string {\n  const toneText = { neutral: 'natural', friendly: 'warm and friendly', formal: 'polite and professional', brief: 'very short (under 8 words)' }[tone]\n  return [\n    `You suggest replies the user could send. Write ${count} different ${toneText} replies to the last message, each one sentence, from the user's point of view.`,\n    'They should differ in intent (for example: agree, ask a question, decline politely). No numbering, no quotes.',\n    extra,\n  ]\n    .filter(Boolean)\n    .join(' ')\n}\n\n/** Fallback when structured output is unavailable: one reply per line. */\nexport function parseReplyLines(text: string, count: number): string[] {\n  return text\n    .split('\\n')\n    .map((l) => l.replace(/^\\s*(\\d+[.)]|[-•*])\\s*/, '').replace(/^[\"“](.*)[\"”]$/, '$1').trim())\n    .filter((l) => l.length > 1)\n    .slice(0, count)\n}\n"
+    },
+    {
+      "path": "registry/components/smart-reply/schema.ts",
+      "type": "registry:component",
+      "target": "components/ondai/smart-reply/schema.ts",
+      "content": "import { z } from 'zod'\n\nexport const repliesSchema = z.object({ replies: z.array(z.string()).min(1).max(5) })\nexport type Replies = z.infer<typeof repliesSchema>\n"
+    },
+    {
+      "path": "registry/components/smart-reply/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/smart-reply/index.ts",
+      "content": "export { SmartReply, type SmartReplyProps } from './smart-reply'\nexport { useSmartReply, threadToPrompt, type SmartReplyState, type ThreadMessage, type UseSmartReplyOptions } from './use-smart-reply'\nexport { replyTones, smartReplyInstructions, parseReplyLines, type ReplyTone } from './prompts'\nexport { repliesSchema } from './schema'\n"
+    }
+  ],
+  "categories": [
+    "text"
+  ],
+  "meta": {
+    "ondai": {
+      "registryVersion": 1,
+      "hash": "593722308f45512c",
+      "priority": "P0",
+      "capabilities": [
+        "structured",
+        "text"
+      ],
+      "variants": {
+        "presentation": [
+          "chips",
+          "stack",
+          "ghost"
+        ],
+        "tone": [
+          "neutral",
+          "friendly",
+          "formal",
+          "brief"
+        ]
+      },
+      "budget": {
+        "input": 1200,
+        "strategy": "Only the last 6 messages are sent, trimmed from the start."
+      },
+      "runsOn": [
+        "apple",
+        "nano",
+        "llama",
+        "cloud"
+      ]
+    }
+  }
+}

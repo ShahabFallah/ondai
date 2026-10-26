@@ -1,0 +1,13 @@
+{
+  "name": "summarize",
+  "title": "Summarize",
+  "description": "A TL;DR for long text: card, inline, sheet or tooltip. Streams, and map-reduces input that does not fit the on-device context.",
+  "category": "text",
+  "priority": "P0",
+  "capabilities": ["text"],
+  "variants": { "presentation": ["card", "inline", "sheet", "tooltip"], "length": ["oneLine", "bullets", "paragraph"], "style": ["plain", "quote", "highlighted"] },
+  "registryDependencies": ["button", "ion-border", "model-download", "on-device-badge", "sheet", "skeleton", "streaming-text"],
+  "files": ["summarize.tsx", "use-summarize.ts", "prompts.ts", "index.ts"],
+  "budget": { "input": 3400, "strategy": "Single streamed pass when the text fits; otherwise map (bullets per chunk) then reduce (streamed)." },
+  "runsOn": ["apple", "nano", "llama", "cloud"]
+}

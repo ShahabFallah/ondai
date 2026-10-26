@@ -1,0 +1,13 @@
+{
+  "name": "smart-input",
+  "title": "SmartInput",
+  "description": "Text, voice or photo fills your zod form on device, with per-field confidence, deterministic refinement and confirm/undo.",
+  "category": "input",
+  "priority": "P0",
+  "capabilities": ["structured"],
+  "variants": { "presentation": ["field", "composer", "overlay", "card"], "confidenceStyle": ["highlight", "badge", "underline"] },
+  "registryDependencies": ["button", "chip", "field", "ion-border", "on-device-badge"],
+  "files": ["smart-input.tsx", "use-smart-form.ts", "prompts.ts", "index.ts"],
+  "budget": { "input": 1500, "strategy": "One structured call; enum/number/date fields are refined deterministically after parsing." },
+  "runsOn": ["apple", "nano", "llama", "cloud"]
+}

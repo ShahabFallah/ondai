@@ -1,0 +1,14 @@
+{
+  "name": "scan-to-data",
+  "title": "ScanToData",
+  "description": "Camera or photo becomes structured data (receipt, business card, event, or your own schema) via on-device OCR and the local model.",
+  "category": "vision",
+  "priority": "P0",
+  "capabilities": ["structured", "vision"],
+  "variants": { "presentation": ["camera", "picker", "card"], "preset": ["receipt", "businessCard", "event", "custom"] },
+  "registryDependencies": ["button", "field", "ion-border", "on-device-badge", "skeleton"],
+  "files": ["scan-to-data.tsx", "use-scan-to-data.ts", "schema.ts", "prompts.ts", "index.ts"],
+  "budget": { "input": 1500, "strategy": "OCR text (not the image) goes to the model; fields refined deterministically." },
+  "runsOn": ["apple", "nano", "llama", "cloud"],
+  "docs": "Pass `ocr` (e.g. @react-native-ml-kit/text-recognition or Apple Vision) to read photos; without it the component explains that OCR is not configured."
+}

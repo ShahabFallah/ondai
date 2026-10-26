@@ -57,7 +57,8 @@
     "react-native-svg": "catalog:",
     "react-native-web": "catalog:",
     "react-native-worklets": "catalog:",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "@ondai/evals": "workspace:*"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",

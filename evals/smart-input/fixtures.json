@@ -1,0 +1,8 @@
+[
+  { "id": "lunch", "input": "Lunch with Sam at Luigi's yesterday, 24.50 euros, paid by card", "expected": { "merchant": "Luigi's", "amount": 24.5, "category": "food" } },
+  { "id": "uber", "input": "uber to the airport this morning 38 dollars", "expected": { "merchant": "Uber", "amount": 38, "category": "transport" } },
+  { "id": "groceries", "input": "spent 112.30 at Carrefour on groceries", "expected": { "merchant": "Carrefour", "amount": 112.3, "category": "food" } },
+  { "id": "pharmacy", "input": "pharmacy, 9.99, cough syrup", "expected": { "merchant": "pharmacy", "amount": 9.99, "category": "health" } },
+  { "id": "rent", "input": "October rent 1450 transferred to the landlord", "expected": { "amount": 1450, "category": "home" } },
+  { "id": "cinema", "input": "two cinema tickets 27 euros friday night", "expected": { "amount": 27, "category": "fun" } }
+]

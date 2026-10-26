@@ -1,0 +1,10 @@
+{
+  "name": "@ondai/evals",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./index.ts", "./runners": "./runners.ts" },
+  "scripts": { "typecheck": "tsc --noEmit", "test": "vitest run" },
+  "dependencies": { "@ondai/core": "workspace:*", "zod": "catalog:" },
+  "devDependencies": { "@ondai/config": "workspace:*", "typescript": "catalog:", "vitest": "catalog:" }
+}

@@ -1,0 +1,76 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "semantic-search",
+  "type": "registry:component",
+  "title": "SemanticSearch",
+  "description": "Search by meaning over the app's own records with a local vector index and hybrid keyword matching, showing why each result matched.",
+  "dependencies": [
+    "@ondai/core",
+    "@ondai/tokens",
+    "expo-haptics",
+    "lucide-react-native",
+    "react-native-reanimated"
+  ],
+  "registryDependencies": [
+    "chip",
+    "field",
+    "model-download",
+    "on-device-badge",
+    "sheet",
+    "skeleton"
+  ],
+  "files": [
+    {
+      "path": "registry/components/semantic-search/semantic-search.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/semantic-search/semantic-search.tsx",
+      "content": "import { useEffect, useRef, useState, type ReactNode } from 'react'\nimport { Pressable, Text, View, type StyleProp, type ViewStyle } from 'react-native'\nimport Animated, { FadeInDown } from 'react-native-reanimated'\nimport * as Haptics from 'expo-haptics'\nimport { Search, X } from 'lucide-react-native'\nimport type { SearchHit } from '@ondai/core'\nimport { hairlineWidth, typeStyle, useMotion, useTheme } from '@ondai/tokens/react'\nimport { Chip } from '../chip/chip'\nimport { Field } from '../field/field'\nimport { ModelDownload } from '../model-download/model-download'\nimport { OnDeviceBadge } from '../on-device-badge/on-device-badge'\nimport { Sheet } from '../sheet/sheet'\nimport { Skeleton } from '../skeleton/skeleton'\nimport { useSemanticSearch, type UseSemanticSearchOptions } from './use-semantic-search'\n\nexport interface SemanticSearchProps<M> extends UseSemanticSearchOptions<M> {\n  presentation?: 'bar' | 'spotlight' | 'header'\n  resultStyle?: 'list' | 'cards' | 'grouped'\n  /** Title for the `header` presentation. */\n  title?: string\n  placeholder?: string\n  initialQuery?: string\n  autoRun?: boolean\n  /** Show matched terms and similarity under each result. */\n  showWhy?: boolean\n  groupBy?: (hit: SearchHit<M>) => string\n  renderItem?: (hit: SearchHit<M>) => ReactNode\n  onSelect?: (hit: SearchHit<M>) => void\n  /** Debounce ms for search-as-you-type (0 = submit only). */\n  debounce?: number\n  showBadge?: boolean\n  open?: boolean\n  onOpenChange?: (open: boolean) => void\n  style?: StyleProp<ViewStyle>\n  testID?: string\n}\n\n/** A search-by-meaning bar over your own records, with a local vector index, hybrid keyword matching and \"why it matched\". */\nexport function SemanticSearch<M = Record<string, unknown>>({ presentation = 'bar', resultStyle = 'list', title = 'Search', placeholder = 'Search by meaning…', initialQuery = '', autoRun = false, showWhy = true, groupBy, renderItem, onSelect, debounce = 250, showBadge = true, open: openProp, onOpenChange, style, testID, ...hookOptions }: SemanticSearchProps<M>) {\n  const t = useTheme()\n  const motion = useMotion()\n  const s = useSemanticSearch<M>(hookOptions)\n  const [text, setText] = useState(initialQuery)\n  const [openState, setOpenState] = useState(true)\n  const open = openProp ?? openState\n  const ran = useRef(false)\n  useEffect(() => {\n    if (autoRun && initialQuery && !ran.current && !s.isIndexing) {\n      ran.current = true\n      void s.search(initialQuery)\n    }\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, [autoRun, initialQuery, s.isIndexing])\n  useEffect(() => {\n    if (!debounce) return\n    const h = setTimeout(() => {\n      if (text !== s.query) void s.search(text)\n    }, debounce)\n    return () => clearTimeout(h)\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, [text, debounce])\n\n  const pick = (h: SearchHit<M>) => {\n    void Haptics.selectionAsync().catch(() => {})\n    onSelect?.(h)\n  }\n  const field = (\n    <Field\n      value={text}\n      onChangeText={setText}\n      onSubmitEditing={() => void s.search(text)}\n      placeholder={placeholder}\n      state={s.isSearching ? 'thinking' : 'idle'}\n      returnKeyType=\"search\"\n      size={presentation === 'header' ? 'lg' : 'md'}\n      left={<Search size={16} strokeWidth={1.5} color={t.colors.textTertiary} />}\n      right={\n        text ? (\n          <Pressable accessibilityRole=\"button\" accessibilityLabel=\"Clear\" hitSlop={8} onPress={() => (setText(''), s.clear())} style={{ width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>\n            <X size={14} strokeWidth={1.5} color={t.colors.textTertiary} />\n          </Pressable>\n        ) : undefined\n      }\n    />\n  )\n  const why = (h: SearchHit<M>) =>\n    showWhy ? (\n      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>\n        {h.why.terms?.slice(0, 3).map((term) => (\n          <Chip key={term} size=\"sm\" variant=\"ghost\" label={term} style={{ height: 22 }} />\n        ))}\n        {h.why.vector !== undefined ? <Text style={[typeStyle(t, 'xs', { mono: true }), { color: t.colors.textTertiary }]}>{`${Math.round(h.why.vector * 100)}% similar`}</Text> : null}\n      </View>\n    ) : null\n  const item = (h: SearchHit<M>, i: number) => (\n    <Animated.View key={h.id} entering={motion.enabled ? FadeInDown.delay(Math.min(i, 6) * 40).duration(180) : undefined}>\n      <Pressable\n        onPress={() => pick(h)}\n        accessibilityRole=\"button\"\n        style={({ pressed }) => [\n          resultStyle === 'cards'\n            ? { padding: 14, borderRadius: t.radii.lg, borderWidth: hairlineWidth, borderColor: t.colors.hairline, backgroundColor: pressed ? t.colors.elevatedHover : t.colors.surface }\n            : { paddingVertical: 10, paddingHorizontal: 4, borderBottomWidth: hairlineWidth, borderBottomColor: t.colors.hairline, backgroundColor: pressed ? t.colors.elevatedHover : 'transparent' },\n        ]}\n      >\n        {renderItem ? (\n          renderItem(h)\n        ) : (\n          <Text style={[typeStyle(t, 'md'), { color: t.colors.text }]} numberOfLines={3}>\n            {h.text}\n          </Text>\n        )}\n        {why(h)}\n      </Pressable>\n    </Animated.View>\n  )\n  const groups = groupBy ? Object.entries(s.results.reduce<Record<string, SearchHit<M>[]>>((acc, h) => ((acc[groupBy(h)] ??= []).push(h), acc), {})) : null\n  const list = (\n    <View style={{ gap: resultStyle === 'cards' ? 8 : 0 }}>\n      {s.isIndexing && s.indexProgress ? <ModelDownload progress={s.indexProgress[0] / s.indexProgress[1]} variant=\"bar\" size=\"sm\" label=\"Indexing on device\" detail={`${s.indexProgress[0]} of ${s.indexProgress[1]} items`} /> : null}\n      {s.isSearching && !s.results.length ? <Skeleton lines={3} height={14} /> : null}\n      {s.error ? <Text style={[typeStyle(t, 'sm'), { color: t.colors.textSecondary }]}>{s.error.message}</Text> : null}\n      {!s.isSearching && s.query && !s.results.length && !s.error ? <Text style={[typeStyle(t, 'sm'), { color: t.colors.textTertiary, paddingVertical: 12 }]}>Nothing matches yet.</Text> : null}\n      {resultStyle === 'grouped' && groups\n        ? groups.map(([g, hits]) => (\n            <View key={g} style={{ gap: 0 }}>\n              <Text style={[typeStyle(t, 'xs', { mono: true, tag: true, weight: 'medium' }), { color: t.colors.textTertiary, paddingTop: 12, paddingBottom: 4 }]}>{g}</Text>\n              {hits.map(item)}\n            </View>\n          ))\n        : s.results.map(item)}\n      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 10 }}>\n        {showBadge ? <OnDeviceBadge size=\"sm\" state={s.isSearching ? 'thinking' : 'idle'} provider={s.provider} locality={s.locality as never} /> : <View />}\n        <Text style={[typeStyle(t, 'xs', { mono: true }), { color: t.colors.textTertiary }]}>{s.mode === 'vector' ? 'meaning + keywords' : 'keywords only'}</Text>\n      </View>\n    </View>\n  )\n\n  if (presentation === 'spotlight') {\n    return (\n      <Sheet open={open} onClose={() => (setOpenState(false), onOpenChange?.(false))} presentation=\"spotlight\" variant=\"glass\" inline style={style} testID={testID}>\n        <View style={{ padding: 10, gap: 8 }}>\n          {field}\n          {list}\n        </View>\n      </Sheet>\n    )\n  }\n  return (\n    <View style={[{ gap: 10 }, style]} testID={testID}>\n      {presentation === 'header' ? <Text style={[typeStyle(t, '3xl', { weight: 'semibold' }), { color: t.colors.text }]}>{title}</Text> : null}\n      {field}\n      {list}\n    </View>\n  )\n}\n\nexport default SemanticSearch\n"
+    },
+    {
+      "path": "registry/components/semantic-search/use-semantic-search.ts",
+      "type": "registry:hook",
+      "target": "components/ondai/semantic-search/use-semantic-search.ts",
+      "content": "import { useCallback, useEffect, useMemo, useRef, useState } from 'react'\nimport { createVectorIndex, keywordScore, useEmbeddings, useLocalModel, type SearchHit, type VectorIndex, type VectorStorage } from '@ondai/core'\nimport type { AiState } from '@ondai/tokens'\n\nexport interface SearchItem<M = Record<string, unknown>> {\n  id: string\n  /** The text that gets embedded and keyword-matched. */\n  text: string\n  metadata?: M\n}\n\nexport interface UseSemanticSearchOptions<M> {\n  items: SearchItem<M>[]\n  /** Persist embeddings (e.g. sqliteStorage from @ondai/core/expo). In-memory by default. */\n  storage?: VectorStorage\n  indexName?: string\n  k?: number\n  /** Blend keyword overlap into the vector score (default true). */\n  hybrid?: boolean\n  /** Weight of the vector score in hybrid mode (default 0.65). */\n  alpha?: number\n  minScore?: number\n  /** Embedding batch size while indexing. */\n  batchSize?: number\n  component?: string\n}\n\nexport interface SemanticSearchState<M> {\n  query: string\n  setQuery: (q: string) => void\n  results: SearchHit<M>[]\n  search: (q: string) => Promise<SearchHit<M>[]>\n  clear: () => void\n  isIndexing: boolean\n  indexProgress: [number, number] | null\n  isSearching: boolean\n  /** `vector` when embeddings are available, otherwise `keyword`. */\n  mode: 'vector' | 'keyword'\n  status: AiState\n  error: Error | null\n  provider?: string\n  locality?: string\n  reindex: () => Promise<void>\n  index: VectorIndex<M>\n}\n\n/** Search by meaning over the app's own records: a local vector index plus keyword matching, with \"why it matched\". */\nexport function useSemanticSearch<M = Record<string, unknown>>(options: UseSemanticSearchOptions<M>): SemanticSearchState<M> {\n  const { items, storage, indexName = 'search', k = 10, hybrid = true, alpha = 0.65, minScore = 0.08, batchSize = 16 } = options\n  const embeddings = useEmbeddings()\n  const model = useLocalModel('embeddings')\n  const index = useMemo(() => createVectorIndex<M>({ name: indexName, storage }), [indexName, storage])\n  const [query, setQuery] = useState('')\n  const [results, setResults] = useState<SearchHit<M>[]>([])\n  const [isIndexing, setIndexing] = useState(false)\n  const [indexProgress, setIndexProgress] = useState<[number, number] | null>(null)\n  const [isSearching, setSearching] = useState(false)\n  const [error, setError] = useState<Error | null>(null)\n  const mode: SemanticSearchState<M>['mode'] = model.isReady ? 'vector' : 'keyword'\n  const itemsRef = useRef(items)\n  itemsRef.current = items\n\n  const reindex = useCallback(async () => {\n    if (!model.isReady) return\n    await index.ready\n    const missing = itemsRef.current.filter((it) => !index.has(it.id))\n    if (!missing.length) return\n    setIndexing(true)\n    setIndexProgress([0, missing.length])\n    try {\n      for (let i = 0; i < missing.length; i += batchSize) {\n        const batch = missing.slice(i, i + batchSize)\n        const vectors = await embeddings.embed(batch.map((b) => b.text))\n        await index.add(batch.map((b, j) => ({ id: b.id, text: b.text, metadata: b.metadata as Record<string, unknown>, vector: vectors[j] ?? [] })))\n        setIndexProgress([Math.min(missing.length, i + batch.length), missing.length])\n      }\n    } catch (e) {\n      setError(e instanceof Error ? e : new Error(String(e)))\n    } finally {\n      setIndexing(false)\n      setIndexProgress(null)\n    }\n  }, [index, embeddings, batchSize, model.isReady])\n\n  useEffect(() => {\n    void reindex()\n  }, [reindex, items.length])\n\n  const search = useCallback(\n    async (q: string) => {\n      setQuery(q)\n      if (!q.trim()) {\n        setResults([])\n        return []\n      }\n      setSearching(true)\n      setError(null)\n      try {\n        let hits: SearchHit<M>[]\n        if (model.isReady) {\n          await index.ready\n          const [vector] = await embeddings.embed([q])\n          hits = hybrid ? index.searchHybrid(vector ?? null, q, { k, alpha, minScore }) : index.search(vector ?? [], { k, minScore })\n        } else {\n          hits = itemsRef.current\n            .map((it) => ({ id: it.id, score: keywordScore(q, it.text), text: it.text, metadata: it.metadata as M, why: { keyword: keywordScore(q, it.text), terms: q.toLowerCase().split(/\\s+/).filter((w) => it.text.toLowerCase().includes(w)) } }))\n            .filter((h) => h.score > 0)\n            .sort((a, b) => b.score - a.score)\n            .slice(0, k)\n        }\n        setResults(hits)\n        return hits\n      } catch (e) {\n        setError(e instanceof Error ? e : new Error(String(e)))\n        return []\n      } finally {\n        setSearching(false)\n      }\n    },\n    [index, embeddings, model.isReady, hybrid, k, alpha, minScore],\n  )\n\n  const status: AiState = isIndexing ? 'preparing' : isSearching ? 'thinking' : error ? 'error' : results.length ? 'done' : 'idle'\n  return { query, setQuery, results, search, clear: () => (setQuery(''), setResults([])), isIndexing, indexProgress, isSearching, mode, status, error, provider: model.provider, locality: model.locality, reindex, index }\n}\n"
+    },
+    {
+      "path": "registry/components/semantic-search/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/semantic-search/index.ts",
+      "content": "export { SemanticSearch, type SemanticSearchProps } from './semantic-search'\nexport { useSemanticSearch, type SearchItem, type SemanticSearchState, type UseSemanticSearchOptions } from './use-semantic-search'\n"
+    }
+  ],
+  "categories": [
+    "search"
+  ],
+  "meta": {
+    "ondai": {
+      "registryVersion": 1,
+      "hash": "17da0ae70379392f",
+      "priority": "P0",
+      "capabilities": [
+        "embeddings"
+      ],
+      "variants": {
+        "presentation": [
+          "bar",
+          "spotlight",
+          "header"
+        ],
+        "resultStyle": [
+          "list",
+          "cards",
+          "grouped"
+        ]
+      },
+      "budget": {
+        "input": 512,
+        "strategy": "Embeddings only (Apple NLContextualEmbedding, 512 dims); no LLM call. Keyword fallback without embeddings."
+      },
+      "runsOn": [
+        "apple",
+        "llama",
+        "cloud"
+      ]
+    }
+  }
+}

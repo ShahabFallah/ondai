@@ -1,0 +1,89 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "rewrite",
+  "type": "registry:component",
+  "title": "Rewrite",
+  "description": "Shorten, expand, friendlier, formal or fix grammar, streamed on device, with replace / diff / side-by-side results and accept/reject.",
+  "dependencies": [
+    "@ondai/core",
+    "@ondai/tokens",
+    "expo-haptics",
+    "lucide-react-native",
+    "react-native-reanimated"
+  ],
+  "registryDependencies": [
+    "button",
+    "chip",
+    "ion-border",
+    "on-device-badge",
+    "sheet",
+    "streaming-text"
+  ],
+  "files": [
+    {
+      "path": "registry/components/rewrite/rewrite.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/rewrite/rewrite.tsx",
+      "content": "import { useEffect, useRef, useState } from 'react'\nimport { Pressable, ScrollView, Text, View, type StyleProp, type ViewStyle } from 'react-native'\nimport Animated, { FadeInDown } from 'react-native-reanimated'\nimport * as Haptics from 'expo-haptics'\nimport { Check, Minimize2, Maximize2, Smile, Briefcase, SpellCheck, Wand2, X } from 'lucide-react-native'\nimport { hairlineWidth, typeStyle, useMotion, useTheme } from '@ondai/tokens/react'\nimport { Button } from '../button/button'\nimport { Chip } from '../chip/chip'\nimport { IonBorder } from '../ion-border/ion-border'\nimport { OnDeviceBadge } from '../on-device-badge/on-device-badge'\nimport { Sheet } from '../sheet/sheet'\nimport { StreamingText } from '../streaming-text/streaming-text'\nimport { wordDiff } from './diff'\nimport { rewriteModes, type RewriteMode } from './prompts'\nimport { useRewrite, type UseRewriteOptions } from './use-rewrite'\n\nexport interface RewriteProps extends UseRewriteOptions {\n  /** The text to rewrite (usually the current input value). */\n  value: string\n  /** Called when the user accepts a rewrite. */\n  onAccept: (text: string) => void\n  presentation?: 'toolbar' | 'menu' | 'chips'\n  resultView?: 'replace' | 'diff' | 'sideBySide'\n  modes?: RewriteMode[]\n  /** Run this mode on mount (playground / shortcuts). */\n  initialMode?: RewriteMode\n  showBadge?: boolean\n  style?: StyleProp<ViewStyle>\n  testID?: string\n}\n\nconst icons: Record<RewriteMode, typeof Wand2> = { shorten: Minimize2, expand: Maximize2, friendlier: Smile, formal: Briefcase, fix: SpellCheck, custom: Wand2 }\n\n/** Shorten, expand, friendlier, formal, fix grammar: a toolbar, menu or chips, with replace / diff / side-by-side results and accept/reject. */\nexport function Rewrite({ value, onAccept, presentation = 'toolbar', resultView = 'replace', modes = ['shorten', 'expand', 'friendlier', 'formal', 'fix'], initialMode, showBadge = true, style, testID, ...hookOptions }: RewriteProps) {\n  const t = useTheme()\n  const motion = useMotion()\n  const rw = useRewrite(hookOptions)\n  const [menuOpen, setMenuOpen] = useState(false)\n  const ran = useRef(false)\n  useEffect(() => {\n    if (initialMode && value && !ran.current) {\n      ran.current = true\n      void rw.run(value, initialMode).catch(() => {})\n    }\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, [initialMode, value])\n  useEffect(() => {\n    if (rw.status === 'done') void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {})\n  }, [rw.status])\n\n  const start = (m: RewriteMode) => {\n    setMenuOpen(false)\n    void Haptics.selectionAsync().catch(() => {})\n    void rw.run(value, m).catch(() => {})\n  }\n  const accept = () => {\n    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})\n    onAccept(rw.result)\n    rw.reset()\n  }\n  const list = rewriteModes.filter((m) => modes.includes(m.id))\n  const hasResult = rw.mode !== null && (rw.isBusy || rw.result || rw.error)\n\n  const modeButtons =\n    presentation === 'chips' ? (\n      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>\n        {list.map((m) => (\n          <Chip key={m.id} label={m.label} size=\"sm\" variant=\"soft\" selected={rw.mode === m.id && rw.isBusy} onPress={() => start(m.id)} disabled={!value.trim()} />\n        ))}\n      </View>\n    ) : presentation === 'menu' ? (\n      <>\n        <Button title=\"Rewrite\" variant=\"soft\" size=\"sm\" icon={<Wand2 size={14} strokeWidth={1.5} color={t.colors.text} />} onPress={() => setMenuOpen(true)} disabled={!value.trim()} />\n        <Sheet open={menuOpen} onClose={() => setMenuOpen(false)} presentation=\"sheet\" variant=\"solid\" inline>\n          <View style={{ paddingVertical: 8 }}>\n            {list.map((m) => {\n              const Icon = icons[m.id]\n              return (\n                <Pressable key={m.id} onPress={() => start(m.id)} accessibilityRole=\"menuitem\" style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 48, paddingHorizontal: 20, backgroundColor: pressed ? t.colors.elevatedHover : 'transparent' })}>\n                  <Icon size={16} strokeWidth={1.5} color={t.colors.textSecondary} />\n                  <Text style={[typeStyle(t, 'md'), { color: t.colors.text }]}>{m.label}</Text>\n                </Pressable>\n              )\n            })}\n          </View>\n        </Sheet>\n      </>\n    ) : (\n      <ScrollView horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps=\"handled\" contentContainerStyle={{ gap: 4, padding: 4 }} style={{ borderRadius: t.radii.pill, backgroundColor: t.colors.elevated, borderWidth: hairlineWidth, borderColor: t.colors.hairline, alignSelf: 'flex-start', maxWidth: '100%' }}>\n        {list.map((m) => {\n          const Icon = icons[m.id]\n          const on = rw.mode === m.id && rw.isBusy\n          return (\n            <Pressable key={m.id} onPress={() => start(m.id)} disabled={!value.trim()} accessibilityRole=\"button\" style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: 6, height: 32, paddingHorizontal: 12, borderRadius: t.radii.pill, backgroundColor: on ? t.colors.text : pressed ? t.colors.elevatedHover : 'transparent', opacity: value.trim() ? 1 : 0.4 })}>\n              <Icon size={14} strokeWidth={1.5} color={on ? t.colors.bg : t.colors.textSecondary} />\n              <Text style={[typeStyle(t, 'sm', { weight: 'medium' }), { color: on ? t.colors.bg : t.colors.text }]}>{m.label}</Text>\n            </Pressable>\n          )\n        })}\n      </ScrollView>\n    )\n\n  const resultBody = rw.error ? (\n    <View style={{ gap: 8 }}>\n      <Text style={[typeStyle(t, 'sm'), { color: t.colors.text }]}>{rw.error.message}</Text>\n      {rw.error.kind !== 'refusal' && rw.mode ? <Button title=\"Try again\" variant=\"soft\" size=\"sm\" onPress={() => start(rw.mode!)} /> : null}\n    </View>\n  ) : resultView === 'diff' && !rw.isBusy && rw.result ? (\n    <Text style={[typeStyle(t, 'md'), { color: t.colors.text }]}>\n      {wordDiff(rw.original, rw.result).map((p, i) =>\n        p.type === 'equal' ? (\n          <Text key={i}>{p.text}</Text>\n        ) : p.type === 'add' ? (\n          <Text key={i} style={{ backgroundColor: t.colors.successSoft, color: t.colors.text }}>{p.text}</Text>\n        ) : (\n          <Text key={i} style={{ backgroundColor: t.colors.dangerSoft, color: t.colors.textTertiary, textDecorationLine: 'line-through' }}>{p.text}</Text>\n        ),\n      )}\n    </Text>\n  ) : resultView === 'sideBySide' ? (\n    <View style={{ flexDirection: 'row', gap: 12 }}>\n      <View style={{ flex: 1, gap: 4 }}>\n        <Text style={[typeStyle(t, 'xs', { mono: true, tag: true }), { color: t.colors.textTertiary }]}>Before</Text>\n        <Text style={[typeStyle(t, 'sm'), { color: t.colors.textSecondary }]}>{rw.original}</Text>\n      </View>\n      <View style={{ width: hairlineWidth, backgroundColor: t.colors.hairline }} />\n      <View style={{ flex: 1, gap: 4 }}>\n        <Text style={[typeStyle(t, 'xs', { mono: true, tag: true }), { color: t.colors.textTertiary }]}>After</Text>\n        <StreamingText text={rw.result} streaming={rw.status === 'streaming'} size=\"sm\" />\n      </View>\n    </View>\n  ) : (\n    <StreamingText text={rw.result} streaming={rw.status === 'streaming'} size=\"md\" placeholder=\"\" />\n  )\n\n  return (\n    <View style={[{ gap: 10 }, style]} testID={testID}>\n      {modeButtons}\n      {hasResult ? (\n        <Animated.View entering={motion.enabled ? FadeInDown.duration(200) : undefined}>\n          <IonBorder active={rw.isBusy} radius=\"lg\" glow={rw.isBusy}>\n            <View style={{ padding: 14, gap: 12 }}>\n              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>\n                <Text style={[typeStyle(t, 'xs', { mono: true, tag: true, weight: 'medium' }), { color: t.colors.textTertiary }]}>{rewriteModes.find((m) => m.id === rw.mode)?.label ?? 'Rewrite'}</Text>\n                {showBadge ? <OnDeviceBadge size=\"sm\" state={rw.status} provider={rw.provider} locality={rw.locality as never} /> : null}\n              </View>\n              {rw.status === 'thinking' ? <Text style={[typeStyle(t, 'sm'), { color: t.colors.textTertiary }]}>Rewriting…</Text> : resultBody}\n              {!rw.isBusy && rw.result ? (\n                <View style={{ flexDirection: 'row', gap: 8, justifyContent: 'flex-end' }}>\n                  <Button title=\"Keep original\" variant=\"ghost\" size=\"sm\" icon={<X size={14} strokeWidth={1.5} color={t.colors.textSecondary} />} onPress={() => rw.reset()} />\n                  <Button title=\"Use this\" variant=\"solid\" size=\"sm\" icon={<Check size={14} strokeWidth={1.75} color={t.colors.bg} />} onPress={accept} />\n                </View>\n              ) : null}\n            </View>\n          </IonBorder>\n        </Animated.View>\n      ) : null}\n    </View>\n  )\n}\n\nexport default Rewrite\n"
+    },
+    {
+      "path": "registry/components/rewrite/use-rewrite.ts",
+      "type": "registry:hook",
+      "target": "components/ondai/rewrite/use-rewrite.ts",
+      "content": "import { useCallback, useRef, useState } from 'react'\nimport { estimateTokens, streamText, truncateToBudget, useOndai, useTask, type TaskController } from '@ondai/core'\nimport { cleanRewrite, rewriteSystem, type RewriteMode } from './prompts'\n\nexport interface UseRewriteOptions {\n  component?: string\n  localOnly?: boolean\n  /** Extra guidance (\"this is a chat message\", \"keep under 280 characters\"). */\n  instructions?: string\n}\n\nexport interface RewriteState extends Omit<TaskController, 'execute' | 'signal' | 'setStatus'> {\n  result: string\n  original: string\n  mode: RewriteMode | null\n  isBusy: boolean\n  run: (text: string, mode: RewriteMode, custom?: string) => Promise<string>\n}\n\n/** Shorten, expand, change tone or fix grammar, streamed from the on-device model. */\nexport function useRewrite(options: UseRewriteOptions = {}): RewriteState {\n  const ondai = useOndai()\n  const task = useTask(options.component ?? 'rewrite')\n  const [result, setResult] = useState('')\n  const [original, setOriginal] = useState('')\n  const [mode, setMode] = useState<RewriteMode | null>(null)\n  const optionsRef = useRef(options)\n  optionsRef.current = options\n\n  const run = useCallback(\n    async (text: string, m: RewriteMode, custom?: string) => {\n      setResult('')\n      setOriginal(text)\n      setMode(m)\n      return task.execute(\n        'text',\n        async (ctx) => {\n          const window = ctx.resolved.adapter.contextWindow ?? ondai.policy.tokenBudget\n          const res = streamText({\n            model: ctx.resolved.adapter.languageModel!(),\n            system: [rewriteSystem(m, custom), optionsRef.current.instructions].filter(Boolean).join(' '),\n            prompt: truncateToBudget(text, Math.max(300, Math.floor((window - 400) / 2))),\n            abortSignal: ctx.signal,\n            temperature: m === 'fix' ? 0 : 0.4,\n            onError: () => {},\n          })\n          let acc = ''\n          for await (const part of res.fullStream) {\n            if (part.type === 'text-delta') {\n              ctx.firstToken()\n              acc += part.text\n              setResult(cleanRewrite(acc))\n              ctx.tokens(estimateTokens(acc))\n              ctx.setStatus('streaming')\n            } else if (part.type === 'error') throw part.error\n          }\n          const out = cleanRewrite(acc)\n          setResult(out)\n          return out\n        },\n        { localOnly: optionsRef.current.localOnly },\n      )\n    },\n    [task, ondai],\n  )\n\n  return {\n    ...task,\n    result,\n    original,\n    mode,\n    isBusy: task.status === 'thinking' || task.status === 'streaming',\n    run,\n    reset: () => {\n      task.reset()\n      setResult('')\n      setMode(null)\n    },\n  }\n}\n"
+    },
+    {
+      "path": "registry/components/rewrite/prompts.ts",
+      "type": "registry:component",
+      "target": "components/ondai/rewrite/prompts.ts",
+      "content": "export type RewriteMode = 'shorten' | 'expand' | 'friendlier' | 'formal' | 'fix' | 'custom'\n\nexport const rewriteModes: Array<{ id: RewriteMode; label: string }> = [\n  { id: 'shorten', label: 'Shorten' },\n  { id: 'expand', label: 'Expand' },\n  { id: 'friendlier', label: 'Friendlier' },\n  { id: 'formal', label: 'Formal' },\n  { id: 'fix', label: 'Fix grammar' },\n]\n\nexport const rewriteInstructions: Record<Exclude<RewriteMode, 'custom'>, string> = {\n  shorten: 'Rewrite the text to be about half as long. Keep the meaning, names and numbers. Return only the rewritten text.',\n  expand: 'Rewrite the text with a bit more detail and warmth, at most twice as long. Keep names and numbers. Return only the rewritten text.',\n  friendlier: 'Rewrite the text in a warm, friendly tone. Keep the meaning, names and numbers. Return only the rewritten text.',\n  formal: 'Rewrite the text in a clear, professional tone. Keep the meaning, names and numbers. Return only the rewritten text.',\n  fix: 'Fix spelling, grammar and punctuation only. Do not change the meaning or tone. Return only the corrected text.',\n}\n\nexport function rewriteSystem(mode: RewriteMode, custom?: string): string {\n  return mode === 'custom' ? `${custom ?? 'Rewrite the text.'} Return only the rewritten text.` : rewriteInstructions[mode]\n}\n\n/** Strip quotes/preambles small models sometimes add. */\nexport function cleanRewrite(text: string): string {\n  return text\n    .trim()\n    .replace(/^(here('s| is)[^:]*:\\s*)/i, '')\n    .replace(/^[\"“](.*)[\"”]$/s, '$1')\n    .trim()\n}\n"
+    },
+    {
+      "path": "registry/components/rewrite/diff.ts",
+      "type": "registry:component",
+      "target": "components/ondai/rewrite/diff.ts",
+      "content": "export interface DiffPart {\n  type: 'equal' | 'add' | 'remove'\n  text: string\n}\n\n/** Word-level diff (LCS). Small inputs only; both texts are short rewrites. */\nexport function wordDiff(a: string, b: string): DiffPart[] {\n  const x = a.split(/(\\s+)/).filter((s) => s.length)\n  const y = b.split(/(\\s+)/).filter((s) => s.length)\n  const n = x.length\n  const m = y.length\n  const dp: number[][] = Array.from({ length: n + 1 }, () => new Array<number>(m + 1).fill(0))\n  for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) dp[i]![j] = x[i] === y[j] ? dp[i + 1]![j + 1]! + 1 : Math.max(dp[i + 1]![j]!, dp[i]![j + 1]!)\n  const out: DiffPart[] = []\n  let i = 0\n  let j = 0\n  const push = (type: DiffPart['type'], text: string) => {\n    const last = out[out.length - 1]\n    if (last && last.type === type) last.text += text\n    else out.push({ type, text })\n  }\n  while (i < n && j < m) {\n    if (x[i] === y[j]) {\n      push('equal', x[i]!)\n      i++\n      j++\n    } else if (dp[i + 1]![j]! >= dp[i]![j + 1]!) {\n      push('remove', x[i]!)\n      i++\n    } else {\n      push('add', y[j]!)\n      j++\n    }\n  }\n  while (i < n) push('remove', x[i++]!)\n  while (j < m) push('add', y[j++]!)\n  return out\n}\n"
+    },
+    {
+      "path": "registry/components/rewrite/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/rewrite/index.ts",
+      "content": "export { Rewrite, type RewriteProps } from './rewrite'\nexport { useRewrite, type RewriteState, type UseRewriteOptions } from './use-rewrite'\nexport { rewriteModes, rewriteSystem, cleanRewrite, type RewriteMode } from './prompts'\nexport { wordDiff, type DiffPart } from './diff'\n"
+    }
+  ],
+  "categories": [
+    "text"
+  ],
+  "meta": {
+    "ondai": {
+      "registryVersion": 1,
+      "hash": "249ecb3092ca8b7f",
+      "priority": "P0",
+      "capabilities": [
+        "text"
+      ],
+      "variants": {
+        "presentation": [
+          "toolbar",
+          "menu",
+          "chips"
+        ],
+        "resultView": [
+          "replace",
+          "diff",
+          "sideBySide"
+        ]
+      },
+      "budget": {
+        "input": 1800,
+        "strategy": "Input is truncated to half the window so the rewrite fits in the rest."
+      },
+      "runsOn": [
+        "apple",
+        "nano",
+        "llama",
+        "cloud"
+      ]
+    }
+  }
+}

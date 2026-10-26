@@ -17,6 +17,54 @@ export interface ManifestEntry {
 
 export const manifest: ManifestEntry[] = [
   {
+    "name": "auto-tag",
+    "title": "AutoTag",
+    "description": "Tag and category suggestions constrained to the app's own list, fuzzy-matched after the model answers.",
+    "category": "organize",
+    "priority": "P0",
+    "capabilities": [
+      "structured"
+    ],
+    "variants": {
+      "presentation": [
+        "chips",
+        "inlineGhost",
+        "dropdown"
+      ]
+    },
+    "registryDependencies": [
+      "chip",
+      "on-device-badge",
+      "skeleton"
+    ],
+    "files": [
+      "auto-tag.tsx",
+      "use-auto-tag.ts",
+      "prompts.ts",
+      "schema.ts",
+      "index.ts"
+    ],
+    "budget": {
+      "input": 1500,
+      "strategy": "One structured call with an enum-constrained array; results fuzzy-matched to the list."
+    },
+    "runsOn": [
+      "apple",
+      "nano",
+      "llama",
+      "cloud"
+    ],
+    "dependencies": [
+      "@ondai/core",
+      "@ondai/tokens",
+      "expo-haptics",
+      "lucide-react-native",
+      "react-native-reanimated",
+      "zod"
+    ],
+    "hasPlayground": true
+  },
+  {
     "name": "availability-gate",
     "title": "AvailabilityGate",
     "description": "Renders children only when the on-device model is ready; otherwise an elegant empty state with a way to enable it.",
@@ -44,6 +92,166 @@ export const manifest: ManifestEntry[] = [
       "@ondai/core",
       "@ondai/tokens",
       "lucide-react-native"
+    ],
+    "hasPlayground": true
+  },
+  {
+    "name": "button",
+    "title": "Button",
+    "description": "Minimal button with solid, soft, outline, ghost, accent and danger variants.",
+    "category": "primitive",
+    "priority": "P0",
+    "capabilities": [],
+    "variants": {
+      "variant": [
+        "solid",
+        "soft",
+        "outline",
+        "ghost",
+        "accent",
+        "danger"
+      ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
+      ]
+    },
+    "registryDependencies": [],
+    "files": [
+      "button.tsx",
+      "index.ts"
+    ],
+    "dependencies": [
+      "@ondai/tokens"
+    ],
+    "hasPlayground": true
+  },
+  {
+    "name": "chip",
+    "title": "Chip",
+    "description": "Compact selectable pill for tags, filters, suggestions and replies.",
+    "category": "primitive",
+    "priority": "P0",
+    "capabilities": [],
+    "variants": {
+      "variant": [
+        "soft",
+        "outline",
+        "solid",
+        "ghost"
+      ],
+      "size": [
+        "sm",
+        "md"
+      ]
+    },
+    "registryDependencies": [],
+    "files": [
+      "chip.tsx",
+      "index.ts"
+    ],
+    "dependencies": [
+      "@ondai/tokens",
+      "lucide-react-native"
+    ],
+    "hasPlayground": true
+  },
+  {
+    "name": "command-bar",
+    "title": "CommandBar",
+    "description": "Spotlight for your app: natural language becomes one of your registered actions or routes, chosen by on-device tool calling, with preview and confirmation.",
+    "category": "agentic",
+    "priority": "P0",
+    "capabilities": [
+      "tools",
+      "structured",
+      "text"
+    ],
+    "variants": {
+      "presentation": [
+        "spotlight",
+        "sheet",
+        "inline",
+        "pill",
+        "fullscreen"
+      ],
+      "variant": [
+        "glass",
+        "solid",
+        "minimal"
+      ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
+      ]
+    },
+    "registryDependencies": [
+      "ion-border",
+      "key-hint",
+      "on-device-badge",
+      "sheet",
+      "streaming-text",
+      "thinking-indicator",
+      "tool-confirm-card"
+    ],
+    "files": [
+      "command-bar.tsx",
+      "use-command-bar.ts",
+      "actions.ts",
+      "prompts.ts",
+      "schema.ts",
+      "index.ts"
+    ],
+    "budget": {
+      "input": 1200,
+      "strategy": "Top 5 tools preselected by keyword relevance; the query is truncated to the budget."
+    },
+    "runsOn": [
+      "apple",
+      "nano",
+      "llama",
+      "cloud"
+    ],
+    "dependencies": [
+      "@ondai/core",
+      "@ondai/tokens",
+      "expo-haptics",
+      "lucide-react-native",
+      "react-native-reanimated",
+      "zod"
+    ],
+    "hasPlayground": true
+  },
+  {
+    "name": "field",
+    "title": "Field",
+    "description": "Text field in an IonBorder with AI state and confidence styling.",
+    "category": "primitive",
+    "priority": "P0",
+    "capabilities": [],
+    "variants": {
+      "size": [
+        "md",
+        "lg"
+      ],
+      "confidenceStyle": [
+        "highlight",
+        "badge",
+        "underline",
+        "none"
+      ]
+    },
+    "registryDependencies": [
+      "ion-border"
+    ],
+    "files": [
+      "field.tsx",
+      "index.ts"
+    ],
+    "dependencies": [
+      "@ondai/tokens"
     ],
     "hasPlayground": true
   },
@@ -159,6 +367,60 @@ export const manifest: ManifestEntry[] = [
     "hasPlayground": true
   },
   {
+    "name": "natural-filter",
+    "title": "NaturalFilter",
+    "description": "A natural-language search request becomes a typed filter/sort object with editable chips.",
+    "category": "search",
+    "priority": "P0",
+    "capabilities": [
+      "structured"
+    ],
+    "variants": {
+      "presentation": [
+        "bar",
+        "sheet",
+        "inline"
+      ],
+      "chipStyle": [
+        "soft",
+        "outline"
+      ]
+    },
+    "registryDependencies": [
+      "button",
+      "chip",
+      "field",
+      "on-device-badge",
+      "sheet",
+      "skeleton"
+    ],
+    "files": [
+      "natural-filter.tsx",
+      "use-natural-filter.ts",
+      "prompts.ts",
+      "index.ts"
+    ],
+    "budget": {
+      "input": 600,
+      "strategy": "One structured call; enums, numbers and booleans refined deterministically."
+    },
+    "runsOn": [
+      "apple",
+      "nano",
+      "llama",
+      "cloud"
+    ],
+    "dependencies": [
+      "@ondai/core",
+      "@ondai/tokens",
+      "expo-haptics",
+      "lucide-react-native",
+      "react-native-reanimated",
+      "zod"
+    ],
+    "hasPlayground": true
+  },
+  {
     "name": "on-device-badge",
     "title": "OnDeviceBadge",
     "description": "A quiet pill that says where inference runs: ON DEVICE · APPLE, LOCAL · LLAMA, CLOUD. The dot glows while thinking.",
@@ -185,6 +447,201 @@ export const manifest: ManifestEntry[] = [
     "dependencies": [
       "@ondai/core",
       "@ondai/tokens",
+      "react-native-reanimated"
+    ],
+    "hasPlayground": true
+  },
+  {
+    "name": "rewrite",
+    "title": "Rewrite",
+    "description": "Shorten, expand, friendlier, formal or fix grammar, streamed on device, with replace / diff / side-by-side results and accept/reject.",
+    "category": "text",
+    "priority": "P0",
+    "capabilities": [
+      "text"
+    ],
+    "variants": {
+      "presentation": [
+        "toolbar",
+        "menu",
+        "chips"
+      ],
+      "resultView": [
+        "replace",
+        "diff",
+        "sideBySide"
+      ]
+    },
+    "registryDependencies": [
+      "button",
+      "chip",
+      "ion-border",
+      "on-device-badge",
+      "sheet",
+      "streaming-text"
+    ],
+    "files": [
+      "rewrite.tsx",
+      "use-rewrite.ts",
+      "prompts.ts",
+      "diff.ts",
+      "index.ts"
+    ],
+    "budget": {
+      "input": 1800,
+      "strategy": "Input is truncated to half the window so the rewrite fits in the rest."
+    },
+    "runsOn": [
+      "apple",
+      "nano",
+      "llama",
+      "cloud"
+    ],
+    "dependencies": [
+      "@ondai/core",
+      "@ondai/tokens",
+      "expo-haptics",
+      "lucide-react-native",
+      "react-native-reanimated"
+    ],
+    "hasPlayground": true
+  },
+  {
+    "name": "scan-to-data",
+    "title": "ScanToData",
+    "description": "Camera or photo becomes structured data (receipt, business card, event, or your own schema) via on-device OCR and the local model.",
+    "category": "vision",
+    "priority": "P0",
+    "capabilities": [
+      "structured",
+      "vision"
+    ],
+    "variants": {
+      "presentation": [
+        "camera",
+        "picker",
+        "card"
+      ],
+      "preset": [
+        "receipt",
+        "businessCard",
+        "event",
+        "custom"
+      ]
+    },
+    "registryDependencies": [
+      "button",
+      "field",
+      "ion-border",
+      "on-device-badge",
+      "skeleton"
+    ],
+    "files": [
+      "scan-to-data.tsx",
+      "use-scan-to-data.ts",
+      "schema.ts",
+      "prompts.ts",
+      "index.ts"
+    ],
+    "budget": {
+      "input": 1500,
+      "strategy": "OCR text (not the image) goes to the model; fields refined deterministically."
+    },
+    "runsOn": [
+      "apple",
+      "nano",
+      "llama",
+      "cloud"
+    ],
+    "dependencies": [
+      "@ondai/core",
+      "@ondai/tokens",
+      "expo-haptics",
+      "expo-image-picker",
+      "lucide-react-native",
+      "react-native-reanimated",
+      "zod"
+    ],
+    "hasPlayground": true
+  },
+  {
+    "name": "semantic-search",
+    "title": "SemanticSearch",
+    "description": "Search by meaning over the app's own records with a local vector index and hybrid keyword matching, showing why each result matched.",
+    "category": "search",
+    "priority": "P0",
+    "capabilities": [
+      "embeddings"
+    ],
+    "variants": {
+      "presentation": [
+        "bar",
+        "spotlight",
+        "header"
+      ],
+      "resultStyle": [
+        "list",
+        "cards",
+        "grouped"
+      ]
+    },
+    "registryDependencies": [
+      "chip",
+      "field",
+      "model-download",
+      "on-device-badge",
+      "sheet",
+      "skeleton"
+    ],
+    "files": [
+      "semantic-search.tsx",
+      "use-semantic-search.ts",
+      "index.ts"
+    ],
+    "budget": {
+      "input": 512,
+      "strategy": "Embeddings only (Apple NLContextualEmbedding, 512 dims); no LLM call. Keyword fallback without embeddings."
+    },
+    "runsOn": [
+      "apple",
+      "llama",
+      "cloud"
+    ],
+    "dependencies": [
+      "@ondai/core",
+      "@ondai/tokens",
+      "expo-haptics",
+      "lucide-react-native",
+      "react-native-reanimated"
+    ],
+    "hasPlayground": true
+  },
+  {
+    "name": "sheet",
+    "title": "Sheet",
+    "description": "Animated container: bottom sheet, floating spotlight panel or fullscreen; glass or solid.",
+    "category": "primitive",
+    "priority": "P0",
+    "capabilities": [],
+    "variants": {
+      "presentation": [
+        "sheet",
+        "spotlight",
+        "fullscreen"
+      ],
+      "variant": [
+        "glass",
+        "solid"
+      ]
+    },
+    "registryDependencies": [],
+    "files": [
+      "sheet.tsx",
+      "index.ts"
+    ],
+    "dependencies": [
+      "@ondai/tokens",
+      "expo-blur",
       "react-native-reanimated"
     ],
     "hasPlayground": true
@@ -217,6 +674,116 @@ export const manifest: ManifestEntry[] = [
     "hasPlayground": true
   },
   {
+    "name": "smart-input",
+    "title": "SmartInput",
+    "description": "Text, voice or photo fills your zod form on device, with per-field confidence, deterministic refinement and confirm/undo.",
+    "category": "input",
+    "priority": "P0",
+    "capabilities": [
+      "structured"
+    ],
+    "variants": {
+      "presentation": [
+        "field",
+        "composer",
+        "overlay",
+        "card"
+      ],
+      "confidenceStyle": [
+        "highlight",
+        "badge",
+        "underline"
+      ]
+    },
+    "registryDependencies": [
+      "button",
+      "chip",
+      "field",
+      "ion-border",
+      "on-device-badge"
+    ],
+    "files": [
+      "smart-input.tsx",
+      "use-smart-form.ts",
+      "prompts.ts",
+      "index.ts"
+    ],
+    "budget": {
+      "input": 1500,
+      "strategy": "One structured call; enum/number/date fields are refined deterministically after parsing."
+    },
+    "runsOn": [
+      "apple",
+      "nano",
+      "llama",
+      "cloud"
+    ],
+    "dependencies": [
+      "@ondai/core",
+      "@ondai/tokens",
+      "expo-haptics",
+      "lucide-react-native",
+      "react-native-reanimated",
+      "zod"
+    ],
+    "hasPlayground": true
+  },
+  {
+    "name": "smart-reply",
+    "title": "SmartReply",
+    "description": "Three reply suggestions for the last message in a thread: chips, a stack, or ghost text inside the input, with an optional tone picker.",
+    "category": "text",
+    "priority": "P0",
+    "capabilities": [
+      "structured",
+      "text"
+    ],
+    "variants": {
+      "presentation": [
+        "chips",
+        "stack",
+        "ghost"
+      ],
+      "tone": [
+        "neutral",
+        "friendly",
+        "formal",
+        "brief"
+      ]
+    },
+    "registryDependencies": [
+      "chip",
+      "on-device-badge",
+      "skeleton"
+    ],
+    "files": [
+      "smart-reply.tsx",
+      "use-smart-reply.ts",
+      "prompts.ts",
+      "schema.ts",
+      "index.ts"
+    ],
+    "budget": {
+      "input": 1200,
+      "strategy": "Only the last 6 messages are sent, trimmed from the start."
+    },
+    "runsOn": [
+      "apple",
+      "nano",
+      "llama",
+      "cloud"
+    ],
+    "dependencies": [
+      "@ondai/core",
+      "@ondai/tokens",
+      "expo-haptics",
+      "lucide-react-native",
+      "react-native-reanimated",
+      "zod"
+    ],
+    "hasPlayground": true
+  },
+  {
     "name": "streaming-text",
     "title": "StreamingText",
     "description": "Token-by-token text rendering with a blinking accent caret and chunk fade-in.",
@@ -239,6 +806,67 @@ export const manifest: ManifestEntry[] = [
     ],
     "dependencies": [
       "@ondai/tokens",
+      "react-native-reanimated"
+    ],
+    "hasPlayground": true
+  },
+  {
+    "name": "summarize",
+    "title": "Summarize",
+    "description": "A TL;DR for long text: card, inline, sheet or tooltip. Streams, and map-reduces input that does not fit the on-device context.",
+    "category": "text",
+    "priority": "P0",
+    "capabilities": [
+      "text"
+    ],
+    "variants": {
+      "presentation": [
+        "card",
+        "inline",
+        "sheet",
+        "tooltip"
+      ],
+      "length": [
+        "oneLine",
+        "bullets",
+        "paragraph"
+      ],
+      "style": [
+        "plain",
+        "quote",
+        "highlighted"
+      ]
+    },
+    "registryDependencies": [
+      "button",
+      "ion-border",
+      "model-download",
+      "on-device-badge",
+      "sheet",
+      "skeleton",
+      "streaming-text"
+    ],
+    "files": [
+      "summarize.tsx",
+      "use-summarize.ts",
+      "prompts.ts",
+      "index.ts"
+    ],
+    "budget": {
+      "input": 3400,
+      "strategy": "Single streamed pass when the text fits; otherwise map (bullets per chunk) then reduce (streamed)."
+    },
+    "runsOn": [
+      "apple",
+      "nano",
+      "llama",
+      "cloud"
+    ],
+    "dependencies": [
+      "@ondai/core",
+      "@ondai/tokens",
+      "expo-haptics",
+      "lucide-react-native",
       "react-native-reanimated"
     ],
     "hasPlayground": true
@@ -272,6 +900,44 @@ export const manifest: ManifestEntry[] = [
       "@ondai/tokens",
       "react-native-reanimated",
       "react-native-svg"
+    ],
+    "hasPlayground": true
+  },
+  {
+    "name": "tool-confirm-card",
+    "title": "ToolConfirmCard",
+    "description": "Approval for any tool call: action, parameters and risk level, with approve / edit / cancel.",
+    "category": "agentic",
+    "priority": "P0",
+    "capabilities": [
+      "tools"
+    ],
+    "variants": {
+      "presentation": [
+        "card",
+        "sheet",
+        "banner"
+      ]
+    },
+    "registryDependencies": [
+      "button",
+      "sheet"
+    ],
+    "files": [
+      "tool-confirm-card.tsx",
+      "index.ts"
+    ],
+    "runsOn": [
+      "apple",
+      "nano",
+      "llama",
+      "cloud"
+    ],
+    "dependencies": [
+      "@ondai/core",
+      "@ondai/tokens",
+      "lucide-react-native",
+      "react-native-reanimated"
     ],
     "hasPlayground": true
   }

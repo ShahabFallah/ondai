@@ -1,0 +1,1 @@
+{ "name": "field", "title": "Field", "description": "Text field in an IonBorder with AI state and confidence styling.", "category": "primitive", "priority": "P0", "capabilities": [], "variants": { "size": ["md", "lg"], "confidenceStyle": ["highlight", "badge", "underline", "none"] }, "registryDependencies": ["ion-border"], "files": ["field.tsx", "index.ts"] }

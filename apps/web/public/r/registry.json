@@ -5,6 +5,83 @@
   "items": [
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "auto-tag",
+      "type": "registry:component",
+      "title": "AutoTag",
+      "description": "Tag and category suggestions constrained to the app's own list, fuzzy-matched after the model answers.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens",
+        "expo-haptics",
+        "lucide-react-native",
+        "react-native-reanimated",
+        "zod"
+      ],
+      "registryDependencies": [
+        "chip",
+        "on-device-badge",
+        "skeleton"
+      ],
+      "categories": [
+        "organize"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "b2d549541dd7e065",
+          "priority": "P0",
+          "capabilities": [
+            "structured"
+          ],
+          "variants": {
+            "presentation": [
+              "chips",
+              "inlineGhost",
+              "dropdown"
+            ]
+          },
+          "budget": {
+            "input": 1500,
+            "strategy": "One structured call with an enum-constrained array; results fuzzy-matched to the list."
+          },
+          "runsOn": [
+            "apple",
+            "nano",
+            "llama",
+            "cloud"
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/auto-tag/auto-tag.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/auto-tag/auto-tag.tsx"
+        },
+        {
+          "path": "registry/components/auto-tag/use-auto-tag.ts",
+          "type": "registry:hook",
+          "target": "components/ondai/auto-tag/use-auto-tag.ts"
+        },
+        {
+          "path": "registry/components/auto-tag/prompts.ts",
+          "type": "registry:component",
+          "target": "components/ondai/auto-tag/prompts.ts"
+        },
+        {
+          "path": "registry/components/auto-tag/schema.ts",
+          "type": "registry:component",
+          "target": "components/ondai/auto-tag/schema.ts"
+        },
+        {
+          "path": "registry/components/auto-tag/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/auto-tag/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "availability-gate",
       "type": "registry:component",
       "title": "AvailabilityGate",
@@ -48,6 +125,251 @@
           "path": "registry/components/availability-gate/index.ts",
           "type": "registry:lib",
           "target": "components/ondai/availability-gate/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "button",
+      "type": "registry:component",
+      "title": "Button",
+      "description": "Minimal button with solid, soft, outline, ghost, accent and danger variants.",
+      "dependencies": [
+        "@ondai/tokens"
+      ],
+      "registryDependencies": [],
+      "categories": [
+        "primitive"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "2ec978187a9a0946",
+          "priority": "P0",
+          "capabilities": [],
+          "variants": {
+            "variant": [
+              "solid",
+              "soft",
+              "outline",
+              "ghost",
+              "accent",
+              "danger"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
+            ]
+          }
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/button/button.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/button/button.tsx"
+        },
+        {
+          "path": "registry/components/button/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/button/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "chip",
+      "type": "registry:component",
+      "title": "Chip",
+      "description": "Compact selectable pill for tags, filters, suggestions and replies.",
+      "dependencies": [
+        "@ondai/tokens",
+        "lucide-react-native"
+      ],
+      "registryDependencies": [],
+      "categories": [
+        "primitive"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "072f0b00b719ccb6",
+          "priority": "P0",
+          "capabilities": [],
+          "variants": {
+            "variant": [
+              "soft",
+              "outline",
+              "solid",
+              "ghost"
+            ],
+            "size": [
+              "sm",
+              "md"
+            ]
+          }
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/chip/chip.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/chip/chip.tsx"
+        },
+        {
+          "path": "registry/components/chip/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/chip/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "command-bar",
+      "type": "registry:component",
+      "title": "CommandBar",
+      "description": "Spotlight for your app: natural language becomes one of your registered actions or routes, chosen by on-device tool calling, with preview and confirmation.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens",
+        "expo-haptics",
+        "lucide-react-native",
+        "react-native-reanimated",
+        "zod"
+      ],
+      "registryDependencies": [
+        "ion-border",
+        "key-hint",
+        "on-device-badge",
+        "sheet",
+        "streaming-text",
+        "thinking-indicator",
+        "tool-confirm-card"
+      ],
+      "docs": "Register actions with defineActions(); risky actions (risk: 'high') ask before running.",
+      "categories": [
+        "agentic"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "55633dfb3de75624",
+          "priority": "P0",
+          "capabilities": [
+            "tools",
+            "structured",
+            "text"
+          ],
+          "variants": {
+            "presentation": [
+              "spotlight",
+              "sheet",
+              "inline",
+              "pill",
+              "fullscreen"
+            ],
+            "variant": [
+              "glass",
+              "solid",
+              "minimal"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
+            ]
+          },
+          "budget": {
+            "input": 1200,
+            "strategy": "Top 5 tools preselected by keyword relevance; the query is truncated to the budget."
+          },
+          "runsOn": [
+            "apple",
+            "nano",
+            "llama",
+            "cloud"
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/command-bar/command-bar.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/command-bar/command-bar.tsx"
+        },
+        {
+          "path": "registry/components/command-bar/use-command-bar.ts",
+          "type": "registry:hook",
+          "target": "components/ondai/command-bar/use-command-bar.ts"
+        },
+        {
+          "path": "registry/components/command-bar/actions.ts",
+          "type": "registry:component",
+          "target": "components/ondai/command-bar/actions.ts"
+        },
+        {
+          "path": "registry/components/command-bar/prompts.ts",
+          "type": "registry:component",
+          "target": "components/ondai/command-bar/prompts.ts"
+        },
+        {
+          "path": "registry/components/command-bar/schema.ts",
+          "type": "registry:component",
+          "target": "components/ondai/command-bar/schema.ts"
+        },
+        {
+          "path": "registry/components/command-bar/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/command-bar/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "field",
+      "type": "registry:component",
+      "title": "Field",
+      "description": "Text field in an IonBorder with AI state and confidence styling.",
+      "dependencies": [
+        "@ondai/tokens"
+      ],
+      "registryDependencies": [
+        "ion-border"
+      ],
+      "categories": [
+        "primitive"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "970ebf74348e6569",
+          "priority": "P0",
+          "capabilities": [],
+          "variants": {
+            "size": [
+              "md",
+              "lg"
+            ],
+            "confidenceStyle": [
+              "highlight",
+              "badge",
+              "underline",
+              "none"
+            ]
+          }
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/field/field.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/field/field.tsx"
+        },
+        {
+          "path": "registry/components/field/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/field/index.ts"
         }
       ]
     },
@@ -200,7 +522,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "795df67748d4728e",
+          "hash": "18670d0a62b2fcaa",
           "priority": "P0",
           "capabilities": [],
           "variants": {
@@ -232,6 +554,85 @@
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "natural-filter",
+      "type": "registry:component",
+      "title": "NaturalFilter",
+      "description": "A natural-language search request becomes a typed filter/sort object with editable chips.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens",
+        "expo-haptics",
+        "lucide-react-native",
+        "react-native-reanimated",
+        "zod"
+      ],
+      "registryDependencies": [
+        "button",
+        "chip",
+        "field",
+        "on-device-badge",
+        "sheet",
+        "skeleton"
+      ],
+      "categories": [
+        "search"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "1a745a82492d97d7",
+          "priority": "P0",
+          "capabilities": [
+            "structured"
+          ],
+          "variants": {
+            "presentation": [
+              "bar",
+              "sheet",
+              "inline"
+            ],
+            "chipStyle": [
+              "soft",
+              "outline"
+            ]
+          },
+          "budget": {
+            "input": 600,
+            "strategy": "One structured call; enums, numbers and booleans refined deterministically."
+          },
+          "runsOn": [
+            "apple",
+            "nano",
+            "llama",
+            "cloud"
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/natural-filter/natural-filter.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/natural-filter/natural-filter.tsx"
+        },
+        {
+          "path": "registry/components/natural-filter/use-natural-filter.ts",
+          "type": "registry:hook",
+          "target": "components/ondai/natural-filter/use-natural-filter.ts"
+        },
+        {
+          "path": "registry/components/natural-filter/prompts.ts",
+          "type": "registry:component",
+          "target": "components/ondai/natural-filter/prompts.ts"
+        },
+        {
+          "path": "registry/components/natural-filter/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/natural-filter/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "on-device-badge",
       "type": "registry:component",
       "title": "OnDeviceBadge",
@@ -248,7 +649,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "75d86793e93edff6",
+          "hash": "881f71cb1fffb6d9",
           "priority": "P0",
           "capabilities": [],
           "variants": {
@@ -275,6 +676,298 @@
           "path": "registry/components/on-device-badge/index.ts",
           "type": "registry:lib",
           "target": "components/ondai/on-device-badge/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "rewrite",
+      "type": "registry:component",
+      "title": "Rewrite",
+      "description": "Shorten, expand, friendlier, formal or fix grammar, streamed on device, with replace / diff / side-by-side results and accept/reject.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens",
+        "expo-haptics",
+        "lucide-react-native",
+        "react-native-reanimated"
+      ],
+      "registryDependencies": [
+        "button",
+        "chip",
+        "ion-border",
+        "on-device-badge",
+        "sheet",
+        "streaming-text"
+      ],
+      "categories": [
+        "text"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "249ecb3092ca8b7f",
+          "priority": "P0",
+          "capabilities": [
+            "text"
+          ],
+          "variants": {
+            "presentation": [
+              "toolbar",
+              "menu",
+              "chips"
+            ],
+            "resultView": [
+              "replace",
+              "diff",
+              "sideBySide"
+            ]
+          },
+          "budget": {
+            "input": 1800,
+            "strategy": "Input is truncated to half the window so the rewrite fits in the rest."
+          },
+          "runsOn": [
+            "apple",
+            "nano",
+            "llama",
+            "cloud"
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/rewrite/rewrite.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/rewrite/rewrite.tsx"
+        },
+        {
+          "path": "registry/components/rewrite/use-rewrite.ts",
+          "type": "registry:hook",
+          "target": "components/ondai/rewrite/use-rewrite.ts"
+        },
+        {
+          "path": "registry/components/rewrite/prompts.ts",
+          "type": "registry:component",
+          "target": "components/ondai/rewrite/prompts.ts"
+        },
+        {
+          "path": "registry/components/rewrite/diff.ts",
+          "type": "registry:component",
+          "target": "components/ondai/rewrite/diff.ts"
+        },
+        {
+          "path": "registry/components/rewrite/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/rewrite/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "scan-to-data",
+      "type": "registry:component",
+      "title": "ScanToData",
+      "description": "Camera or photo becomes structured data (receipt, business card, event, or your own schema) via on-device OCR and the local model.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens",
+        "expo-haptics",
+        "expo-image-picker",
+        "lucide-react-native",
+        "react-native-reanimated",
+        "zod"
+      ],
+      "registryDependencies": [
+        "button",
+        "field",
+        "ion-border",
+        "on-device-badge",
+        "skeleton"
+      ],
+      "docs": "Pass `ocr` (e.g. @react-native-ml-kit/text-recognition or Apple Vision) to read photos; without it the component explains that OCR is not configured.",
+      "categories": [
+        "vision"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "4be24f17673053b8",
+          "priority": "P0",
+          "capabilities": [
+            "structured",
+            "vision"
+          ],
+          "variants": {
+            "presentation": [
+              "camera",
+              "picker",
+              "card"
+            ],
+            "preset": [
+              "receipt",
+              "businessCard",
+              "event",
+              "custom"
+            ]
+          },
+          "budget": {
+            "input": 1500,
+            "strategy": "OCR text (not the image) goes to the model; fields refined deterministically."
+          },
+          "runsOn": [
+            "apple",
+            "nano",
+            "llama",
+            "cloud"
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/scan-to-data/scan-to-data.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/scan-to-data/scan-to-data.tsx"
+        },
+        {
+          "path": "registry/components/scan-to-data/use-scan-to-data.ts",
+          "type": "registry:hook",
+          "target": "components/ondai/scan-to-data/use-scan-to-data.ts"
+        },
+        {
+          "path": "registry/components/scan-to-data/schema.ts",
+          "type": "registry:component",
+          "target": "components/ondai/scan-to-data/schema.ts"
+        },
+        {
+          "path": "registry/components/scan-to-data/prompts.ts",
+          "type": "registry:component",
+          "target": "components/ondai/scan-to-data/prompts.ts"
+        },
+        {
+          "path": "registry/components/scan-to-data/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/scan-to-data/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "semantic-search",
+      "type": "registry:component",
+      "title": "SemanticSearch",
+      "description": "Search by meaning over the app's own records with a local vector index and hybrid keyword matching, showing why each result matched.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens",
+        "expo-haptics",
+        "lucide-react-native",
+        "react-native-reanimated"
+      ],
+      "registryDependencies": [
+        "chip",
+        "field",
+        "model-download",
+        "on-device-badge",
+        "sheet",
+        "skeleton"
+      ],
+      "categories": [
+        "search"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "17da0ae70379392f",
+          "priority": "P0",
+          "capabilities": [
+            "embeddings"
+          ],
+          "variants": {
+            "presentation": [
+              "bar",
+              "spotlight",
+              "header"
+            ],
+            "resultStyle": [
+              "list",
+              "cards",
+              "grouped"
+            ]
+          },
+          "budget": {
+            "input": 512,
+            "strategy": "Embeddings only (Apple NLContextualEmbedding, 512 dims); no LLM call. Keyword fallback without embeddings."
+          },
+          "runsOn": [
+            "apple",
+            "llama",
+            "cloud"
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/semantic-search/semantic-search.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/semantic-search/semantic-search.tsx"
+        },
+        {
+          "path": "registry/components/semantic-search/use-semantic-search.ts",
+          "type": "registry:hook",
+          "target": "components/ondai/semantic-search/use-semantic-search.ts"
+        },
+        {
+          "path": "registry/components/semantic-search/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/semantic-search/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "sheet",
+      "type": "registry:component",
+      "title": "Sheet",
+      "description": "Animated container: bottom sheet, floating spotlight panel or fullscreen; glass or solid.",
+      "dependencies": [
+        "@ondai/tokens",
+        "expo-blur",
+        "react-native-reanimated"
+      ],
+      "registryDependencies": [],
+      "categories": [
+        "primitive"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "608803615c024377",
+          "priority": "P0",
+          "capabilities": [],
+          "variants": {
+            "presentation": [
+              "sheet",
+              "spotlight",
+              "fullscreen"
+            ],
+            "variant": [
+              "glass",
+              "solid"
+            ]
+          }
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/sheet/sheet.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/sheet/sheet.tsx"
+        },
+        {
+          "path": "registry/components/sheet/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/sheet/index.ts"
         }
       ]
     },
@@ -324,6 +1017,170 @@
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "smart-input",
+      "type": "registry:component",
+      "title": "SmartInput",
+      "description": "Text, voice or photo fills your zod form on device, with per-field confidence, deterministic refinement and confirm/undo.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens",
+        "expo-haptics",
+        "lucide-react-native",
+        "react-native-reanimated",
+        "zod"
+      ],
+      "registryDependencies": [
+        "button",
+        "chip",
+        "field",
+        "ion-border",
+        "on-device-badge"
+      ],
+      "categories": [
+        "input"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "6f957eede3de9dc8",
+          "priority": "P0",
+          "capabilities": [
+            "structured"
+          ],
+          "variants": {
+            "presentation": [
+              "field",
+              "composer",
+              "overlay",
+              "card"
+            ],
+            "confidenceStyle": [
+              "highlight",
+              "badge",
+              "underline"
+            ]
+          },
+          "budget": {
+            "input": 1500,
+            "strategy": "One structured call; enum/number/date fields are refined deterministically after parsing."
+          },
+          "runsOn": [
+            "apple",
+            "nano",
+            "llama",
+            "cloud"
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/smart-input/smart-input.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/smart-input/smart-input.tsx"
+        },
+        {
+          "path": "registry/components/smart-input/use-smart-form.ts",
+          "type": "registry:hook",
+          "target": "components/ondai/smart-input/use-smart-form.ts"
+        },
+        {
+          "path": "registry/components/smart-input/prompts.ts",
+          "type": "registry:component",
+          "target": "components/ondai/smart-input/prompts.ts"
+        },
+        {
+          "path": "registry/components/smart-input/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/smart-input/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "smart-reply",
+      "type": "registry:component",
+      "title": "SmartReply",
+      "description": "Three reply suggestions for the last message in a thread: chips, a stack, or ghost text inside the input, with an optional tone picker.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens",
+        "expo-haptics",
+        "lucide-react-native",
+        "react-native-reanimated",
+        "zod"
+      ],
+      "registryDependencies": [
+        "chip",
+        "on-device-badge",
+        "skeleton"
+      ],
+      "categories": [
+        "text"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "593722308f45512c",
+          "priority": "P0",
+          "capabilities": [
+            "structured",
+            "text"
+          ],
+          "variants": {
+            "presentation": [
+              "chips",
+              "stack",
+              "ghost"
+            ],
+            "tone": [
+              "neutral",
+              "friendly",
+              "formal",
+              "brief"
+            ]
+          },
+          "budget": {
+            "input": 1200,
+            "strategy": "Only the last 6 messages are sent, trimmed from the start."
+          },
+          "runsOn": [
+            "apple",
+            "nano",
+            "llama",
+            "cloud"
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/smart-reply/smart-reply.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/smart-reply/smart-reply.tsx"
+        },
+        {
+          "path": "registry/components/smart-reply/use-smart-reply.ts",
+          "type": "registry:hook",
+          "target": "components/ondai/smart-reply/use-smart-reply.ts"
+        },
+        {
+          "path": "registry/components/smart-reply/prompts.ts",
+          "type": "registry:component",
+          "target": "components/ondai/smart-reply/prompts.ts"
+        },
+        {
+          "path": "registry/components/smart-reply/schema.ts",
+          "type": "registry:component",
+          "target": "components/ondai/smart-reply/schema.ts"
+        },
+        {
+          "path": "registry/components/smart-reply/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/smart-reply/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "streaming-text",
       "type": "registry:component",
       "title": "StreamingText",
@@ -363,6 +1220,92 @@
           "path": "registry/components/streaming-text/index.ts",
           "type": "registry:lib",
           "target": "components/ondai/streaming-text/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "summarize",
+      "type": "registry:component",
+      "title": "Summarize",
+      "description": "A TL;DR for long text: card, inline, sheet or tooltip. Streams, and map-reduces input that does not fit the on-device context.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens",
+        "expo-haptics",
+        "lucide-react-native",
+        "react-native-reanimated"
+      ],
+      "registryDependencies": [
+        "button",
+        "ion-border",
+        "model-download",
+        "on-device-badge",
+        "sheet",
+        "skeleton",
+        "streaming-text"
+      ],
+      "categories": [
+        "text"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "e06a6bd98d157b85",
+          "priority": "P0",
+          "capabilities": [
+            "text"
+          ],
+          "variants": {
+            "presentation": [
+              "card",
+              "inline",
+              "sheet",
+              "tooltip"
+            ],
+            "length": [
+              "oneLine",
+              "bullets",
+              "paragraph"
+            ],
+            "style": [
+              "plain",
+              "quote",
+              "highlighted"
+            ]
+          },
+          "budget": {
+            "input": 3400,
+            "strategy": "Single streamed pass when the text fits; otherwise map (bullets per chunk) then reduce (streamed)."
+          },
+          "runsOn": [
+            "apple",
+            "nano",
+            "llama",
+            "cloud"
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/summarize/summarize.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/summarize/summarize.tsx"
+        },
+        {
+          "path": "registry/components/summarize/use-summarize.ts",
+          "type": "registry:hook",
+          "target": "components/ondai/summarize/use-summarize.ts"
+        },
+        {
+          "path": "registry/components/summarize/prompts.ts",
+          "type": "registry:component",
+          "target": "components/ondai/summarize/prompts.ts"
+        },
+        {
+          "path": "registry/components/summarize/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/summarize/index.ts"
         }
       ]
     },
@@ -412,6 +1355,61 @@
           "path": "registry/components/thinking-indicator/index.ts",
           "type": "registry:lib",
           "target": "components/ondai/thinking-indicator/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "tool-confirm-card",
+      "type": "registry:component",
+      "title": "ToolConfirmCard",
+      "description": "Approval for any tool call: action, parameters and risk level, with approve / edit / cancel.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens",
+        "lucide-react-native",
+        "react-native-reanimated"
+      ],
+      "registryDependencies": [
+        "button",
+        "sheet"
+      ],
+      "categories": [
+        "agentic"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "84dbadc462b2ff8a",
+          "priority": "P0",
+          "capabilities": [
+            "tools"
+          ],
+          "variants": {
+            "presentation": [
+              "card",
+              "sheet",
+              "banner"
+            ]
+          },
+          "runsOn": [
+            "apple",
+            "nano",
+            "llama",
+            "cloud"
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/tool-confirm-card/tool-confirm-card.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/tool-confirm-card/tool-confirm-card.tsx"
+        },
+        {
+          "path": "registry/components/tool-confirm-card/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/tool-confirm-card/index.ts"
         }
       ]
     }

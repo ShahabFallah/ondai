@@ -1,0 +1,8 @@
+[
+  { "id": "task", "input": "remind me to buy milk tomorrow", "expected": "task.create" },
+  { "id": "expense", "input": "add 24.50 at luigi's for lunch", "expected": "expense.add" },
+  { "id": "email", "input": "email priya that the budget is approved", "expected": "email.send" },
+  { "id": "settings", "input": "open settings", "expected": "screen.settings" },
+  { "id": "dark", "input": "switch to dark mode", "expected": "theme.toggle" },
+  { "id": "inbox", "input": "show my messages", "expected": "screen.inbox" }
+]

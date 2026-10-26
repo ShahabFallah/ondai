@@ -1,0 +1,84 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "smart-input",
+  "type": "registry:component",
+  "title": "SmartInput",
+  "description": "Text, voice or photo fills your zod form on device, with per-field confidence, deterministic refinement and confirm/undo.",
+  "dependencies": [
+    "@ondai/core",
+    "@ondai/tokens",
+    "expo-haptics",
+    "lucide-react-native",
+    "react-native-reanimated",
+    "zod"
+  ],
+  "registryDependencies": [
+    "button",
+    "chip",
+    "field",
+    "ion-border",
+    "on-device-badge"
+  ],
+  "files": [
+    {
+      "path": "registry/components/smart-input/smart-input.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/smart-input/smart-input.tsx",
+      "content": "import { useEffect, useRef, useState, type ReactNode } from 'react'\nimport { Pressable, Text, View, type StyleProp, type ViewStyle } from 'react-native'\nimport Animated, { FadeInDown } from 'react-native-reanimated'\nimport * as Haptics from 'expo-haptics'\nimport { Camera, Check, Mic, RotateCcw, Sparkles } from 'lucide-react-native'\nimport type { z } from 'zod'\nimport { humanize } from '@ondai/core'\nimport { hairlineWidth, typeStyle, useMotion, useTheme } from '@ondai/tokens/react'\nimport { Button } from '../button/button'\nimport { Chip } from '../chip/chip'\nimport { Field } from '../field/field'\nimport { IonBorder } from '../ion-border/ion-border'\nimport { OnDeviceBadge } from '../on-device-badge/on-device-badge'\nimport { useSmartForm, type SmartFormState, type UseSmartFormOptions } from './use-smart-form'\n\nexport interface SmartInputProps<S extends z.ZodObject<z.ZodRawShape>> extends UseSmartFormOptions<S> {\n  presentation?: 'field' | 'composer' | 'overlay' | 'card'\n  confidenceStyle?: 'highlight' | 'badge' | 'underline'\n  placeholder?: string\n  /** Show the mic button; `onVoice` returns transcribed text. */\n  voice?: boolean\n  onVoice?: () => Promise<string>\n  /** Show the camera button; `onCamera` returns OCR text. */\n  camera?: boolean\n  onCamera?: () => Promise<string>\n  /** Pre-filled input (playground). */\n  initialText?: string\n  autoRun?: boolean\n  /** Render-prop to show the developer's own form, given the smart form state (overlay). */\n  children?: (form: SmartFormState<S>) => ReactNode\n  /** Expose the hook state (controlled usage). */\n  onState?: (form: SmartFormState<S>) => void\n  showBadge?: boolean\n  style?: StyleProp<ViewStyle>\n  testID?: string\n}\n\n/** Text, voice or photo fills your zod form. Per-field confidence, confirm/undo, four presentations. */\nexport function SmartInput<S extends z.ZodObject<z.ZodRawShape>>({ presentation = 'field', confidenceStyle = 'highlight', placeholder = 'Describe it in your own words…', voice = true, onVoice, camera = false, onCamera, initialText = '', autoRun = false, children, onState, showBadge = true, style, testID, ...hookOptions }: SmartInputProps<S>) {\n  const t = useTheme()\n  const motion = useMotion()\n  const form = useSmartForm(hookOptions)\n  const [text, setText] = useState(initialText)\n  const ran = useRef(false)\n  const busy = form.isLoading\n  useEffect(() => {\n    onState?.(form)\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, [form.values, form.fields, form.status])\n  useEffect(() => {\n    if (autoRun && initialText && !ran.current) {\n      ran.current = true\n      void form.fill(initialText).catch(() => {})\n    }\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, [autoRun, initialText])\n  useEffect(() => {\n    if (form.status === 'done') void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {})\n  }, [form.status])\n\n  const submit = () => {\n    if (!text.trim() || busy) return\n    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})\n    void form.fill(text).catch(() => {})\n  }\n  const mic = voice && onVoice ? (\n    <Pressable accessibilityRole=\"button\" accessibilityLabel=\"Speak\" hitSlop={8} onPress={() => void onVoice().then((s) => (setText(s), form.fill(s))).catch(() => {})} style={{ width: 36, height: 36, alignItems: 'center', justifyContent: 'center' }}>\n      <Mic size={18} strokeWidth={1.5} color={t.colors.textSecondary} />\n    </Pressable>\n  ) : null\n  const cam = camera && onCamera ? (\n    <Pressable accessibilityRole=\"button\" accessibilityLabel=\"Scan\" hitSlop={8} onPress={() => void onCamera().then((s) => (setText(s), form.fill(s))).catch(() => {})} style={{ width: 36, height: 36, alignItems: 'center', justifyContent: 'center' }}>\n      <Camera size={18} strokeWidth={1.5} color={t.colors.textSecondary} />\n    </Pressable>\n  ) : null\n\n  const input = (\n    <Field\n      testID={testID ? `${testID}-input` : undefined}\n      value={text}\n      onChangeText={setText}\n      onSubmitEditing={submit}\n      placeholder={placeholder}\n      state={form.status}\n      returnKeyType=\"done\"\n      size={presentation === 'composer' ? 'lg' : 'md'}\n      left={busy ? undefined : <Sparkles size={16} strokeWidth={1.5} color={t.colors.accent.solid} />}\n      right={\n        <View style={{ flexDirection: 'row', alignItems: 'center' }}>\n          {cam}\n          {mic}\n          {presentation === 'composer' ? <Button title=\"Fill\" size=\"sm\" variant=\"solid\" onPress={submit} loading={busy} disabled={!text.trim()} /> : null}\n        </View>\n      }\n    />\n  )\n\n  const fieldsView = (\n    <View style={{ gap: 10 }}>\n      {form.fieldInfo.map((f) => {\n        const r = form.fields[f.name]\n        const value = form.values[f.name as keyof typeof form.values]\n        if (value === undefined && !r) return null\n        const conf = r?.confidence ?? 0\n        const label = hookOptions.labels?.[f.name as never] ?? humanize(f.name)\n        return (\n          <Animated.View key={f.name} entering={motion.enabled ? FadeInDown.duration(200) : undefined}>\n            <Field\n              label={label}\n              value={value === undefined ? '' : String(value instanceof Date ? value.toLocaleString() : value)}\n              onChangeText={(v) => form.setField(f.name as never, f.type === 'number' ? Number(v) : v)}\n              confidence={conf}\n              confidenceStyle={confidenceStyle}\n              right={\n                <View style={{ flexDirection: 'row', gap: 2 }}>\n                  {conf < 1 ? (\n                    <Pressable accessibilityRole=\"button\" accessibilityLabel={`Confirm ${label}`} hitSlop={8} onPress={() => form.confirmField(f.name as never)} style={{ width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>\n                      <Check size={16} strokeWidth={1.75} color={t.colors.accent.solid} />\n                    </Pressable>\n                  ) : null}\n                  <Pressable accessibilityRole=\"button\" accessibilityLabel={`Undo ${label}`} hitSlop={8} onPress={() => form.undoField(f.name as never)} style={{ width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>\n                    <RotateCcw size={14} strokeWidth={1.5} color={t.colors.textTertiary} />\n                  </Pressable>\n                </View>\n              }\n            />\n          </Animated.View>\n        )\n      })}\n    </View>\n  )\n\n  const footer = (\n    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 24 }}>\n      {showBadge ? <OnDeviceBadge size=\"sm\" state={form.status} provider={form.provider} locality={form.locality as never} /> : <View />}\n      {form.confidence !== null ? <Text style={[typeStyle(t, 'xs', { mono: true }), { color: t.colors.textTertiary }]}>{`confidence ${Math.round(form.confidence * 100)}%`}</Text> : null}\n    </View>\n  )\n  const errorView = form.error ? (\n    <View style={{ paddingHorizontal: 12, paddingVertical: 10, borderRadius: t.radii.md, borderWidth: hairlineWidth, borderColor: t.colors.danger, gap: 6 }}>\n      <Text style={[typeStyle(t, 'sm'), { color: t.colors.text }]}>{form.error.message}</Text>\n      {form.error.kind !== 'refusal' ? (\n        <Pressable onPress={submit} accessibilityRole=\"button\" style={{ minHeight: 28, justifyContent: 'center' }}>\n          <Text style={[typeStyle(t, 'sm', { weight: 'medium' }), { color: t.colors.textSecondary }]}>Try again</Text>\n        </Pressable>\n      ) : null}\n    </View>\n  ) : null\n\n  if (presentation === 'card') {\n    return (\n      <View style={[{ gap: 12 }, style]} testID={testID}>\n        {input}\n        {errorView}\n        {Object.keys(form.values).length ? (\n          <IonBorder active={busy} radius=\"lg\">\n            <View style={{ padding: 14, gap: 12 }}>\n              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>\n                {Object.entries(form.values).map(([k, v]) =>\n                  v === undefined ? null : <Chip key={k} size=\"sm\" variant=\"soft\" label={`${hookOptions.labels?.[k as never] ?? humanize(k)}: ${String(v)}`} ghost={(form.fields[k]?.confidence ?? 1) < 0.6} />,\n                )}\n              </View>\n              {footer}\n              <View style={{ flexDirection: 'row', gap: 8, justifyContent: 'flex-end' }}>\n                <Button title=\"Undo\" variant=\"ghost\" size=\"sm\" onPress={form.undoAll} />\n                <Button title=\"Use these\" variant=\"solid\" size=\"sm\" onPress={() => form.fieldInfo.forEach((f) => form.confirmField(f.name as never))} />\n              </View>\n            </View>\n          </IonBorder>\n        ) : (\n          footer\n        )}\n      </View>\n    )\n  }\n  if (presentation === 'overlay') {\n    return (\n      <View style={[{ gap: 12 }, style]} testID={testID}>\n        {input}\n        {errorView}\n        {children ? children(form) : fieldsView}\n        {footer}\n      </View>\n    )\n  }\n  if (presentation === 'composer') {\n    return (\n      <View style={[{ gap: 12 }, style]} testID={testID}>\n        {Object.keys(form.values).length ? fieldsView : null}\n        {errorView}\n        {input}\n        {footer}\n      </View>\n    )\n  }\n  return (\n    <View style={[{ gap: 12 }, style]} testID={testID}>\n      {input}\n      {errorView}\n      {Object.keys(form.values).length ? fieldsView : null}\n      {footer}\n    </View>\n  )\n}\n\nexport default SmartInput\n"
+    },
+    {
+      "path": "registry/components/smart-input/use-smart-form.ts",
+      "type": "registry:hook",
+      "target": "components/ondai/smart-input/use-smart-form.ts",
+      "content": "import { useCallback, useMemo, useRef, useState } from 'react'\nimport type { z } from 'zod'\nimport { describeSchema, refineObject, useStructured, type RefinedField, type StructuredState } from '@ondai/core'\nimport { smartFormInstructions } from './prompts'\n\nexport interface UseSmartFormOptions<S extends z.ZodObject<z.ZodRawShape>> {\n  schema: S\n  /** Domain hints for the model (\"expenses app; merchants are restaurants and shops\"). */\n  instructions?: string\n  /** Aliases per enum field: { category: { food: ['lunch', 'dinner'] } }. */\n  aliases?: Record<string, Record<string, string[]>>\n  /** Labels for fields in the UI. */\n  labels?: Partial<Record<keyof z.infer<S> & string, string>>\n  /** Called with the refined values after each successful fill. */\n  onFill?: (values: Partial<z.infer<S>>, fields: Record<string, RefinedField>) => void\n  component?: string\n  localOnly?: boolean\n}\n\nexport interface SmartFormState<S extends z.ZodObject<z.ZodRawShape>> extends Omit<StructuredState<Record<string, unknown>>, 'object' | 'run'> {\n  values: Partial<z.infer<S>>\n  /** Per-field confidence and whether a deterministic correction was applied. */\n  fields: Record<string, RefinedField>\n  fill: (text: string) => Promise<Partial<z.infer<S>>>\n  /** Accept a field (marks confidence 1). */\n  confirmField: (name: keyof z.infer<S> & string) => void\n  /** Revert a field to its previous value. */\n  undoField: (name: keyof z.infer<S> & string) => void\n  /** Manually edit a field. */\n  setField: (name: keyof z.infer<S> & string, value: unknown) => void\n  /** Push values into any form library: apply((name, value) => form.setValue(name, value)). */\n  apply: (setter: (name: string, value: unknown) => void) => void\n  undoAll: () => void\n  fieldInfo: ReturnType<typeof describeSchema>\n}\n\n/** Text (or transcribed voice / OCR text) fills your zod form, with deterministic refinement and per-field confidence. */\nexport function useSmartForm<S extends z.ZodObject<z.ZodRawShape>>(options: UseSmartFormOptions<S>): SmartFormState<S> {\n  const { schema, instructions, aliases, onFill, component = 'smart-input', localOnly } = options\n  const fieldInfo = useMemo(() => describeSchema(schema), [schema])\n  const [values, setValues] = useState<Partial<z.infer<S>>>({})\n  const [fields, setFields] = useState<Record<string, RefinedField>>({})\n  const previous = useRef<Partial<z.infer<S>>>({})\n  const partial = useMemo(() => (schema as unknown as { partial: () => z.ZodObject<z.ZodRawShape> }).partial(), [schema])\n\n  const structured = useStructured<Record<string, unknown>>({\n    schema: partial as never,\n    instructions: smartFormInstructions(fieldInfo, instructions),\n    component,\n    localOnly,\n    refine: (obj) => {\n      const r = refineObject(fieldInfo, obj, { aliases })\n      return { object: r.object, confidence: r.confidence }\n    },\n  })\n\n  const fill = useCallback(\n    async (text: string) => {\n      const obj = await structured.run(text)\n      const r = refineObject(fieldInfo, obj, { aliases })\n      previous.current = values\n      const next = { ...values, ...(r.object as Partial<z.infer<S>>) }\n      for (const k of Object.keys(r.fields)) if (r.object[k] === undefined) delete (next as Record<string, unknown>)[k]\n      setValues(next)\n      setFields(r.fields)\n      onFill?.(next, r.fields)\n      return next\n    },\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n    [structured.run, fieldInfo, aliases, values, onFill],\n  )\n\n  return {\n    ...structured,\n    values,\n    fields,\n    fieldInfo,\n    fill,\n    confirmField: (name) => setFields((f) => ({ ...f, [name]: { ...(f[name] ?? { value: values[name] }), confidence: 1 } })),\n    undoField: (name) => {\n      setValues((v) => ({ ...v, [name]: previous.current[name] }))\n      setFields((f) => ({ ...f, [name]: { value: previous.current[name], confidence: 1 } }))\n    },\n    setField: (name, value) => {\n      setValues((v) => ({ ...v, [name]: value }))\n      setFields((f) => ({ ...f, [name]: { value, confidence: 1 } }))\n    },\n    apply: (setter) => {\n      for (const [k, v] of Object.entries(values)) if (v !== undefined) setter(k, v)\n    },\n    undoAll: () => {\n      setValues(previous.current)\n      setFields({})\n    },\n    reset: () => {\n      structured.reset()\n      setValues({})\n      setFields({})\n      previous.current = {}\n    },\n  }\n}\n"
+    },
+    {
+      "path": "registry/components/smart-input/prompts.ts",
+      "type": "registry:component",
+      "target": "components/ondai/smart-input/prompts.ts",
+      "content": "import { describeForPrompt, type FieldInfo } from '@ondai/core'\n\nexport function smartFormInstructions(fields: FieldInfo[], extra?: string): string {\n  return [\n    'Extract the fields from the user text and return JSON only.',\n    `Fields: ${describeForPrompt(fields)}.`,\n    'Leave a field out if the text does not mention it. Never invent values. Copy numbers and names exactly as written.',\n    extra,\n  ]\n    .filter(Boolean)\n    .join(' ')\n}\n"
+    },
+    {
+      "path": "registry/components/smart-input/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/smart-input/index.ts",
+      "content": "export { SmartInput, type SmartInputProps } from './smart-input'\nexport { useSmartForm, type SmartFormState, type UseSmartFormOptions } from './use-smart-form'\nexport { smartFormInstructions } from './prompts'\n"
+    }
+  ],
+  "categories": [
+    "input"
+  ],
+  "meta": {
+    "ondai": {
+      "registryVersion": 1,
+      "hash": "6f957eede3de9dc8",
+      "priority": "P0",
+      "capabilities": [
+        "structured"
+      ],
+      "variants": {
+        "presentation": [
+          "field",
+          "composer",
+          "overlay",
+          "card"
+        ],
+        "confidenceStyle": [
+          "highlight",
+          "badge",
+          "underline"
+        ]
+      },
+      "budget": {
+        "input": 1500,
+        "strategy": "One structured call; enum/number/date fields are refined deterministically after parsing."
+      },
+      "runsOn": [
+        "apple",
+        "nano",
+        "llama",
+        "cloud"
+      ]
+    }
+  }
+}

@@ -1,0 +1,1 @@
+{ "name": "chip", "title": "Chip", "description": "Compact selectable pill for tags, filters, suggestions and replies.", "category": "primitive", "priority": "P0", "capabilities": [], "variants": { "variant": ["soft", "outline", "solid", "ghost"], "size": ["sm", "md"] }, "registryDependencies": [], "files": ["chip.tsx", "index.ts"] }

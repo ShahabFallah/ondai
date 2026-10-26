@@ -4,6 +4,7 @@ import { useOndai, useStreamText, type Availability, type ProviderAdapter, estim
 import { useTheme } from '@ondai/tokens/react'
 import { Body, Button, Card, Label, Mono, Row, Screen } from '@/ui'
 import { usePrefs } from '@/prefs'
+import { runSpike } from '@/spike'
 
 function describe(av: Availability | undefined): { text: string; color: 'ok' | 'warn' | 'bad' | 'muted' } {
   if (!av) return { text: 'checking…', color: 'muted' }
@@ -32,17 +33,7 @@ export default function DeviceScreen() {
       if (alive) setAvail(next)
       console.log('[ondai-spike] availability', JSON.stringify(next))
       if (process.env.EXPO_PUBLIC_ONDAI_AUTORUN === '1' && Object.values(next).some((a) => a?.status === 'ready')) {
-        const prompts = ['Explain on-device AI in one sentence.', 'Describe a quiet morning in a small town in one sentence.', 'Write one sentence about why spring is a good season for walks.', 'Summarize: Sam confirmed Friday at noon and Priya sent the revised budget.']
-        for (const p of prompts) {
-          try {
-            const t0 = Date.now()
-            const text = await stream.run(p)
-            console.log('[ondai-spike] result', JSON.stringify({ prompt: p, text, ms: Date.now() - t0 }))
-            break
-          } catch (e) {
-            console.log('[ondai-spike] prompt failed', JSON.stringify(p), String(e))
-          }
-        }
+        await runSpike(ondai).catch((e) => console.log('[spike] fatal', String(e)))
       }
     }
     void load()

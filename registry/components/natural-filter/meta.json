@@ -1,0 +1,13 @@
+{
+  "name": "natural-filter",
+  "title": "NaturalFilter",
+  "description": "A natural-language search request becomes a typed filter/sort object with editable chips.",
+  "category": "search",
+  "priority": "P0",
+  "capabilities": ["structured"],
+  "variants": { "presentation": ["bar", "sheet", "inline"], "chipStyle": ["soft", "outline"] },
+  "registryDependencies": ["button", "chip", "field", "on-device-badge", "sheet", "skeleton"],
+  "files": ["natural-filter.tsx", "use-natural-filter.ts", "prompts.ts", "index.ts"],
+  "budget": { "input": 600, "strategy": "One structured call; enums, numbers and booleans refined deterministically." },
+  "runsOn": ["apple", "nano", "llama", "cloud"]
+}

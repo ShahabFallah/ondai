@@ -1,11 +1,11 @@
 import type { ComponentType, ReactElement } from 'react'
 import type { Availability } from '@ondai/core'
-import type { MockScriptInput } from '@ondai/core/mock'
+import type { ScriptSource } from '@ondai/core/mock'
 import { defaultValues, type ControlValues, type Controls } from './controls'
 
 export interface PlaygroundState {
   /** Mock provider script driving the model for this state. */
-  script?: MockScriptInput
+  script?: ScriptSource
   /** Override availability (unavailable / preparing states). */
   availability?: Availability
   /** Extra props merged over control values. */
@@ -47,9 +47,9 @@ export interface PlaygroundDef<CS extends Controls = Controls, P = any> {
   review: string[]
   frame: PlaygroundFrame
   /** Custom render when the component needs children/callbacks/sample data. */
-  render?: (props: ControlValues<CS> & Record<string, unknown>, ctx: PlaygroundRenderContext) => ReactElement
+  render?(props: ControlValues<CS> & Record<string, any>, ctx: PlaygroundRenderContext): ReactElement
   /** Code snippet generator shown as "live code" in the docs. */
-  code?: (props: ControlValues<CS>) => string
+  code?(props: ControlValues<CS>): string
   /** Which control keys are variants (shown as segmented pickers first). */
   variantKeys?: Array<keyof CS & string>
 }

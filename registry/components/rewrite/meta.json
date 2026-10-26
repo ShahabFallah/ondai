@@ -1,0 +1,13 @@
+{
+  "name": "rewrite",
+  "title": "Rewrite",
+  "description": "Shorten, expand, friendlier, formal or fix grammar, streamed on device, with replace / diff / side-by-side results and accept/reject.",
+  "category": "text",
+  "priority": "P0",
+  "capabilities": ["text"],
+  "variants": { "presentation": ["toolbar", "menu", "chips"], "resultView": ["replace", "diff", "sideBySide"] },
+  "registryDependencies": ["button", "chip", "ion-border", "on-device-badge", "sheet", "streaming-text"],
+  "files": ["rewrite.tsx", "use-rewrite.ts", "prompts.ts", "diff.ts", "index.ts"],
+  "budget": { "input": 1800, "strategy": "Input is truncated to half the window so the rewrite fits in the rest." },
+  "runsOn": ["apple", "nano", "llama", "cloud"]
+}

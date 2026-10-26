@@ -1,0 +1,90 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "summarize",
+  "type": "registry:component",
+  "title": "Summarize",
+  "description": "A TL;DR for long text: card, inline, sheet or tooltip. Streams, and map-reduces input that does not fit the on-device context.",
+  "dependencies": [
+    "@ondai/core",
+    "@ondai/tokens",
+    "expo-haptics",
+    "lucide-react-native",
+    "react-native-reanimated"
+  ],
+  "registryDependencies": [
+    "button",
+    "ion-border",
+    "model-download",
+    "on-device-badge",
+    "sheet",
+    "skeleton",
+    "streaming-text"
+  ],
+  "files": [
+    {
+      "path": "registry/components/summarize/summarize.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/summarize/summarize.tsx",
+      "content": "import { useEffect, useRef, useState, type ReactNode } from 'react'\nimport { Pressable, Text, View, type StyleProp, type ViewStyle } from 'react-native'\nimport Animated, { FadeIn, FadeInDown } from 'react-native-reanimated'\nimport * as Haptics from 'expo-haptics'\nimport { ChevronDown, RefreshCw, Sparkles } from 'lucide-react-native'\nimport { availabilityCopy, useLocalModel } from '@ondai/core'\nimport { hairlineWidth, typeStyle, useMotion, useTheme } from '@ondai/tokens/react'\nimport { Button } from '../button/button'\nimport { IonBorder } from '../ion-border/ion-border'\nimport { ModelDownload } from '../model-download/model-download'\nimport { OnDeviceBadge } from '../on-device-badge/on-device-badge'\nimport { Sheet } from '../sheet/sheet'\nimport { Skeleton } from '../skeleton/skeleton'\nimport { StreamingText } from '../streaming-text/streaming-text'\nimport type { SummaryLength } from './prompts'\nimport { useSummarize, type UseSummarizeOptions } from './use-summarize'\n\nexport interface SummarizeProps extends UseSummarizeOptions {\n  /** The text to summarize. */\n  text: string\n  presentation?: 'card' | 'inline' | 'sheet' | 'tooltip'\n  length?: SummaryLength\n  /** Visual style of the summary body. */\n  style?: 'plain' | 'quote' | 'highlighted'\n  title?: string\n  /** Run on mount / when `text` changes. */\n  autoRun?: boolean\n  /** Card starts collapsed (summary hidden until tapped). */\n  collapsed?: boolean\n  showBadge?: boolean\n  /** Children are the content the summary refers to (tooltip anchors above them). */\n  children?: ReactNode\n  containerStyle?: StyleProp<ViewStyle>\n  testID?: string\n}\n\n/** A TL;DR for long text. Card, inline link, sheet or tooltip. Streams, and map-reduces long input. */\nexport function Summarize({ text, presentation = 'card', length = 'bullets', style = 'plain', title = 'TL;DR', autoRun = true, collapsed = false, showBadge = true, children, containerStyle, testID, ...hookOptions }: SummarizeProps) {\n  const t = useTheme()\n  const motion = useMotion()\n  const s = useSummarize({ ...hookOptions, length })\n  const model = useLocalModel('text')\n  const [open, setOpen] = useState(!collapsed)\n  const [sheetOpen, setSheetOpen] = useState(false)\n  const [expanded, setExpanded] = useState(false)\n  const ran = useRef<string | null>(null)\n\n  useEffect(() => {\n    if (!autoRun || !text.trim() || ran.current === text || !model.isReady) return\n    ran.current = text\n    void s.run(text).catch(() => {})\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, [text, autoRun, model.isReady, length])\n  useEffect(() => {\n    if (s.status === 'done') void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {})\n  }, [s.status])\n\n  const unavailable = model.availability && model.availability.status !== 'ready'\n  const busy = s.isBusy\n  const retry = () => void s.run(text).catch(() => {})\n\n  const body = (\n    <View style={{ gap: 10 }}>\n      {unavailable && model.availability ? (\n        model.availability.status === 'preparing' ? (\n          <ModelDownload progress={model.availability.progress} variant=\"bar\" size=\"sm\" label=\"Preparing model\" />\n        ) : (\n          <Text style={[typeStyle(t, 'sm'), { color: t.colors.textSecondary }]}>{availabilityCopy(model.availability).title}</Text>\n        )\n      ) : s.status === 'thinking' ? (\n        <View style={{ gap: 8 }}>\n          <Skeleton lines={length === 'oneLine' ? 1 : 3} height={12} />\n          {s.progress ? <Text style={[typeStyle(t, 'xs', { mono: true }), { color: t.colors.textTertiary }]}>{`reading part ${s.progress[0]} of ${s.progress[1]}`}</Text> : null}\n        </View>\n      ) : s.error ? (\n        <Animated.View entering={motion.enabled ? FadeIn.duration(160) : undefined} style={{ gap: 8 }}>\n          <Text style={[typeStyle(t, 'sm'), { color: t.colors.text }]}>{s.error.message}</Text>\n          {s.error.kind !== 'refusal' ? <Button title=\"Try again\" variant=\"soft\" size=\"sm\" onPress={retry} icon={<RefreshCw size={14} strokeWidth={1.5} color={t.colors.text} />} /> : null}\n        </Animated.View>\n      ) : (\n        <View style={[style === 'quote' && { borderLeftWidth: 2, borderLeftColor: t.colors.accent.solid, paddingLeft: 12 }, style === 'highlighted' && { backgroundColor: t.colors.accent.soft, borderRadius: t.radii.md, padding: 12 }]}>\n          <StreamingText text={s.summary} streaming={s.status === 'streaming'} size=\"md\" color={t.colors.text} placeholder={autoRun ? '' : 'Tap Summarize to generate a TL;DR on device.'} />\n        </View>\n      )}\n      {(showBadge || s.status === 'done') && !unavailable ? (\n        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>\n          {showBadge ? <OnDeviceBadge size=\"sm\" state={s.status} provider={s.provider} locality={s.locality as never} /> : <View />}\n          {!autoRun && !busy && !s.summary ? <Button title=\"Summarize\" size=\"sm\" variant=\"solid\" onPress={retry} icon={<Sparkles size={14} strokeWidth={1.5} color={t.colors.bg} />} /> : null}\n        </View>\n      ) : null}\n    </View>\n  )\n\n  if (presentation === 'inline') {\n    return (\n      <View style={[{ gap: 8 }, containerStyle]} testID={testID}>\n        {children}\n        {!expanded ? (\n          <Pressable\n            onPress={() => {\n              setExpanded(true)\n              if (!s.summary && !busy) retry()\n            }}\n            accessibilityRole=\"button\"\n            style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 32 }}\n          >\n            <Sparkles size={14} strokeWidth={1.5} color={t.colors.accent.solid} />\n            <Text style={[typeStyle(t, 'sm', { weight: 'medium' }), { color: t.colors.text }]}>Summarize</Text>\n          </Pressable>\n        ) : (\n          <Animated.View entering={motion.enabled ? FadeInDown.duration(200) : undefined}>\n            <IonBorder active={busy} radius=\"md\">\n              <View style={{ padding: 12 }}>{body}</View>\n            </IonBorder>\n          </Animated.View>\n        )}\n      </View>\n    )\n  }\n  if (presentation === 'sheet') {\n    return (\n      <View style={containerStyle} testID={testID}>\n        {children}\n        <Button\n          title=\"Summarize\"\n          variant=\"soft\"\n          size=\"sm\"\n          icon={<Sparkles size={14} strokeWidth={1.5} color={t.colors.text} />}\n          onPress={() => {\n            setSheetOpen(true)\n            if (!s.summary && !busy) retry()\n          }}\n        />\n        <Sheet open={sheetOpen} onClose={() => setSheetOpen(false)} presentation=\"sheet\" variant=\"solid\" inline>\n          <View style={{ padding: 20, gap: 12 }}>\n            <Text style={[typeStyle(t, 'lg', { weight: 'medium' }), { color: t.colors.text }]}>{title}</Text>\n            {body}\n          </View>\n        </Sheet>\n      </View>\n    )\n  }\n  if (presentation === 'tooltip') {\n    return (\n      <View style={[{ gap: 8 }, containerStyle]} testID={testID}>\n        <Animated.View entering={motion.enabled ? FadeInDown.duration(200) : undefined}>\n          <IonBorder active={busy} radius=\"md\" fill={t.colors.elevated} glow>\n            <View style={{ padding: 12, maxWidth: 320 }}>{body}</View>\n          </IonBorder>\n          <View style={{ alignSelf: 'flex-start', marginLeft: 20, width: 10, height: 10, backgroundColor: t.colors.elevated, transform: [{ rotate: '45deg' }], marginTop: -5, borderRightWidth: hairlineWidth, borderBottomWidth: hairlineWidth, borderColor: t.colors.hairline }} />\n        </Animated.View>\n        {children}\n      </View>\n    )\n  }\n  return (\n    <View style={containerStyle} testID={testID}>\n      <IonBorder active={busy} radius=\"lg\" glow={busy}>\n        <View style={{ padding: 14, gap: 10 }}>\n          <Pressable onPress={() => setOpen((o) => !o)} accessibilityRole=\"button\" accessibilityState={{ expanded: open }} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 28 }}>\n            <Sparkles size={14} strokeWidth={1.5} color={busy ? t.colors.accent.solid : t.colors.textSecondary} />\n            <Text style={[typeStyle(t, 'xs', { mono: true, tag: true, weight: 'medium' }), { color: t.colors.textSecondary, flex: 1 }]}>{title}</Text>\n            {s.inputTokens ? <Text style={[typeStyle(t, 'xs', { mono: true }), { color: t.colors.textTertiary }]}>{`≈${s.inputTokens} tok`}</Text> : null}\n            <ChevronDown size={14} strokeWidth={1.5} color={t.colors.textTertiary} style={{ transform: [{ rotate: open ? '0deg' : '-90deg' }] }} />\n          </Pressable>\n          {open ? body : null}\n        </View>\n      </IonBorder>\n      {children}\n    </View>\n  )\n}\n\nexport default Summarize\n"
+    },
+    {
+      "path": "registry/components/summarize/use-summarize.ts",
+      "type": "registry:hook",
+      "target": "components/ondai/summarize/use-summarize.ts",
+      "content": "import { useCallback, useRef, useState } from 'react'\nimport { generateText, streamText } from '@ondai/core'\nimport { estimateTokens, mapReduce, useOndai, useTask, type TaskController } from '@ondai/core'\nimport { cleanSummary, mapInstructions, reduceInstructions, summarizeInstructions, type SummaryLength } from './prompts'\n\nexport interface UseSummarizeOptions {\n  length?: SummaryLength\n  /** Input tokens for a single pass; longer input goes through map-reduce. */\n  maxInputTokens?: number\n  localOnly?: boolean\n  component?: string\n  onDone?: (summary: string) => void\n}\n\nexport interface SummarizeState extends Omit<TaskController, 'execute' | 'signal' | 'setStatus'> {\n  summary: string\n  isBusy: boolean\n  /** Map-reduce progress for long input: [done, total]. */\n  progress: [number, number] | null\n  run: (text: string) => Promise<string>\n  /** Estimated tokens of the last input. */\n  inputTokens: number\n}\n\n/** TL;DR of any text. Streams for short input; map-reduces long input in chunks that fit the on-device model. */\nexport function useSummarize(options: UseSummarizeOptions = {}): SummarizeState {\n  const ondai = useOndai()\n  const task = useTask(options.component ?? 'summarize')\n  const [summary, setSummary] = useState('')\n  const [progress, setProgress] = useState<[number, number] | null>(null)\n  const [inputTokens, setInputTokens] = useState(0)\n  const optionsRef = useRef(options)\n  optionsRef.current = options\n\n  const run = useCallback(\n    async (text: string) => {\n      const o = optionsRef.current\n      const length = o.length ?? 'bullets'\n      setSummary('')\n      setProgress(null)\n      setInputTokens(estimateTokens(text))\n      return task.execute(\n        'text',\n        async (ctx) => {\n          const window = ctx.resolved.adapter.contextWindow ?? ondai.policy.tokenBudget\n          const budget = o.maxInputTokens ?? Math.max(400, window - 600)\n          const model = () => ctx.resolved.adapter.languageModel!()\n          const streamFinal = async (system: string, prompt: string) => {\n            const res = streamText({ model: model(), system, prompt, abortSignal: ctx.signal, temperature: 0.2, onError: () => {} })\n            let acc = ''\n            for await (const part of res.fullStream) {\n              if (part.type === 'text-delta') {\n                ctx.firstToken()\n                acc += part.text\n                setSummary(cleanSummary(acc, length))\n                ctx.tokens(estimateTokens(acc))\n                ctx.setStatus('streaming')\n              } else if (part.type === 'error') throw part.error\n            }\n            return cleanSummary(acc, length)\n          }\n          let out: string\n          if (estimateTokens(text) <= budget) {\n            out = await streamFinal(summarizeInstructions[length], text)\n          } else {\n            const notes = await mapReduce<string>(text, {\n              maxTokens: budget,\n              onProgress: (done, total) => setProgress([done, total]),\n              map: async (chunkText) => (await generateText({ model: model(), system: mapInstructions, prompt: chunkText, abortSignal: ctx.signal, temperature: 0.2 })).text,\n              reduce: async (parts) => parts.join('\\n'),\n            })\n            setProgress(null)\n            out = await streamFinal(reduceInstructions[length], notes)\n          }\n          setSummary(out)\n          o.onDone?.(out)\n          return out\n        },\n        { localOnly: o.localOnly },\n      )\n    },\n    [task, ondai],\n  )\n\n  return {\n    ...task,\n    summary,\n    progress,\n    inputTokens,\n    isBusy: task.status === 'thinking' || task.status === 'streaming',\n    run,\n    reset: () => {\n      task.reset()\n      setSummary('')\n      setProgress(null)\n    },\n  }\n}\n"
+    },
+    {
+      "path": "registry/components/summarize/prompts.ts",
+      "type": "registry:component",
+      "target": "components/ondai/summarize/prompts.ts",
+      "content": "export type SummaryLength = 'oneLine' | 'bullets' | 'paragraph'\n\nexport const summarizeInstructions: Record<SummaryLength, string> = {\n  oneLine: 'Summarize the text in one plain sentence of at most 20 words. No preamble.',\n  bullets: 'Summarize the text as 3 to 5 short bullet points. Start each line with \"- \". No preamble, no headings.',\n  paragraph: 'Summarize the text in one short paragraph of 2 to 4 sentences. No preamble.',\n}\n\nexport const mapInstructions = 'Write 2 to 4 short bullet points with the key facts of this part. Start each line with \"- \". No preamble.'\n\nexport const reduceInstructions: Record<SummaryLength, string> = {\n  oneLine: 'These are notes from parts of one document. Combine them into one plain sentence of at most 20 words. No preamble.',\n  bullets: 'These are notes from parts of one document. Combine them into 3 to 5 short bullet points starting with \"- \". No preamble.',\n  paragraph: 'These are notes from parts of one document. Combine them into one short paragraph of 2 to 4 sentences. No preamble.',\n}\n\n/** Deterministic cleanup of small-model output. */\nexport function cleanSummary(text: string, length: SummaryLength): string {\n  let s = text.trim().replace(/^(summary|tl;dr|here is[^:]*):\\s*/i, '')\n  if (length === 'bullets') {\n    s = s\n      .split('\\n')\n      .map((l) => l.trim().replace(/^[•*\\-–]\\s*/, ''))\n      .filter(Boolean)\n      .map((l) => `- ${l}`)\n      .join('\\n')\n  }\n  return s\n}\n"
+    },
+    {
+      "path": "registry/components/summarize/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/summarize/index.ts",
+      "content": "export { Summarize, type SummarizeProps } from './summarize'\nexport { useSummarize, type SummarizeState, type UseSummarizeOptions } from './use-summarize'\nexport { cleanSummary, summarizeInstructions, type SummaryLength } from './prompts'\n"
+    }
+  ],
+  "categories": [
+    "text"
+  ],
+  "meta": {
+    "ondai": {
+      "registryVersion": 1,
+      "hash": "e06a6bd98d157b85",
+      "priority": "P0",
+      "capabilities": [
+        "text"
+      ],
+      "variants": {
+        "presentation": [
+          "card",
+          "inline",
+          "sheet",
+          "tooltip"
+        ],
+        "length": [
+          "oneLine",
+          "bullets",
+          "paragraph"
+        ],
+        "style": [
+          "plain",
+          "quote",
+          "highlighted"
+        ]
+      },
+      "budget": {
+        "input": 3400,
+        "strategy": "Single streamed pass when the text fits; otherwise map (bullets per chunk) then reduce (streamed)."
+      },
+      "runsOn": [
+        "apple",
+        "nano",
+        "llama",
+        "cloud"
+      ]
+    }
+  }
+}

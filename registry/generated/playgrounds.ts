@@ -2,15 +2,29 @@
 import type { PlaygroundDef } from '@ondai/playground'
 
 export const playgrounds = {
+  'auto-tag': () => import('../components/auto-tag/playground'),
   'availability-gate': () => import('../components/availability-gate/playground'),
+  'button': () => import('../components/button/playground'),
+  'chip': () => import('../components/chip/playground'),
+  'command-bar': () => import('../components/command-bar/playground'),
+  'field': () => import('../components/field/playground'),
   'ion-border': () => import('../components/ion-border/playground'),
   'key-hint': () => import('../components/key-hint/playground'),
   'latency-chip': () => import('../components/latency-chip/playground'),
   'model-download': () => import('../components/model-download/playground'),
+  'natural-filter': () => import('../components/natural-filter/playground'),
   'on-device-badge': () => import('../components/on-device-badge/playground'),
+  'rewrite': () => import('../components/rewrite/playground'),
+  'scan-to-data': () => import('../components/scan-to-data/playground'),
+  'semantic-search': () => import('../components/semantic-search/playground'),
+  'sheet': () => import('../components/sheet/playground'),
   'skeleton': () => import('../components/skeleton/playground'),
+  'smart-input': () => import('../components/smart-input/playground'),
+  'smart-reply': () => import('../components/smart-reply/playground'),
   'streaming-text': () => import('../components/streaming-text/playground'),
+  'summarize': () => import('../components/summarize/playground'),
   'thinking-indicator': () => import('../components/thinking-indicator/playground'),
+  'tool-confirm-card': () => import('../components/tool-confirm-card/playground'),
 } as const satisfies Record<string, () => Promise<{ default: PlaygroundDef<any, any> }>>
 
 export type PlaygroundName = keyof typeof playgrounds

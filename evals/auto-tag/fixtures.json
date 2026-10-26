@@ -1,0 +1,8 @@
+[
+  { "id": "trip", "input": "Book the train to Lyon for the client workshop on the 14th and expense the tickets", "expected": ["travel", "work"] },
+  { "id": "lasagna", "input": "Grandma's lasagna: béchamel first, then ragù, rest 20 minutes before cutting", "expected": ["recipes"] },
+  { "id": "dentist", "input": "Dentist appointment moved to the 14th at 9:30, bring insurance card", "expected": ["health"] },
+  { "id": "budget", "input": "Q4 budget review: marketing down 8%, hardware moved to Q1", "expected": ["work", "finance"] },
+  { "id": "garden", "input": "Raised beds along the fence, tomatoes and basil in May", "expected": ["ideas"] },
+  { "id": "gift", "input": "Gift ideas for Sam: record player, hiking socks", "expected": ["personal"] }
+]

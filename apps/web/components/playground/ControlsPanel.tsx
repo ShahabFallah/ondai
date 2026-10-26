@@ -6,7 +6,7 @@ const stateOrder = ['idle', 'focus', 'thinking', 'streaming', 'tool', 'confirm',
 
 export function ControlsPanel({ def, query, onChange }: { def: PlaygroundDef; query: PlaygroundQuery; onChange: (q: PlaygroundQuery) => void }) {
   const set = (patch: Partial<PlaygroundQuery>) => onChange({ ...query, ...patch })
-  const setProp = (k: string, v: unknown) => onChange({ ...query, props: { ...query.props, [k]: v } })
+  const setProp = (k: string, v: unknown) => onChange({ ...query, props: { ...query.props, [k]: v } as PlaygroundQuery['props'] })
   const variantKeys = def.variantKeys ?? []
   const entries = Object.entries(def.controls) as Array<[string, Control]>
   const variants = entries.filter(([k]) => variantKeys.includes(k))

@@ -10,3 +10,7 @@ export * from './adapters'
 export * from './router'
 export * from './context'
 export * from './hooks'
+export * from './schema'
+// AI SDK surface re-exported so registry components never import `ai` directly (one place to bump the major).
+export { generateText, streamText, embedMany, Output, tool, stepCountIs, experimental_transcribe as transcribe, experimental_generateSpeech as generateSpeech } from 'ai'
+export type { ToolSet, LanguageModel } from 'ai'

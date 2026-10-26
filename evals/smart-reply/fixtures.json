@@ -1,0 +1,5 @@
+[
+  { "id": "pickup", "input": "Them: Can you bring the revised budget printout, and do you want me to pick you up?", "expected": { "minReplies": 2, "mustMention": ["budget", "pick"] } },
+  { "id": "reschedule", "input": "Them: Sorry, can we move Thursday's call to Friday?", "expected": { "minReplies": 2, "mustMention": ["Friday"] } },
+  { "id": "thanks", "input": "Them: Thanks so much for your help today!", "expected": { "minReplies": 2, "mustMention": [] } }
+]

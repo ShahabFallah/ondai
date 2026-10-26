@@ -1,0 +1,82 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "auto-tag",
+  "type": "registry:component",
+  "title": "AutoTag",
+  "description": "Tag and category suggestions constrained to the app's own list, fuzzy-matched after the model answers.",
+  "dependencies": [
+    "@ondai/core",
+    "@ondai/tokens",
+    "expo-haptics",
+    "lucide-react-native",
+    "react-native-reanimated",
+    "zod"
+  ],
+  "registryDependencies": [
+    "chip",
+    "on-device-badge",
+    "skeleton"
+  ],
+  "files": [
+    {
+      "path": "registry/components/auto-tag/auto-tag.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/auto-tag/auto-tag.tsx",
+      "content": "import { useEffect, useRef } from 'react'\nimport { Pressable, Text, View, type StyleProp, type ViewStyle } from 'react-native'\nimport Animated, { FadeInRight } from 'react-native-reanimated'\nimport * as Haptics from 'expo-haptics'\nimport { Plus, Sparkles } from 'lucide-react-native'\nimport { hairlineWidth, typeStyle, useMotion, useTheme } from '@ondai/tokens/react'\nimport { Chip } from '../chip/chip'\nimport { OnDeviceBadge } from '../on-device-badge/on-device-badge'\nimport { Skeleton } from '../skeleton/skeleton'\nimport { useAutoTag, type UseAutoTagOptions } from './use-auto-tag'\n\nexport interface AutoTagProps extends UseAutoTagOptions {\n  /** The content to tag. */\n  text: string\n  selected: string[]\n  onChange: (tags: string[]) => void\n  presentation?: 'chips' | 'inlineGhost' | 'dropdown'\n  multi?: boolean\n  autoRun?: boolean\n  showBadge?: boolean\n  style?: StyleProp<ViewStyle>\n  testID?: string\n}\n\n/** Tag suggestions from the app's own list: chips, faded inline ghosts, or a dropdown. Multi-select with a max. */\nexport function AutoTag({ text, selected, onChange, presentation = 'chips', multi = true, autoRun = true, showBadge = true, style, testID, ...hookOptions }: AutoTagProps) {\n  const t = useTheme()\n  const motion = useMotion()\n  const at = useAutoTag(hookOptions)\n  const last = useRef('')\n  useEffect(() => {\n    if (!autoRun || !text.trim() || last.current === text) return\n    last.current = text\n    const h = setTimeout(() => void at.run(text).catch(() => {}), 350)\n    return () => clearTimeout(h)\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, [text, autoRun])\n\n  const toggle = (tag: string) => {\n    void Haptics.selectionAsync().catch(() => {})\n    if (selected.includes(tag)) onChange(selected.filter((x) => x !== tag))\n    else onChange(multi ? [...selected, tag] : [tag])\n  }\n  const pending = at.suggestions.filter((s) => !selected.includes(s))\n  const badge = showBadge ? <OnDeviceBadge size=\"sm\" state={at.status} provider={at.provider} locality={at.locality as never} /> : null\n\n  if (presentation === 'inlineGhost') {\n    return (\n      <View style={[{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6 }, style]} testID={testID}>\n        {selected.map((s) => (\n          <Chip key={s} label={s} size=\"sm\" variant=\"solid\" onRemove={() => toggle(s)} />\n        ))}\n        {at.isBusy && !pending.length ? <Skeleton width={72} height={28} radius=\"pill\" /> : null}\n        {pending.map((s, i) => (\n          <Animated.View key={s} entering={motion.enabled ? FadeInRight.delay(i * 50).duration(180) : undefined}>\n            <Chip label={s} size=\"sm\" variant=\"outline\" ghost icon={<Plus size={12} strokeWidth={1.75} color={t.colors.textTertiary} />} onPress={() => toggle(s)} accessibilityLabel={`Add tag ${s}`} />\n          </Animated.View>\n        ))}\n        {at.error ? <Text style={[typeStyle(t, 'xs'), { color: t.colors.textTertiary }]}>{at.error.message}</Text> : null}\n      </View>\n    )\n  }\n  if (presentation === 'dropdown') {\n    return (\n      <View style={[{ gap: 8 }, style]} testID={testID}>\n        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>\n          {selected.map((s) => (\n            <Chip key={s} label={s} size=\"sm\" variant=\"solid\" onRemove={() => toggle(s)} />\n          ))}\n        </View>\n        {(pending.length || at.isBusy || at.error) ? (\n          <View style={{ borderRadius: t.radii.md, borderWidth: hairlineWidth, borderColor: t.colors.hairline, backgroundColor: t.colors.elevated, overflow: 'hidden' }}>\n            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 8, borderBottomWidth: hairlineWidth, borderBottomColor: t.colors.hairline }}>\n              <Sparkles size={12} strokeWidth={1.5} color={t.colors.accent.solid} />\n              <Text style={[typeStyle(t, 'xs', { mono: true, tag: true, weight: 'medium' }), { color: t.colors.textTertiary }]}>Suggested</Text>\n            </View>\n            {at.isBusy && !pending.length ? <View style={{ padding: 12 }}><Skeleton lines={2} height={12} /></View> : null}\n            {at.error ? <Text style={[typeStyle(t, 'sm'), { color: t.colors.textSecondary, padding: 12 }]}>{at.error.message}</Text> : null}\n            {pending.map((s) => (\n              <Pressable key={s} onPress={() => toggle(s)} accessibilityRole=\"button\" style={({ pressed }) => ({ minHeight: 40, justifyContent: 'center', paddingHorizontal: 12, backgroundColor: pressed ? t.colors.elevatedHover : 'transparent' })}>\n                <Text style={[typeStyle(t, 'md'), { color: t.colors.text }]}>{s}</Text>\n              </Pressable>\n            ))}\n          </View>\n        ) : null}\n        {badge}\n      </View>\n    )\n  }\n  return (\n    <View style={[{ gap: 10 }, style]} testID={testID}>\n      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>\n        {at.isBusy && !at.suggestions.length ? (\n          <>\n            <Skeleton width={80} height={34} radius=\"pill\" />\n            <Skeleton width={110} height={34} radius=\"pill\" />\n          </>\n        ) : null}\n        {[...selected, ...pending].map((s, i) => (\n          <Animated.View key={s} entering={motion.enabled ? FadeInRight.delay(i * 40).duration(180) : undefined}>\n            <Chip label={s} variant=\"soft\" selected={selected.includes(s)} ghost={!selected.includes(s)} onPress={() => toggle(s)} />\n          </Animated.View>\n        ))}\n      </View>\n      {at.error ? <Text style={[typeStyle(t, 'sm'), { color: t.colors.textSecondary }]}>{at.error.message}</Text> : null}\n      {badge}\n    </View>\n  )\n}\n\nexport default AutoTag\n"
+    },
+    {
+      "path": "registry/components/auto-tag/use-auto-tag.ts",
+      "type": "registry:hook",
+      "target": "components/ondai/auto-tag/use-auto-tag.ts",
+      "content": "import { useCallback, useMemo, useRef, useState } from 'react'\nimport { matchEnumList, useStructured, type StructuredState } from '@ondai/core'\nimport { autoTagInstructions } from './prompts'\nimport { tagsSchema } from './schema'\n\nexport interface UseAutoTagOptions {\n  /** The app's own tag list. The model can only choose from these. */\n  tags: string[]\n  max?: number\n  aliases?: Record<string, string[]>\n  instructions?: string\n  component?: string\n  localOnly?: boolean\n}\n\nexport interface AutoTagState extends Omit<StructuredState<{ tags: string[] }>, 'run' | 'object'> {\n  suggestions: string[]\n  run: (text: string) => Promise<string[]>\n  isBusy: boolean\n}\n\n/** Tag and category suggestions constrained to the app's own list; fuzzy-matched after the model answers. */\nexport function useAutoTag(options: UseAutoTagOptions): AutoTagState {\n  const { tags, max = 3, aliases, instructions, component = 'auto-tag', localOnly } = options\n  const [suggestions, setSuggestions] = useState<string[]>([])\n  const schema = useMemo(() => tagsSchema(tags), [tags])\n  const tagsRef = useRef(tags)\n  tagsRef.current = tags\n  const structured = useStructured({\n    schema,\n    instructions: autoTagInstructions(tags, max, instructions),\n    component,\n    localOnly,\n    refine: (obj) => {\n      const matched = matchEnumList(obj.tags, tagsRef.current, { aliases }).slice(0, max)\n      return { object: { tags: matched }, confidence: obj.tags.length ? matched.length / obj.tags.length : 0.5 }\n    },\n  })\n  const run = useCallback(\n    async (text: string) => {\n      setSuggestions([])\n      const r = await structured.run(text)\n      setSuggestions(r.tags)\n      return r.tags\n    },\n    [structured.run],\n  )\n  return { ...structured, suggestions, run, isBusy: structured.isLoading, reset: () => (structured.reset(), setSuggestions([])) }\n}\n"
+    },
+    {
+      "path": "registry/components/auto-tag/prompts.ts",
+      "type": "registry:component",
+      "target": "components/ondai/auto-tag/prompts.ts",
+      "content": "export function autoTagInstructions(tags: string[], max: number, extra?: string): string {\n  return [`Pick up to ${max} tags for the text from this list only: ${tags.join(', ')}.`, 'Return JSON with a \"tags\" array. Pick nothing if none fit.', extra].filter(Boolean).join(' ')\n}\n"
+    },
+    {
+      "path": "registry/components/auto-tag/schema.ts",
+      "type": "registry:component",
+      "target": "components/ondai/auto-tag/schema.ts",
+      "content": "import { z } from 'zod'\n\nexport const tagsSchema = (tags: readonly string[]) => z.object({ tags: z.array(tags.length ? z.enum(tags as [string, ...string[]]) : z.string()).max(8) })\n"
+    },
+    {
+      "path": "registry/components/auto-tag/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/auto-tag/index.ts",
+      "content": "export { AutoTag, type AutoTagProps } from './auto-tag'\nexport { useAutoTag, type AutoTagState, type UseAutoTagOptions } from './use-auto-tag'\nexport { autoTagInstructions } from './prompts'\nexport { tagsSchema } from './schema'\n"
+    }
+  ],
+  "categories": [
+    "organize"
+  ],
+  "meta": {
+    "ondai": {
+      "registryVersion": 1,
+      "hash": "b2d549541dd7e065",
+      "priority": "P0",
+      "capabilities": [
+        "structured"
+      ],
+      "variants": {
+        "presentation": [
+          "chips",
+          "inlineGhost",
+          "dropdown"
+        ]
+      },
+      "budget": {
+        "input": 1500,
+        "strategy": "One structured call with an enum-constrained array; results fuzzy-matched to the list."
+      },
+      "runsOn": [
+        "apple",
+        "nano",
+        "llama",
+        "cloud"
+      ]
+    }
+  }
+}

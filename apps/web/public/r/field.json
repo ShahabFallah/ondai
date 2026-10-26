@@ -1,0 +1,50 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "field",
+  "type": "registry:component",
+  "title": "Field",
+  "description": "Text field in an IonBorder with AI state and confidence styling.",
+  "dependencies": [
+    "@ondai/tokens"
+  ],
+  "registryDependencies": [
+    "ion-border"
+  ],
+  "files": [
+    {
+      "path": "registry/components/field/field.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/field/field.tsx",
+      "content": "import { forwardRef, useState, type ComponentRef, type ReactNode } from 'react'\nimport { Text, TextInput, View, type StyleProp, type TextInputProps, type ViewStyle } from 'react-native'\nimport { hairlineWidth, typeStyle, useTheme } from '@ondai/tokens/react'\nimport type { AiState } from '@ondai/tokens'\nimport { IonBorder } from '../ion-border/ion-border'\n\nexport interface FieldProps extends Omit<TextInputProps, 'style'> {\n  label?: string\n  hint?: string\n  error?: string\n  /** AI state drives the ion border: thinking/streaming animate, focus shows the ring. */\n  state?: AiState\n  left?: ReactNode\n  right?: ReactNode\n  size?: 'md' | 'lg'\n  /** Confidence 0..1 rendered as a soft underline/highlight (SmartInput). */\n  confidence?: number\n  confidenceStyle?: 'highlight' | 'badge' | 'underline' | 'none'\n  style?: StyleProp<ViewStyle>\n  testID?: string\n}\n\n/** Text field wrapped in an IonBorder: quiet when idle, lit only while the AI works on it. */\nexport const Field = forwardRef<ComponentRef<typeof TextInput>, FieldProps>(function Field({ label, hint, error, state = 'idle', left, right, size = 'md', confidence, confidenceStyle = 'highlight', style, testID, onFocus, onBlur, editable = true, ...input }, ref) {\n  const t = useTheme()\n  const [focused, setFocused] = useState(false)\n  const active = state === 'thinking' || state === 'streaming' || state === 'tool'\n  const showConf = confidence !== undefined && confidenceStyle !== 'none'\n  const confColor = confidence !== undefined ? (confidence >= 0.8 ? t.colors.accent.solid : confidence >= 0.5 ? t.colors.warning : t.colors.danger) : t.colors.hairline\n  return (\n    <View style={[{ gap: 6 }, style]} testID={testID}>\n      {label ? <Text style={[typeStyle(t, 'xs', { mono: true, tag: true, weight: 'medium' }), { color: t.colors.textTertiary }]}>{label}</Text> : null}\n      <IonBorder active={active} focused={focused || state === 'focus'} radius=\"md\" fill={showConf && confidenceStyle === 'highlight' ? mixSoft(confColor, t.colors.input) : t.colors.input} width={1.5}>\n        <View style={{ flexDirection: 'row', alignItems: 'center', minHeight: size === 'lg' ? 52 : 44, paddingHorizontal: 12, gap: 10 }}>\n          {left}\n          <TextInput\n            ref={ref}\n            {...input}\n            editable={editable}\n            onFocus={(e) => {\n              setFocused(true)\n              onFocus?.(e)\n            }}\n            onBlur={(e) => {\n              setFocused(false)\n              onBlur?.(e)\n            }}\n            placeholderTextColor={t.colors.textTertiary}\n            selectionColor={t.colors.accent.solid}\n            style={[typeStyle(t, size === 'lg' ? 'lg' : 'md'), { flex: 1, color: t.colors.text, paddingVertical: 10, outlineStyle: 'none' } as never]}\n          />\n          {showConf && confidenceStyle === 'badge' ? (\n            <Text style={[typeStyle(t, 'xs', { mono: true }), { color: confColor }]}>{Math.round((confidence ?? 0) * 100)}%</Text>\n          ) : null}\n          {right}\n        </View>\n        {showConf && confidenceStyle === 'underline' ? <View style={{ height: 2, marginHorizontal: 12, marginBottom: 6, borderRadius: 1, backgroundColor: confColor, width: `${Math.round((confidence ?? 0) * 100)}%` as never }} /> : null}\n      </IonBorder>\n      {error ? (\n        <Text style={[typeStyle(t, 'sm'), { color: t.colors.danger }]}>{error}</Text>\n      ) : hint ? (\n        <Text style={[typeStyle(t, 'sm'), { color: t.colors.textTertiary }]}>{hint}</Text>\n      ) : null}\n      {error ? <View style={{ height: hairlineWidth }} /> : null}\n    </View>\n  )\n})\n\nfunction mixSoft(color: string, base: string): string {\n  // 14% tint of the confidence color over the input background (rgba blend done by stacking in RN is unreliable, so approximate).\n  if (!color.startsWith('#') || !base.startsWith('#')) return base\n  const c = parseInt(color.slice(1, 7), 16)\n  const b = parseInt(base.slice(1, 7), 16)\n  const ch = (shift: number) => Math.round(((b >> shift) & 255) * 0.86 + ((c >> shift) & 255) * 0.14)\n  return `#${((ch(16) << 16) | (ch(8) << 8) | ch(0)).toString(16).padStart(6, '0')}`\n}\n\nexport default Field\n"
+    },
+    {
+      "path": "registry/components/field/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/field/index.ts",
+      "content": "export { Field, type FieldProps } from './field'\n"
+    }
+  ],
+  "categories": [
+    "primitive"
+  ],
+  "meta": {
+    "ondai": {
+      "registryVersion": 1,
+      "hash": "970ebf74348e6569",
+      "priority": "P0",
+      "capabilities": [],
+      "variants": {
+        "size": [
+          "md",
+          "lg"
+        ],
+        "confidenceStyle": [
+          "highlight",
+          "badge",
+          "underline",
+          "none"
+        ]
+      }
+    }
+  }
+}

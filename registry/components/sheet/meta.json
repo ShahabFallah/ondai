@@ -1,0 +1,1 @@
+{ "name": "sheet", "title": "Sheet", "description": "Animated container: bottom sheet, floating spotlight panel or fullscreen; glass or solid.", "category": "primitive", "priority": "P0", "capabilities": [], "variants": { "presentation": ["sheet", "spotlight", "fullscreen"], "variant": ["glass", "solid"] }, "registryDependencies": [], "files": ["sheet.tsx", "index.ts"] }

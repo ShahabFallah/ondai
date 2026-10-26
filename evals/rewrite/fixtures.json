@@ -1,0 +1,5 @@
+[
+  { "id": "fix-1", "input": { "mode": "fix", "text": "hey priya, got ur budget, looks good mostly but marketing seems low" }, "expected": { "mustContain": ["Priya", "budget"], "maxLengthRatio": 1.6 } },
+  { "id": "shorten-1", "input": { "mode": "shorten", "text": "I wanted to reach out to let you know that, after careful consideration, we have decided to move the design review from Tuesday to Thursday at 3pm because Jordan will be out of the office." }, "expected": { "mustContain": ["Thursday"], "maxLengthRatio": 0.8 } },
+  { "id": "formal-1", "input": { "mode": "formal", "text": "cant make it tmrw, sick. can we do fri?" }, "expected": { "mustContain": ["Friday"], "maxLengthRatio": 3 } }
+]

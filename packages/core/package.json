@@ -11,7 +11,8 @@
     "./apple": "./src/providers/apple.ts",
     "./adk": "./src/providers/adk.ts",
     "./llama": "./src/providers/llama.ts",
-    "./expo": "./src/expo/index.ts"
+    "./expo": "./src/expo/index.ts",
+    "./headless": "./src/headless.ts"
   },
   "publishConfig": {
     "exports": {
@@ -45,6 +46,11 @@
         "types": "./dist/expo.d.ts",
         "react-native": "./dist/expo.js",
         "default": "./dist/expo.js"
+      },
+      "./headless": {
+        "types": "./dist/headless.d.ts",
+        "import": "./dist/headless.js",
+        "default": "./dist/headless.js"
       }
     },
     "main": "./dist/index.js",

@@ -1,0 +1,83 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "natural-filter",
+  "type": "registry:component",
+  "title": "NaturalFilter",
+  "description": "A natural-language search request becomes a typed filter/sort object with editable chips.",
+  "dependencies": [
+    "@ondai/core",
+    "@ondai/tokens",
+    "expo-haptics",
+    "lucide-react-native",
+    "react-native-reanimated",
+    "zod"
+  ],
+  "registryDependencies": [
+    "button",
+    "chip",
+    "field",
+    "on-device-badge",
+    "sheet",
+    "skeleton"
+  ],
+  "files": [
+    {
+      "path": "registry/components/natural-filter/natural-filter.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/natural-filter/natural-filter.tsx",
+      "content": "import { useEffect, useRef, useState, type ReactNode } from 'react'\nimport { Pressable, ScrollView, Text, View, type StyleProp, type ViewStyle } from 'react-native'\nimport Animated, { FadeInRight } from 'react-native-reanimated'\nimport * as Haptics from 'expo-haptics'\nimport { SlidersHorizontal, Search, X } from 'lucide-react-native'\nimport type { z } from 'zod'\nimport { typeStyle, useMotion, useTheme } from '@ondai/tokens/react'\nimport { Button } from '../button/button'\nimport { Chip } from '../chip/chip'\nimport { Field } from '../field/field'\nimport { OnDeviceBadge } from '../on-device-badge/on-device-badge'\nimport { Sheet } from '../sheet/sheet'\nimport { Skeleton } from '../skeleton/skeleton'\nimport { useNaturalFilter, type FilterChip, type UseNaturalFilterOptions } from './use-natural-filter'\n\nexport interface NaturalFilterProps<S extends z.ZodObject<z.ZodRawShape>> extends UseNaturalFilterOptions<S> {\n  presentation?: 'bar' | 'sheet' | 'inline'\n  chipStyle?: 'soft' | 'outline'\n  placeholder?: string\n  initialQuery?: string\n  autoRun?: boolean\n  showBadge?: boolean\n  /** Inline presentation: a filter object to display instead of running the model. */\n  value?: Partial<z.infer<S>>\n  /** Rendered below the chips (results list). */\n  children?: ReactNode\n  style?: StyleProp<ViewStyle>\n  testID?: string\n}\n\n/** \"cheap Italian open now\" becomes a typed filter and editable chips. Bar, sheet, or chips-only inline. */\nexport function NaturalFilter<S extends z.ZodObject<z.ZodRawShape>>({ presentation = 'bar', chipStyle = 'soft', placeholder = 'Search in your own words…', initialQuery = '', autoRun = false, showBadge = true, value, children, style, testID, ...hookOptions }: NaturalFilterProps<S>) {\n  const t = useTheme()\n  const motion = useMotion()\n  const nf = useNaturalFilter(hookOptions)\n  const [query, setQuery] = useState(initialQuery)\n  const [sheetOpen, setSheetOpen] = useState(false)\n  const ran = useRef(false)\n  useEffect(() => {\n    if (value) {\n      for (const [k, v] of Object.entries(value)) nf.set(k as never, v)\n    }\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, [JSON.stringify(value ?? null)])\n  useEffect(() => {\n    if (autoRun && initialQuery && !ran.current) {\n      ran.current = true\n      void nf.run(initialQuery).catch(() => {})\n    }\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, [autoRun, initialQuery])\n  useEffect(() => {\n    if (nf.status === 'done') void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {})\n  }, [nf.status])\n\n  const submit = () => {\n    if (!query.trim()) return\n    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})\n    void nf.run(query).catch(() => {})\n  }\n  const cycle = (c: FilterChip) => {\n    if (!c.options?.length) return\n    const i = c.options.indexOf(String(c.value))\n    nf.set(c.key as never, c.options[(i + 1) % c.options.length])\n    void Haptics.selectionAsync().catch(() => {})\n  }\n  const chips = (\n    <ScrollView horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps=\"handled\" contentContainerStyle={{ gap: 6, paddingVertical: 2 }}>\n      {nf.isLoading && !nf.chips.length ? (\n        <>\n          <Skeleton width={90} height={28} radius=\"pill\" />\n          <Skeleton width={70} height={28} radius=\"pill\" />\n          <Skeleton width={110} height={28} radius=\"pill\" />\n        </>\n      ) : null}\n      {nf.chips.map((c, i) => (\n        <Animated.View key={c.key} entering={motion.enabled ? FadeInRight.delay(i * 50).duration(180) : undefined}>\n          <Chip\n            size=\"sm\"\n            variant={chipStyle}\n            label={`${c.label}: ${c.display}`}\n            ghost={c.confidence < 0.6}\n            onPress={c.options ? () => cycle(c) : undefined}\n            onRemove={() => nf.remove(c.key as never)}\n            accessibilityLabel={`${c.label} ${c.display}${c.options ? ', tap to change' : ''}`}\n          />\n        </Animated.View>\n      ))}\n      {nf.chips.length > 1 ? (\n        <Pressable onPress={nf.clear} accessibilityRole=\"button\" accessibilityLabel=\"Clear filters\" style={{ height: 28, paddingHorizontal: 8, justifyContent: 'center' }}>\n          <Text style={[typeStyle(t, 'xs', { mono: true, tag: true }), { color: t.colors.textTertiary }]}>clear</Text>\n        </Pressable>\n      ) : null}\n    </ScrollView>\n  )\n  const error = nf.error ? <Text style={[typeStyle(t, 'sm'), { color: t.colors.textSecondary }]}>{nf.error.message}</Text> : null\n  const badge = showBadge ? <OnDeviceBadge size=\"sm\" state={nf.status} provider={nf.provider} locality={nf.locality as never} /> : null\n\n  if (presentation === 'inline') {\n    return (\n      <View style={[{ gap: 8 }, style]} testID={testID}>\n        {chips}\n        {children}\n      </View>\n    )\n  }\n  const input = (\n    <Field\n      value={query}\n      onChangeText={setQuery}\n      onSubmitEditing={submit}\n      placeholder={placeholder}\n      state={nf.status}\n      returnKeyType=\"search\"\n      left={<Search size={16} strokeWidth={1.5} color={t.colors.textTertiary} />}\n      right={\n        query ? (\n          <Pressable accessibilityRole=\"button\" accessibilityLabel=\"Clear\" hitSlop={8} onPress={() => (setQuery(''), nf.clear())} style={{ width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>\n            <X size={14} strokeWidth={1.5} color={t.colors.textTertiary} />\n          </Pressable>\n        ) : presentation === 'sheet' ? (\n          <Pressable accessibilityRole=\"button\" accessibilityLabel=\"Edit filters\" hitSlop={8} onPress={() => setSheetOpen(true)} style={{ width: 32, height: 32, alignItems: 'center', justifyContent: 'center' }}>\n            <SlidersHorizontal size={16} strokeWidth={1.5} color={t.colors.textSecondary} />\n          </Pressable>\n        ) : undefined\n      }\n    />\n  )\n  if (presentation === 'sheet') {\n    return (\n      <View style={[{ gap: 8 }, style]} testID={testID}>\n        {input}\n        {nf.chips.length ? chips : null}\n        {error}\n        {children}\n        <Sheet open={sheetOpen} onClose={() => setSheetOpen(false)} presentation=\"sheet\" variant=\"solid\" inline>\n          <View style={{ padding: 20, gap: 14 }}>\n            <Text style={[typeStyle(t, 'lg', { weight: 'medium' }), { color: t.colors.text }]}>Filters</Text>\n            {nf.fieldInfo.map((f) => {\n              const v = (nf.filter as Record<string, unknown>)[f.name]\n              return (\n                <View key={f.name} style={{ gap: 6 }}>\n                  <Text style={[typeStyle(t, 'xs', { mono: true, tag: true, weight: 'medium' }), { color: t.colors.textTertiary }]}>{hookOptions.labels?.[f.name as never] ?? f.name}</Text>\n                  {f.type === 'enum' ? (\n                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>\n                      {f.options?.map((o) => (\n                        <Chip key={o} size=\"sm\" label={o} variant=\"outline\" selected={v === o} onPress={() => nf.set(f.name as never, v === o ? undefined : o)} />\n                      ))}\n                    </View>\n                  ) : f.type === 'boolean' ? (\n                    <Chip size=\"sm\" label={v ? 'yes' : 'no'} variant=\"outline\" selected={!!v} onPress={() => nf.set(f.name as never, !v)} />\n                  ) : (\n                    <Text style={[typeStyle(t, 'sm'), { color: t.colors.textSecondary }]}>{v === undefined ? '—' : String(v)}</Text>\n                  )}\n                </View>\n              )\n            })}\n            <Button title=\"Done\" variant=\"solid\" onPress={() => setSheetOpen(false)} />\n          </View>\n        </Sheet>\n        {badge}\n      </View>\n    )\n  }\n  return (\n    <View style={[{ gap: 8 }, style]} testID={testID}>\n      {input}\n      {(nf.chips.length || nf.isLoading) ? chips : null}\n      {error}\n      {children}\n      {badge}\n    </View>\n  )\n}\n\nexport default NaturalFilter\n"
+    },
+    {
+      "path": "registry/components/natural-filter/use-natural-filter.ts",
+      "type": "registry:hook",
+      "target": "components/ondai/natural-filter/use-natural-filter.ts",
+      "content": "import { useCallback, useMemo, useState } from 'react'\nimport type { z } from 'zod'\nimport { describeSchema, humanize, refineObject, useStructured, type FieldInfo, type StructuredState } from '@ondai/core'\nimport { naturalFilterInstructions } from './prompts'\n\nexport interface FilterChip {\n  key: string\n  label: string\n  value: unknown\n  display: string\n  confidence: number\n  /** Enum options, so chips can cycle values. */\n  options?: string[]\n}\n\nexport interface UseNaturalFilterOptions<S extends z.ZodObject<z.ZodRawShape>> {\n  schema: S\n  instructions?: string\n  aliases?: Record<string, Record<string, string[]>>\n  labels?: Partial<Record<keyof z.infer<S> & string, string>>\n  /** Format a value for its chip. */\n  format?: (key: string, value: unknown) => string\n  onChange?: (filter: Partial<z.infer<S>>) => void\n  component?: string\n  localOnly?: boolean\n}\n\nexport interface NaturalFilterState<S extends z.ZodObject<z.ZodRawShape>> extends Omit<StructuredState<Record<string, unknown>>, 'object' | 'run' | 'partial'> {\n  filter: Partial<z.infer<S>>\n  chips: FilterChip[]\n  run: (query: string) => Promise<Partial<z.infer<S>>>\n  set: (key: keyof z.infer<S> & string, value: unknown) => void\n  remove: (key: keyof z.infer<S> & string) => void\n  clear: () => void\n  fieldInfo: FieldInfo[]\n}\n\n/** \"cheap Italian open now\" becomes a typed filter object. Chips are editable and removable. */\nexport function useNaturalFilter<S extends z.ZodObject<z.ZodRawShape>>(options: UseNaturalFilterOptions<S>): NaturalFilterState<S> {\n  const { schema, instructions, aliases, labels, format, onChange, component = 'natural-filter', localOnly } = options\n  const fieldInfo = useMemo(() => describeSchema(schema), [schema])\n  const [filter, setFilter] = useState<Partial<z.infer<S>>>({})\n  const [conf, setConf] = useState<Record<string, number>>({})\n  const partial = useMemo(() => (schema as unknown as { partial: () => z.ZodObject<z.ZodRawShape> }).partial(), [schema])\n  const structured = useStructured<Record<string, unknown>>({\n    schema: partial as never,\n    instructions: naturalFilterInstructions(fieldInfo, instructions),\n    component,\n    localOnly,\n    refine: (obj) => {\n      const r = refineObject(fieldInfo, obj, { aliases })\n      return { object: r.object, confidence: r.confidence }\n    },\n  })\n  const update = useCallback(\n    (next: Partial<z.infer<S>>) => {\n      setFilter(next)\n      onChange?.(next)\n    },\n    [onChange],\n  )\n  const run = useCallback(\n    async (query: string) => {\n      const obj = await structured.run(query)\n      const r = refineObject(fieldInfo, obj, { aliases })\n      const next: Record<string, unknown> = {}\n      const c: Record<string, number> = {}\n      for (const [k, v] of Object.entries(r.object)) {\n        if (v === undefined || v === null || v === '' || v === false) continue\n        next[k] = v\n        c[k] = r.fields[k]?.confidence ?? 0.8\n      }\n      setConf(c)\n      update(next as Partial<z.infer<S>>)\n      return next as Partial<z.infer<S>>\n    },\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n    [structured.run, fieldInfo, aliases, update],\n  )\n  const chips = useMemo<FilterChip[]>(\n    () =>\n      fieldInfo\n        .filter((f) => (filter as Record<string, unknown>)[f.name] !== undefined)\n        .map((f) => {\n          const v = (filter as Record<string, unknown>)[f.name]\n          const display = format?.(f.name, v) ?? (typeof v === 'boolean' ? (v ? 'yes' : 'no') : String(v))\n          return { key: f.name, label: labels?.[f.name as never] ?? humanize(f.name), value: v, display, confidence: conf[f.name] ?? 1, options: f.options }\n        }),\n    [fieldInfo, filter, conf, labels, format],\n  )\n  return {\n    ...structured,\n    filter,\n    chips,\n    fieldInfo,\n    run,\n    set: (k, v) => update({ ...filter, [k]: v }),\n    remove: (k) => {\n      const next = { ...filter }\n      delete (next as Record<string, unknown>)[k]\n      update(next)\n    },\n    clear: () => update({}),\n    reset: () => {\n      structured.reset()\n      update({})\n    },\n  }\n}\n"
+    },
+    {
+      "path": "registry/components/natural-filter/prompts.ts",
+      "type": "registry:component",
+      "target": "components/ondai/natural-filter/prompts.ts",
+      "content": "import { describeForPrompt, type FieldInfo } from '@ondai/core'\n\nexport function naturalFilterInstructions(fields: FieldInfo[], extra?: string): string {\n  return ['Turn the search request into filters. Return JSON only with these fields:', describeForPrompt(fields) + '.', 'Only set a field when the request clearly implies it. Never guess.', extra].filter(Boolean).join(' ')\n}\n"
+    },
+    {
+      "path": "registry/components/natural-filter/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/natural-filter/index.ts",
+      "content": "export { NaturalFilter, type NaturalFilterProps } from './natural-filter'\nexport { useNaturalFilter, type FilterChip, type NaturalFilterState, type UseNaturalFilterOptions } from './use-natural-filter'\nexport { naturalFilterInstructions } from './prompts'\n"
+    }
+  ],
+  "categories": [
+    "search"
+  ],
+  "meta": {
+    "ondai": {
+      "registryVersion": 1,
+      "hash": "1a745a82492d97d7",
+      "priority": "P0",
+      "capabilities": [
+        "structured"
+      ],
+      "variants": {
+        "presentation": [
+          "bar",
+          "sheet",
+          "inline"
+        ],
+        "chipStyle": [
+          "soft",
+          "outline"
+        ]
+      },
+      "budget": {
+        "input": 600,
+        "strategy": "One structured call; enums, numbers and booleans refined deterministically."
+      },
+      "runsOn": [
+        "apple",
+        "nano",
+        "llama",
+        "cloud"
+      ]
+    }
+  }
+}

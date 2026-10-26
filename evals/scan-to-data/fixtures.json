@@ -1,0 +1,5 @@
+[
+  { "id": "receipt-luigi", "input": "LUIGI'S TRATTORIA\nVia Roma 12\n25/10/2026 13:42\n2x Margherita 18.00\n1x Tiramisu 6.50\nSubtotal 24.50\nVAT 10% 2.45\nTOTAL EUR 26.95\nVISA **** 4421", "expected": { "merchant": "Luigi's Trattoria", "total": 26.95, "currency": "EUR" } },
+  { "id": "receipt-market", "input": "GREEN MARKET\n12/10/2026\nApples 3.20\nBread 2.80\nMilk 1.10\nTOTAL 7.10 EUR\nCASH", "expected": { "merchant": "Green Market", "total": 7.1 } },
+  { "id": "receipt-taxi", "input": "CITY TAXI\nRide 14.5 km\nFare 23.00\nTip 2.00\nTOTAL $25.00\nCard", "expected": { "merchant": "City Taxi", "total": 25 } }
+]

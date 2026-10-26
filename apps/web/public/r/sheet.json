@@ -1,0 +1,49 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "sheet",
+  "type": "registry:component",
+  "title": "Sheet",
+  "description": "Animated container: bottom sheet, floating spotlight panel or fullscreen; glass or solid.",
+  "dependencies": [
+    "@ondai/tokens",
+    "expo-blur",
+    "react-native-reanimated"
+  ],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "registry/components/sheet/sheet.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/sheet/sheet.tsx",
+      "content": "import { useEffect, useState, type ReactNode } from 'react'\nimport { KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, View, useWindowDimensions, type StyleProp, type ViewStyle } from 'react-native'\nimport Animated, { Easing, runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated'\nimport { BlurView } from 'expo-blur'\nimport { hairlineWidth, useMotion, useTheme } from '@ondai/tokens/react'\n\nexport interface SheetProps {\n  open: boolean\n  onClose: () => void\n  /** `sheet` slides up from the bottom; `spotlight` floats centered (⌘K style); `fullscreen` fills. */\n  presentation?: 'sheet' | 'spotlight' | 'fullscreen'\n  /** `glass` blurs the backdrop and uses translucent surface; `solid` uses the theme surface. */\n  variant?: 'glass' | 'solid'\n  /** Render inline (no Modal) for the web playground and embedded previews. */\n  inline?: boolean\n  children: ReactNode\n  style?: StyleProp<ViewStyle>\n  testID?: string\n  /** Max width of the spotlight panel. */\n  maxWidth?: number\n}\n\n/** Animated container used by CommandBar, ToolConfirmCard and sheet presentations. Springs in, fades the backdrop. */\nexport function Sheet({ open, onClose, presentation = 'sheet', variant = 'glass', inline, children, style, testID, maxWidth = 560 }: SheetProps) {\n  const t = useTheme()\n  const motion = useMotion()\n  const { height } = useWindowDimensions()\n  const [mounted, setMounted] = useState(open)\n  const progress = useSharedValue(open ? 1 : 0)\n\n  useEffect(() => {\n    if (open) {\n      setMounted(true)\n      progress.value = motion.enabled ? withSpring(1, t.springs.smooth) : 1\n    } else if (motion.enabled) {\n      progress.value = withTiming(0, { duration: 180, easing: Easing.out(Easing.quad) }, (finished) => {\n        if (finished) runOnJS(setMounted)(false)\n      })\n    } else {\n      progress.value = 0\n      setMounted(false)\n    }\n  }, [open, motion.enabled, progress, t.springs.smooth])\n\n  const backdrop = useAnimatedStyle(() => ({ opacity: progress.value }), [progress])\n  const panel = useAnimatedStyle(\n    () =>\n      presentation === 'sheet'\n        ? { transform: [{ translateY: (1 - progress.value) * Math.min(height, 600) }] }\n        : presentation === 'spotlight'\n          ? { opacity: progress.value, transform: [{ scale: 0.96 + progress.value * 0.04 }, { translateY: (1 - progress.value) * -8 }] }\n          : { opacity: progress.value },\n    [progress, presentation, height],\n  )\n\n  if (!mounted) return null\n  const glass = variant === 'glass'\n  const surface: ViewStyle = {\n    backgroundColor: glass ? t.colors.glassFill : t.colors.surface,\n    borderColor: glass ? t.colors.glassStroke : t.colors.hairline,\n    borderWidth: hairlineWidth,\n  }\n  const content = (\n    <View style={StyleSheet.absoluteFill} pointerEvents=\"box-none\" testID={testID}>\n      <Animated.View style={[StyleSheet.absoluteFill, backdrop]} pointerEvents={open ? 'auto' : 'none'}>\n        {glass && Platform.OS !== 'web' ? (\n          <BlurView intensity={20} tint={t.scheme === 'dark' ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />\n        ) : null}\n        <Pressable accessibilityRole=\"button\" accessibilityLabel=\"Close\" onPress={onClose} style={[StyleSheet.absoluteFill, { backgroundColor: t.colors.overlay }]} />\n      </Animated.View>\n      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[StyleSheet.absoluteFill, presentation === 'spotlight' ? styles.centerTop : presentation === 'sheet' ? styles.bottom : null]} pointerEvents=\"box-none\">\n        <Animated.View\n          style={[\n            presentation === 'sheet'\n              ? { borderTopLeftRadius: t.radii.xl, borderTopRightRadius: t.radii.xl, paddingBottom: 24, maxHeight: height * 0.9 }\n              : presentation === 'spotlight'\n                ? { width: '100%', maxWidth, borderRadius: t.radii.xl, marginTop: Math.max(72, height * 0.12), marginHorizontal: 16 }\n                : { flex: 1 },\n            surface,\n            presentation === 'fullscreen' && { borderWidth: 0, borderRadius: 0 },\n            panel,\n            style,\n          ]}\n        >\n          {presentation === 'sheet' ? <View style={{ alignSelf: 'center', width: 36, height: 4, borderRadius: 2, backgroundColor: t.colors.hairlineStrong, marginTop: 8, marginBottom: 4 }} /> : null}\n          {children}\n        </Animated.View>\n      </KeyboardAvoidingView>\n    </View>\n  )\n  if (inline) return content\n  return (\n    <Modal visible transparent statusBarTranslucent animationType=\"none\" onRequestClose={onClose}>\n      {content}\n    </Modal>\n  )\n}\n\nconst styles = StyleSheet.create({\n  bottom: { justifyContent: 'flex-end' },\n  centerTop: { alignItems: 'center', justifyContent: 'flex-start' },\n})\n\nexport default Sheet\n"
+    },
+    {
+      "path": "registry/components/sheet/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/sheet/index.ts",
+      "content": "export { Sheet, type SheetProps } from './sheet'\n"
+    }
+  ],
+  "categories": [
+    "primitive"
+  ],
+  "meta": {
+    "ondai": {
+      "registryVersion": 1,
+      "hash": "608803615c024377",
+      "priority": "P0",
+      "capabilities": [],
+      "variants": {
+        "presentation": [
+          "sheet",
+          "spotlight",
+          "fullscreen"
+        ],
+        "variant": [
+          "glass",
+          "solid"
+        ]
+      }
+    }
+  }
+}

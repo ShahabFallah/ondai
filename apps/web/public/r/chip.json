@@ -1,0 +1,49 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "chip",
+  "type": "registry:component",
+  "title": "Chip",
+  "description": "Compact selectable pill for tags, filters, suggestions and replies.",
+  "dependencies": [
+    "@ondai/tokens",
+    "lucide-react-native"
+  ],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "registry/components/chip/chip.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/chip/chip.tsx",
+      "content": "import type { ReactNode } from 'react'\nimport { Pressable, Text, View, type StyleProp, type ViewStyle } from 'react-native'\nimport { X } from 'lucide-react-native'\nimport { createVariants } from '@ondai/tokens'\nimport { hairlineWidth, typeStyle, useTheme } from '@ondai/tokens/react'\n\nexport interface ChipProps {\n  label: string\n  /** Secondary mono text (e.g. a count or a key). */\n  meta?: string\n  icon?: ReactNode\n  variant?: 'soft' | 'outline' | 'solid' | 'ghost'\n  size?: 'sm' | 'md'\n  selected?: boolean\n  /** Faded \"suggested\" look (inline ghost tags). */\n  ghost?: boolean\n  disabled?: boolean\n  onPress?: () => void\n  onRemove?: () => void\n  style?: StyleProp<ViewStyle>\n  testID?: string\n  accessibilityLabel?: string\n}\n\nconst variants = createVariants({\n  variants: {\n    size: { sm: { height: 28, paddingHorizontal: 10, gap: 6 }, md: { height: 34, paddingHorizontal: 12, gap: 8 } },\n    variant: { soft: {}, outline: { backgroundColor: 'transparent' }, solid: {}, ghost: { backgroundColor: 'transparent', borderColor: 'transparent' } },\n  },\n  defaults: { size: 'md', variant: 'soft' },\n})\n\n/** Compact selectable pill used for tags, filters, suggestions and smart replies. */\nexport function Chip({ label, meta, icon, variant = 'soft', size = 'md', selected, ghost, disabled, onPress, onRemove, style, testID, accessibilityLabel }: ChipProps) {\n  const t = useTheme()\n  const on = !!selected\n  const bg = variant === 'solid' || on ? t.colors.text : variant === 'soft' ? t.colors.elevated : 'transparent'\n  const fg = variant === 'solid' || on ? t.colors.bg : t.colors.text\n  const border = variant === 'outline' ? t.colors.hairlineStrong : variant === 'soft' ? t.colors.hairline : 'transparent'\n  return (\n    <Pressable\n      onPress={onPress}\n      disabled={disabled || (!onPress && !onRemove)}\n      accessibilityRole={onPress ? 'button' : 'text'}\n      accessibilityState={{ selected: on, disabled }}\n      accessibilityLabel={accessibilityLabel ?? label}\n      testID={testID}\n      hitSlop={6}\n      style={({ pressed }) => [\n        { flexDirection: 'row', alignItems: 'center', borderRadius: t.radii.pill, borderWidth: hairlineWidth, borderColor: border, backgroundColor: bg, opacity: disabled ? 0.4 : ghost ? 0.55 : pressed ? 0.75 : 1 },\n        ...variants({ size, variant }),\n        on && { borderColor: t.colors.text },\n        style,\n      ]}\n    >\n      {icon ? <View style={{ marginLeft: -2 }}>{icon}</View> : null}\n      <Text numberOfLines={1} style={[typeStyle(t, size === 'sm' ? 'sm' : 'md', { weight: 'medium' }), { color: fg }]}>\n        {label}\n      </Text>\n      {meta ? <Text style={[typeStyle(t, 'xs', { mono: true }), { color: on ? t.colors.bg : t.colors.textTertiary }]}>{meta}</Text> : null}\n      {onRemove ? (\n        <Pressable onPress={onRemove} hitSlop={8} accessibilityRole=\"button\" accessibilityLabel={`Remove ${label}`} style={{ marginRight: -4, padding: 2 }}>\n          <X size={14} strokeWidth={1.75} color={on ? t.colors.bg : t.colors.textTertiary} />\n        </Pressable>\n      ) : null}\n    </Pressable>\n  )\n}\n\nexport default Chip\n"
+    },
+    {
+      "path": "registry/components/chip/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/chip/index.ts",
+      "content": "export { Chip, type ChipProps } from './chip'\n"
+    }
+  ],
+  "categories": [
+    "primitive"
+  ],
+  "meta": {
+    "ondai": {
+      "registryVersion": 1,
+      "hash": "072f0b00b719ccb6",
+      "priority": "P0",
+      "capabilities": [],
+      "variants": {
+        "variant": [
+          "soft",
+          "outline",
+          "solid",
+          "ghost"
+        ],
+        "size": [
+          "sm",
+          "md"
+        ]
+      }
+    }
+  }
+}

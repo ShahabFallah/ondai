@@ -1,0 +1,7 @@
+[
+  { "id": "cheap-italian", "input": "cheap italian open now within 2 km", "expected": { "cuisine": "italian", "price": "$", "openNow": true, "maxDistanceKm": 2 } },
+  { "id": "sushi", "input": "best rated sushi place", "expected": { "cuisine": "japanese", "sort": "rating" } },
+  { "id": "fancy", "input": "somewhere fancy for a date, mexican", "expected": { "cuisine": "mexican", "price": "$$$" } },
+  { "id": "nearby", "input": "anything close by", "expected": { "sort": "distance" } },
+  { "id": "thai-rating", "input": "thai with at least 4.5 stars", "expected": { "cuisine": "thai", "minRating": 4.5 } }
+]

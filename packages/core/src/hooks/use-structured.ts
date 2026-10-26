@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { generateText, Output } from 'ai'
+import { generateText, NoObjectGeneratedError, Output } from 'ai'
 import type { z } from 'zod'
 import { truncateToBudget } from '../budget'
 import { useOndai } from '../context'
@@ -57,6 +57,26 @@ export function useStructured<T>(options: UseStructuredOptions<T>): StructuredSt
         async (ctx) => {
           const window = ctx.resolved.adapter.contextWindow ?? ondai.policy.tokenBudget
           const system = buildInstructions(o.instructions, o.examples)
+          const applyRefine = (value: T): { value: T; conf?: number } => {
+            if (!o.refine) return { value }
+            const r = o.refine(value, input)
+            if (r && typeof r === 'object' && 'object' in (r as object) && !(o.schema.safeParse(r).success && !('confidence' in (r as object)))) {
+              const rr = r as { object: T; confidence?: number }
+              return { value: rr.object, conf: rr.confidence }
+            }
+            return { value: r as T }
+          }
+          /** Strict parse failed (e.g. an off-list enum from a model without constrained decoding): refine the raw JSON, then validate. */
+          const recover = (e: unknown): { value: T; conf: number } | null => {
+            const raw = NoObjectGeneratedError.isInstance(e) ? e.text : undefined
+            if (!raw) return null
+            const json = extractJson(raw)
+            if (!json) return null
+            const refined = applyRefine(json as T)
+            const parsed = o.schema.safeParse(refined.value)
+            if (!parsed.success) return null
+            return { value: parsed.data, conf: Math.min(0.8, refined.conf ?? 0.8) }
+          }
           const attempt = async (budget: number) => {
             const result = await generateText({
               model: ctx.resolved.adapter.languageModel!(),
@@ -70,22 +90,35 @@ export function useStructured<T>(options: UseStructuredOptions<T>): StructuredSt
           }
           let conf = 1
           let out: T
+          let recovered = false
           try {
             out = await attempt(o.inputBudget ?? Math.max(256, window - 768))
           } catch (e) {
             const kind = ondai.classify(e, ctx.resolved.provider)
-            if (kind !== 'context-overflow' && kind !== 'invalid-output') throw e
-            // Exactly one retry: smaller budget, fresh session.
-            conf = 0.7
-            out = await attempt(Math.max(256, Math.floor(((o.inputBudget ?? window) - 768) / 2)))
+            const rec = kind === 'invalid-output' ? recover(e) : null
+            if (rec) {
+              out = rec.value
+              conf = rec.conf
+              recovered = true
+            } else {
+              if (kind !== 'context-overflow' && kind !== 'invalid-output') throw e
+              // Exactly one retry: smaller budget, fresh session.
+              conf = 0.7
+              try {
+                out = await attempt(Math.max(256, Math.floor(((o.inputBudget ?? window) - 768) / 2)))
+              } catch (e2) {
+                const rec2 = ondai.classify(e2, ctx.resolved.provider) === 'invalid-output' ? recover(e2) : null
+                if (!rec2) throw e2
+                out = rec2.value
+                conf = Math.min(conf, rec2.conf)
+                recovered = true
+              }
+            }
           }
-          if (o.refine) {
-            const r = o.refine(out, input)
-            if (r && typeof r === 'object' && 'object' in (r as object) && !(o.schema.safeParse(r).success && !('confidence' in (r as object)))) {
-              const rr = r as { object: T; confidence?: number }
-              out = rr.object
-              if (rr.confidence !== undefined) conf = Math.min(conf, rr.confidence)
-            } else out = r as T
+          if (!recovered) {
+            const r = applyRefine(out)
+            out = r.value
+            if (r.conf !== undefined) conf = Math.min(conf, r.conf)
           }
           setObject(out)
           setConfidence(conf)
@@ -115,6 +148,20 @@ export function useStructured<T>(options: UseStructuredOptions<T>): StructuredSt
       setObject(null)
       setConfidence(null)
     },
+  }
+}
+
+/** Pull the first JSON object out of model text (handles code fences and preambles). */
+export function extractJson(text: string): Record<string, unknown> | null {
+  const cleaned = text.replace(/```(?:json)?/gi, '').trim()
+  const start = cleaned.indexOf('{')
+  const end = cleaned.lastIndexOf('}')
+  if (start === -1 || end <= start) return null
+  try {
+    const v = JSON.parse(cleaned.slice(start, end + 1))
+    return v && typeof v === 'object' ? (v as Record<string, unknown>) : null
+  } catch {
+    return null
   }
 }
 

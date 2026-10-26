@@ -1,0 +1,13 @@
+{
+  "name": "semantic-search",
+  "title": "SemanticSearch",
+  "description": "Search by meaning over the app's own records with a local vector index and hybrid keyword matching, showing why each result matched.",
+  "category": "search",
+  "priority": "P0",
+  "capabilities": ["embeddings"],
+  "variants": { "presentation": ["bar", "spotlight", "header"], "resultStyle": ["list", "cards", "grouped"] },
+  "registryDependencies": ["chip", "field", "model-download", "on-device-badge", "sheet", "skeleton"],
+  "files": ["semantic-search.tsx", "use-semantic-search.ts", "index.ts"],
+  "budget": { "input": 512, "strategy": "Embeddings only (Apple NLContextualEmbedding, 512 dims); no LLM call. Keyword fallback without embeddings." },
+  "runsOn": ["apple", "llama", "cloud"]
+}

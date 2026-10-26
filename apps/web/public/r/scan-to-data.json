@@ -1,0 +1,93 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "scan-to-data",
+  "type": "registry:component",
+  "title": "ScanToData",
+  "description": "Camera or photo becomes structured data (receipt, business card, event, or your own schema) via on-device OCR and the local model.",
+  "dependencies": [
+    "@ondai/core",
+    "@ondai/tokens",
+    "expo-haptics",
+    "expo-image-picker",
+    "lucide-react-native",
+    "react-native-reanimated",
+    "zod"
+  ],
+  "registryDependencies": [
+    "button",
+    "field",
+    "ion-border",
+    "on-device-badge",
+    "skeleton"
+  ],
+  "files": [
+    {
+      "path": "registry/components/scan-to-data/scan-to-data.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/scan-to-data/scan-to-data.tsx",
+      "content": "import { useEffect, useRef, useState } from 'react'\nimport { Image, Pressable, Text, View, type StyleProp, type ViewStyle } from 'react-native'\nimport Animated, { Easing, FadeInDown, cancelAnimation, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated'\nimport * as ImagePicker from 'expo-image-picker'\nimport * as Haptics from 'expo-haptics'\nimport { Camera, Check, ImageIcon, RotateCcw, ScanLine } from 'lucide-react-native'\nimport type { z } from 'zod'\nimport { humanize } from '@ondai/core'\nimport { hairlineWidth, typeStyle, useMotion, useTheme } from '@ondai/tokens/react'\nimport { Button } from '../button/button'\nimport { Field } from '../field/field'\nimport { IonBorder } from '../ion-border/ion-border'\nimport { OnDeviceBadge } from '../on-device-badge/on-device-badge'\nimport { Skeleton } from '../skeleton/skeleton'\nimport { useScanToData, type ScanImage, type UseScanToDataOptions } from './use-scan-to-data'\n\nexport interface ScanToDataProps<S extends z.ZodObject<z.ZodRawShape>> extends UseScanToDataOptions<S> {\n  presentation?: 'camera' | 'picker' | 'card'\n  onData?: (data: Partial<z.infer<S>>) => void\n  labels?: Record<string, string>\n  /** Pre-supplied image (playground / deep links). */\n  initialImage?: ScanImage\n  /** Pre-supplied OCR text (skips OCR). */\n  initialText?: string\n  autoRun?: boolean\n  showBadge?: boolean\n  style?: StyleProp<ViewStyle>\n  testID?: string\n}\n\n/** Camera or photo becomes structured data: a scanning frame with an ion edge sweep, a picker, or a result card. */\nexport function ScanToData<S extends z.ZodObject<z.ZodRawShape>>({ presentation = 'camera', onData, labels, initialImage, initialText, autoRun = false, showBadge = true, style, testID, ...hookOptions }: ScanToDataProps<S>) {\n  const t = useTheme()\n  const motion = useMotion()\n  const sc = useScanToData(hookOptions)\n  const [image, setImage] = useState<ScanImage | null>(initialImage ?? null)\n  const ran = useRef(false)\n  const busy = sc.phase === 'ocr' || sc.phase === 'extract'\n  useEffect(() => {\n    if (!autoRun || ran.current) return\n    ran.current = true\n    if (initialText) void sc.scanText(initialText).then(onData).catch(() => {})\n    else if (initialImage) void sc.scan(initialImage).then(onData).catch(() => {})\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, [autoRun])\n  useEffect(() => {\n    if (sc.phase === 'done') void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {})\n  }, [sc.phase])\n\n  const sweep = useSharedValue(0)\n  useEffect(() => {\n    if (busy && motion.enabled) {\n      sweep.value = 0\n      sweep.value = withRepeat(withTiming(1, { duration: 1800, easing: Easing.inOut(Easing.quad) }), -1, true)\n    } else cancelAnimation(sweep)\n    return () => cancelAnimation(sweep)\n  }, [busy, motion.enabled, sweep])\n  const sweepStyle = useAnimatedStyle(() => ({ top: `${sweep.value * 100}%` }), [sweep])\n\n  const pick = async (camera: boolean) => {\n    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {})\n    const res = camera ? await ImagePicker.launchCameraAsync({ quality: 0.8, base64: true }) : await ImagePicker.launchImageLibraryAsync({ quality: 0.8, base64: true })\n    const asset = res.canceled ? null : res.assets?.[0]\n    if (!asset) return\n    const img: ScanImage = { uri: asset.uri, base64: asset.base64 ?? undefined, width: asset.width, height: asset.height }\n    setImage(img)\n    void sc.scan(img).then(onData).catch(() => {})\n  }\n\n  const result = sc.data ? (\n    <Animated.View entering={motion.enabled ? FadeInDown.duration(220) : undefined}>\n      <IonBorder active={false} radius=\"lg\">\n        <View style={{ padding: 14, gap: 10 }}>\n          {sc.fieldInfo.map((f) => {\n            const v = (sc.data as Record<string, unknown>)?.[f.name]\n            if (v === undefined) return null\n            const conf = sc.fields[f.name]?.confidence ?? 1\n            return <Field key={f.name} label={labels?.[f.name] ?? humanize(f.name)} value={String(v)} editable={false} confidence={conf} confidenceStyle=\"badge\" />\n          })}\n          <View style={{ flexDirection: 'row', gap: 8, justifyContent: 'flex-end' }}>\n            <Button title=\"Rescan\" variant=\"ghost\" size=\"sm\" icon={<RotateCcw size={14} strokeWidth={1.5} color={t.colors.textSecondary} />} onPress={() => (sc.reset(), setImage(null))} />\n            <Button title=\"Use\" variant=\"solid\" size=\"sm\" icon={<Check size={14} strokeWidth={1.75} color={t.colors.bg} />} onPress={() => sc.data && onData?.(sc.data)} />\n          </View>\n        </View>\n      </IonBorder>\n    </Animated.View>\n  ) : null\n  const status = (\n    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>\n      {showBadge ? <OnDeviceBadge size=\"sm\" state={busy ? 'thinking' : sc.status} provider={sc.provider} locality={sc.locality as never} /> : <View />}\n      <Text style={[typeStyle(t, 'xs', { mono: true }), { color: t.colors.textTertiary }]}>{sc.phase === 'ocr' ? 'reading text…' : sc.phase === 'extract' ? 'extracting…' : sc.ocrAvailable ? 'ocr on device' : 'ocr not configured'}</Text>\n    </View>\n  )\n  const error = sc.error ? <Text style={[typeStyle(t, 'sm'), { color: t.colors.textSecondary }]}>{sc.error.message}</Text> : null\n\n  if (presentation === 'card') {\n    return (\n      <View style={[{ gap: 12 }, style]} testID={testID}>\n        {busy ? <Skeleton lines={4} height={14} /> : result}\n        {error}\n        {status}\n      </View>\n    )\n  }\n  if (presentation === 'picker') {\n    return (\n      <View style={[{ gap: 12 }, style]} testID={testID}>\n        <View style={{ flexDirection: 'row', gap: 8 }}>\n          <Button title=\"Choose photo\" variant=\"soft\" icon={<ImageIcon size={16} strokeWidth={1.5} color={t.colors.text} />} onPress={() => void pick(false)} loading={busy} />\n          <Button title=\"Camera\" variant=\"outline\" icon={<Camera size={16} strokeWidth={1.5} color={t.colors.text} />} onPress={() => void pick(true)} disabled={busy} />\n        </View>\n        {image ? <Image source={{ uri: image.uri }} style={{ width: '100%', height: 160, borderRadius: t.radii.md }} resizeMode=\"cover\" accessibilityLabel=\"Selected photo\" /> : null}\n        {busy ? <Skeleton lines={3} height={14} /> : result}\n        {error}\n        {status}\n      </View>\n    )\n  }\n  return (\n    <View style={[{ gap: 12 }, style]} testID={testID}>\n      <IonBorder active={busy} radius=\"xl\" glow={busy}>\n        <Pressable onPress={() => void pick(true)} disabled={busy} accessibilityRole=\"button\" accessibilityLabel=\"Open camera and scan\" style={{ height: 220, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', backgroundColor: t.colors.bg }}>\n          {image ? <Image source={{ uri: image.uri }} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.55 } as never} resizeMode=\"cover\" /> : null}\n          {[0, 1, 2, 3].map((i) => (\n            <View key={i} style={{ position: 'absolute', width: 22, height: 22, borderColor: busy ? t.colors.accent.solid : t.colors.textTertiary, borderTopWidth: i < 2 ? 1.5 : 0, borderBottomWidth: i >= 2 ? 1.5 : 0, borderLeftWidth: i % 2 === 0 ? 1.5 : 0, borderRightWidth: i % 2 === 1 ? 1.5 : 0, top: i < 2 ? 18 : undefined, bottom: i >= 2 ? 18 : undefined, left: i % 2 === 0 ? 18 : undefined, right: i % 2 === 1 ? 18 : undefined }} />\n          ))}\n          {busy ? <Animated.View style={[{ position: 'absolute', left: 18, right: 18, height: 2, backgroundColor: t.colors.accent.solid, opacity: 0.9 }, sweepStyle]} /> : null}\n          {!busy ? (\n            <View style={{ alignItems: 'center', gap: 8 }}>\n              <ScanLine size={22} strokeWidth={1.5} color={t.colors.textSecondary} />\n              <Text style={[typeStyle(t, 'sm'), { color: t.colors.textSecondary }]}>{image ? 'Tap to scan again' : `Scan a ${humanize(hookOptions.preset ?? 'receipt').toLowerCase()}`}</Text>\n            </View>\n          ) : null}\n        </Pressable>\n      </IonBorder>\n      <View style={{ flexDirection: 'row', gap: 8 }}>\n        <Button title=\"Photo library\" variant=\"ghost\" size=\"sm\" icon={<ImageIcon size={14} strokeWidth={1.5} color={t.colors.textSecondary} />} onPress={() => void pick(false)} disabled={busy} />\n      </View>\n      {busy && sc.phase === 'extract' ? <Skeleton lines={3} height={14} /> : result}\n      {error}\n      {status}\n    </View>\n  )\n}\n\nexport default ScanToData\n"
+    },
+    {
+      "path": "registry/components/scan-to-data/use-scan-to-data.ts",
+      "type": "registry:hook",
+      "target": "components/ondai/scan-to-data/use-scan-to-data.ts",
+      "content": "import { useCallback, useMemo, useRef, useState } from 'react'\nimport type { z } from 'zod'\nimport { describeSchema, refineObject, useStructured, type RefinedField, type StructuredState } from '@ondai/core'\nimport { scanInstructions } from './prompts'\nimport { presets, type ScanPreset } from './schema'\n\nexport interface ScanImage {\n  uri: string\n  base64?: string\n  width?: number\n  height?: number\n}\n\nexport interface UseScanToDataOptions<S extends z.ZodObject<z.ZodRawShape>> {\n  preset?: ScanPreset\n  /** Required when preset is `custom`. */\n  schema?: S\n  /** On-device OCR (e.g. ML Kit text recognition, Apple Vision). Returns the recognized text. */\n  ocr?: (image: ScanImage) => Promise<string>\n  instructions?: string\n  aliases?: Record<string, Record<string, string[]>>\n  component?: string\n  localOnly?: boolean\n}\n\nexport interface ScanToDataState<T> extends Omit<StructuredState<Record<string, unknown>>, 'object' | 'run' | 'partial'> {\n  data: Partial<T> | null\n  fields: Record<string, RefinedField>\n  ocrText: string\n  /** `ocr` while reading the image, then the structured phases. */\n  phase: 'idle' | 'ocr' | 'extract' | 'done' | 'error'\n  scan: (image: ScanImage) => Promise<Partial<T>>\n  /** Skip OCR: extract from text you already have. */\n  scanText: (text: string) => Promise<Partial<T>>\n  ocrAvailable: boolean\n  fieldInfo: ReturnType<typeof describeSchema>\n}\n\n/** Camera or photo → OCR on device → structured data for a preset (receipt, business card, event) or your own schema. */\nexport function useScanToData<S extends z.ZodObject<z.ZodRawShape>>(options: UseScanToDataOptions<S>): ScanToDataState<z.infer<S>> {\n  const { preset = 'receipt', schema, ocr, instructions, aliases, component = 'scan-to-data', localOnly } = options\n  const resolved = useMemo(() => (preset === 'custom' ? schema : (presets[preset] as unknown as S)) as S, [preset, schema])\n  if (!resolved) throw new Error('[ondai] ScanToData: preset \"custom\" needs a schema')\n  const fieldInfo = useMemo(() => describeSchema(resolved), [resolved])\n  const partial = useMemo(() => (resolved as unknown as { partial: () => z.ZodObject<z.ZodRawShape> }).partial(), [resolved])\n  const [data, setData] = useState<Partial<z.infer<S>> | null>(null)\n  const [fields, setFields] = useState<Record<string, RefinedField>>({})\n  const [ocrText, setOcrText] = useState('')\n  const [phase, setPhase] = useState<ScanToDataState<unknown>['phase']>('idle')\n  const ocrRef = useRef(ocr)\n  ocrRef.current = ocr\n  const structured = useStructured<Record<string, unknown>>({\n    schema: partial as never,\n    instructions: scanInstructions(preset, fieldInfo, instructions),\n    component,\n    localOnly,\n    refine: (obj) => {\n      const r = refineObject(fieldInfo, obj, { aliases })\n      return { object: r.object, confidence: r.confidence }\n    },\n  })\n\n  const scanText = useCallback(\n    async (text: string) => {\n      setOcrText(text)\n      setPhase('extract')\n      try {\n        const obj = await structured.run(text)\n        const r = refineObject(fieldInfo, obj, { aliases })\n        const next: Record<string, unknown> = {}\n        for (const [k, v] of Object.entries(r.object)) if (v !== undefined) next[k] = v\n        setData(next as Partial<z.infer<S>>)\n        setFields(r.fields)\n        setPhase('done')\n        return next as Partial<z.infer<S>>\n      } catch (e) {\n        setPhase('error')\n        throw e\n      }\n    },\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n    [structured.run, fieldInfo, aliases],\n  )\n  const scan = useCallback(\n    async (image: ScanImage) => {\n      if (!ocrRef.current) throw new Error('OCR is not configured. Pass `ocr` (e.g. ML Kit text recognition) to ScanToData.')\n      setPhase('ocr')\n      setData(null)\n      setFields({})\n      let text: string\n      try {\n        text = await ocrRef.current(image)\n      } catch (e) {\n        setPhase('error')\n        throw e\n      }\n      return scanText(text)\n    },\n    [scanText],\n  )\n  return { ...structured, data, fields, ocrText, phase, scan, scanText, ocrAvailable: !!ocr, fieldInfo, reset: () => (structured.reset(), setData(null), setFields({}), setOcrText(''), setPhase('idle')) }\n}\n"
+    },
+    {
+      "path": "registry/components/scan-to-data/schema.ts",
+      "type": "registry:component",
+      "target": "components/ondai/scan-to-data/schema.ts",
+      "content": "import { z } from 'zod'\n\nexport const receiptSchema = z.object({\n  merchant: z.string(),\n  total: z.number(),\n  currency: z.string().optional(),\n  date: z.string().describe('date').optional(),\n  category: z.enum(['food', 'groceries', 'transport', 'shopping', 'health', 'other']).optional(),\n  paymentMethod: z.enum(['card', 'cash', 'other']).optional(),\n})\n\nexport const businessCardSchema = z.object({\n  name: z.string(),\n  company: z.string().optional(),\n  title: z.string().optional(),\n  email: z.string().optional(),\n  phone: z.string().optional(),\n  website: z.string().optional(),\n})\n\nexport const eventSchema = z.object({\n  title: z.string(),\n  date: z.string().describe('date').optional(),\n  time: z.string().optional(),\n  location: z.string().optional(),\n  notes: z.string().optional(),\n})\n\nexport const presets = { receipt: receiptSchema, businessCard: businessCardSchema, event: eventSchema } as const\nexport type ScanPreset = keyof typeof presets | 'custom'\n"
+    },
+    {
+      "path": "registry/components/scan-to-data/prompts.ts",
+      "type": "registry:component",
+      "target": "components/ondai/scan-to-data/prompts.ts",
+      "content": "import { describeForPrompt, type FieldInfo } from '@ondai/core'\nimport type { ScanPreset } from './schema'\n\nconst presetHints: Record<ScanPreset, string> = {\n  receipt: 'The text is OCR from a receipt. The total is the final amount paid.',\n  businessCard: 'The text is OCR from a business card.',\n  event: 'The text is OCR from a poster, invitation or screenshot about an event.',\n  custom: 'The text is OCR from a photo.',\n}\n\nexport function scanInstructions(preset: ScanPreset, fields: FieldInfo[], extra?: string): string {\n  return [presetHints[preset], `Extract these fields and return JSON only: ${describeForPrompt(fields)}.`, 'OCR may contain mistakes; copy values carefully. Leave out fields that are not present.', extra].filter(Boolean).join(' ')\n}\n"
+    },
+    {
+      "path": "registry/components/scan-to-data/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/scan-to-data/index.ts",
+      "content": "export { ScanToData, type ScanToDataProps } from './scan-to-data'\nexport { useScanToData, type ScanImage, type ScanToDataState, type UseScanToDataOptions } from './use-scan-to-data'\nexport { presets, receiptSchema, businessCardSchema, eventSchema, type ScanPreset } from './schema'\nexport { scanInstructions } from './prompts'\n"
+    }
+  ],
+  "docs": "Pass `ocr` (e.g. @react-native-ml-kit/text-recognition or Apple Vision) to read photos; without it the component explains that OCR is not configured.",
+  "categories": [
+    "vision"
+  ],
+  "meta": {
+    "ondai": {
+      "registryVersion": 1,
+      "hash": "4be24f17673053b8",
+      "priority": "P0",
+      "capabilities": [
+        "structured",
+        "vision"
+      ],
+      "variants": {
+        "presentation": [
+          "camera",
+          "picker",
+          "card"
+        ],
+        "preset": [
+          "receipt",
+          "businessCard",
+          "event",
+          "custom"
+        ]
+      },
+      "budget": {
+        "input": 1500,
+        "strategy": "OCR text (not the image) goes to the model; fields refined deterministically."
+      },
+      "runsOn": [
+        "apple",
+        "nano",
+        "llama",
+        "cloud"
+      ]
+    }
+  }
+}
