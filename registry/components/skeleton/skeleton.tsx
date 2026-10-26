@@ -19,7 +19,6 @@ export interface SkeletonProps {
 
 /** Loading placeholder with a faint ion shimmer. Quiet gray otherwise. */
 export function Skeleton({ width = '100%', height = 16, radius = 'sm', lines, shimmer = true, style, testID }: SkeletonProps) {
-  const t = useTheme()
   if (lines && lines > 1) {
     return (
       <View style={[{ gap: 8 }, style]} testID={testID} accessibilityLabel="Loading" accessibilityRole="progressbar">

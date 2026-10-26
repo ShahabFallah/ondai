@@ -36,14 +36,15 @@ export function useAutoTag(options: UseAutoTagOptions): AutoTagState {
       return { object: { tags: matched }, confidence: obj.tags.length ? matched.length / obj.tags.length : 0.5 }
     },
   })
+  const structuredRun = structured.run
   const run = useCallback(
     async (text: string) => {
       setSuggestions([])
-      const r = await structured.run(text)
+      const r = await structuredRun(text)
       setSuggestions(r.tags)
       return r.tags
     },
-    [structured.run],
+    [structuredRun],
   )
   return { ...structured, suggestions, run, isBusy: structured.isLoading, reset: () => (structured.reset(), setSuggestions([])) }
 }

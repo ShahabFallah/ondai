@@ -11,6 +11,7 @@ export default function ReviewGrid({ component, theme, motion, clock }: { compon
   const [defs, setDefs] = useState<PlaygroundDef[]>([])
   const pending = useRef(0)
   const themes: Theme[] = theme === 'void' || theme === 'paper' || theme === 'glass' ? [theme] : ['void', 'paper']
+  const themeKey = themes.join(',')
   const motionMode = motion === 'off' ? 'off' : 'system'
   const clockMode = clock === 'manual' ? 'manual' : 'real'
 
@@ -30,7 +31,8 @@ export default function ReviewGrid({ component, theme, motion, clock }: { compon
           })),
         ),
       ),
-    [defs, themes.join(','), motionMode, clockMode],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [defs, themeKey, motionMode, clockMode],
   )
 
   useEffect(() => {
@@ -43,12 +45,10 @@ export default function ReviewGrid({ component, theme, motion, clock }: { compon
     if (pending.current <= 0) document.documentElement.dataset.ready = 'true'
   }
 
-  let lastName = ''
   return (
     <div className="flex flex-col gap-10">
-      {cells.map((c) => {
-        const header = c.def.name !== lastName
-        lastName = c.def.name
+      {cells.map((c, i) => {
+        const header = i === 0 || cells[i - 1]!.def.name !== c.def.name
         return (
           <div key={c.key} className="flex flex-col gap-3">
             {header ? (

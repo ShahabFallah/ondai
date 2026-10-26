@@ -2,7 +2,9 @@
   "name": "ondai",
   "private": true,
   "packageManager": "pnpm@10.33.2",
-  "engines": { "node": ">=22.13.0" },
+  "engines": {
+    "node": ">=22.13.0"
+  },
   "scripts": {
     "dev": "turbo run dev --filter=@ondai/web",
     "dev:web": "turbo run dev --filter=@ondai/web",
@@ -25,5 +27,6 @@
     "tsx": "^4.23.15",
     "turbo": "2.11.10",
     "typescript": "catalog:"
-  }
+  },
+  "type": "module"
 }

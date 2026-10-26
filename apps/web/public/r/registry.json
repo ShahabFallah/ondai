@@ -28,7 +28,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "b2d549541dd7e065",
+          "hash": "c7d5df0a070df8bf",
           "priority": "P0",
           "capabilities": [
             "structured"
@@ -194,7 +194,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "072f0b00b719ccb6",
+          "hash": "0a57c839e75ba5eb",
           "priority": "P0",
           "capabilities": [],
           "variants": {
@@ -792,7 +792,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "4be24f17673053b8",
+          "hash": "1fbd5513a49c24ea",
           "priority": "P0",
           "capabilities": [
             "structured",
@@ -989,7 +989,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "a5e1cb3c4dd0fe38",
+          "hash": "7982db050dd01a10",
           "priority": "P0",
           "capabilities": [],
           "variants": {
@@ -1120,7 +1120,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "593722308f45512c",
+          "hash": "69e790c546f88c66",
           "priority": "P0",
           "capabilities": [
             "structured",
@@ -1380,7 +1380,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "84dbadc462b2ff8a",
+          "hash": "fa0a206c57713887",
           "priority": "P0",
           "capabilities": [
             "tools"

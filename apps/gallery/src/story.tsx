@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { ScrollView, Switch, Text, TextInput, View } from 'react-native'
+import { Chip } from '@ondai/registry/components/chip'
 import { playgroundDefaults, queryDefaults, type Control, type PlaygroundDef, type PlaygroundQuery } from '@ondai/playground'
 import { PlaygroundHost } from '@ondai/playground/host'
 import { OndaiProvider, useOndai } from '@ondai/core'
@@ -45,11 +46,29 @@ export function Story({ def }: { def: PlaygroundDef }) {
           </View>
         </View>
         <Label>State</Label>
-        <Segmented options={states as [string, ...string[]]} value={state} onChange={setState} />
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+          {states.map((st) => (
+            <Chip key={st} label={st} size="sm" variant="ghost" selected={state === st} onPress={() => setState(st)} />
+          ))}
+        </ScrollView>
         {def.states[state]?.description ? <Text style={[typeStyle(t, 'sm'), { color: t.colors.textTertiary }]}>{def.states[state]?.description}</Text> : null}
         {entries.map(([k, c]) => {
           const v = props[k]
-          if (c.kind === 'select') return <View key={k} style={{ gap: 6 }}><Label>{c.label ?? k}</Label><Segmented options={c.options as [string, ...string[]]} value={String(v)} onChange={(x) => setProp(k, x)} /></View>
+          if (c.kind === 'select')
+            return (
+              <View key={k} style={{ gap: 6 }}>
+                <Label>{c.label ?? k}</Label>
+                {c.options.length > 3 ? (
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+                    {c.options.map((o) => (
+                      <Chip key={o} label={o} size="sm" variant="ghost" selected={String(v) === o} onPress={() => setProp(k, o)} />
+                    ))}
+                  </ScrollView>
+                ) : (
+                  <Segmented options={c.options as [string, ...string[]]} value={String(v)} onChange={(x) => setProp(k, x)} />
+                )}
+              </View>
+            )
           if (c.kind === 'boolean')
             return (
               <View key={k} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>

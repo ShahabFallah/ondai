@@ -61,7 +61,8 @@ export function ToolConfirmCard({ pending, presentation = 'card', editable = tru
           return [k, v]
         }))
       : pending.input
-    onApprove ? onApprove(input) : pending.confirm(input)
+    if (onApprove) onApprove(input)
+    else pending.confirm(input)
   }
   const cancel = () => (onCancel ? onCancel() : pending.cancel('Cancelled'))
   const entries = Object.entries(pending.input)

@@ -39,7 +39,7 @@ export function PlaygroundHost<CS extends Controls>({ def, query, style, onReady
       simulated: true,
     })
     return createOndai({ providers: { [adapter.id]: adapter }, policy: { order: [adapter.id], prewarm: 'never' } })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [state.script, state.availability, clock, query.tps, query.device])
 
   const actions = useRef<PlaygroundActions>({})
@@ -68,7 +68,7 @@ export function PlaygroundHost<CS extends Controls>({ def, query, style, onReady
   const props = { ...(query.props as Record<string, unknown>), ...(state.props ?? {}) }
   const content: ReactElement = def.render
     ? def.render(props as never, { state: query.state, stateDef: state, bind: (a) => Object.assign(actions.current, a) })
-    : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    :  
       <def.component {...(props as any)} />
 
   return (

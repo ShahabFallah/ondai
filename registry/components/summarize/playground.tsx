@@ -3,7 +3,8 @@ import { boolean, definePlayground, select, text } from '@ondai/playground'
 import { Summarize } from './summarize'
 import { longDocument, sampleSummaryBullets, sampleSummaryOneLine, sampleSummaryParagraph, sampleThread } from './sample-data'
 
-const byLength = { oneLine: sampleSummaryOneLine, bullets: sampleSummaryBullets, paragraph: sampleSummaryParagraph } as const
+type Length = 'oneLine' | 'bullets' | 'paragraph'
+export const summaryByLength: Record<Length, string> = { oneLine: sampleSummaryOneLine, bullets: sampleSummaryBullets, paragraph: sampleSummaryParagraph }
 
 export default definePlayground({
   name: 'summarize',
@@ -38,7 +39,7 @@ export default definePlayground({
   review: ['thinking', 'streaming', 'done', 'refusal'],
   frame: { width: 380, padding: 20, background: 'bg' },
   render: (p, ctx) => {
-    const length = (p.length ?? 'bullets') as keyof typeof byLength
+    const length = (p.length ?? 'bullets') as Length
     const script = ctx.stateDef.script
     const scriptedLength = typeof script === 'function' ? undefined : length
     return <Summarize {...(p as object)} text={(p.text as string) ?? sampleThread} length={length} key={scriptedLength} />

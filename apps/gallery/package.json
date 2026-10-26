@@ -64,6 +64,7 @@
     "@babel/core": "^7.26.0",
     "@ondai/config": "workspace:*",
     "@types/react": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "eslint": "^10.13.0"
   }
 }
