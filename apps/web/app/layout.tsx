@@ -6,6 +6,12 @@ import './global.css'
 
 const tokensCss = generateCss()
 
+export const metadata = {
+  title: { default: 'Ondai · AI that lives on the phone', template: '%s · Ondai' },
+  description: 'Beautiful on-device AI components for React Native. Free, private, offline, fast.',
+  openGraph: { images: ['/og.png'] },
+}
+
 export default function Layout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} dark`} data-theme="void" suppressHydrationWarning>

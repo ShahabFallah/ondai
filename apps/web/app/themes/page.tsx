@@ -1,5 +1,7 @@
 import ThemesClient from '@/components/themes/ThemesClient'
 
+export const metadata = { title: 'Themes', description: 'Theme and accent builder with token export.' }
+
 export default function ThemesPage() {
   return (
     <main className="mx-auto max-w-6xl px-6 py-12">

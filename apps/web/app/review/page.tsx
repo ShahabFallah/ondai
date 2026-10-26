@@ -1,6 +1,7 @@
 import ReviewClient from '@/components/review/ReviewClient'
 
 export const dynamic = 'force-dynamic'
+export const metadata = { title: 'Review grid', description: 'Every Ondai component in every review state, Void and Paper.' }
 
 export default async function ReviewPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sp = await searchParams

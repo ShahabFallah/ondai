@@ -3,6 +3,12 @@ import { PlaygroundPage } from '@/components/playground/PlaygroundPage'
 import { manifest } from '@ondai/registry/manifest'
 import { PlaygroundNav } from '@/components/playground/PlaygroundNav'
 
+export async function generateMetadata({ params }: { params: Promise<{ name: string }> }) {
+  const { name } = await params
+  const m = manifest.find((x) => x.name === name)
+  return { title: m ? `${m.title} playground` : 'Playground', description: m?.description }
+}
+
 export function generateStaticParams() {
   return manifest.filter((m) => m.hasPlayground).map((m) => ({ name: m.name }))
 }
