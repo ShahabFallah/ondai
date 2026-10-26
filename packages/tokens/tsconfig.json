@@ -1,0 +1,4 @@
+{
+  "extends": "@ondai/config/tsconfig.base.json",
+  "include": ["src", "tsdown.config.ts", "vitest.config.ts"]
+}
