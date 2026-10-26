@@ -1,8 +1,10 @@
 // Records the CommandBar flow in the web playground (scripted mock): a WebM via Playwright's recorder
 // and a GIF encoded from screenshot frames (no system ffmpeg needed).
 import { chromium } from 'playwright'
-import { GIFEncoder, quantize, applyPalette } from 'gifenc'
-import { PNG } from 'pngjs'
+import gifenc from 'gifenc'
+const { GIFEncoder, quantize, applyPalette } = gifenc
+import pngjs from 'pngjs'
+const { PNG } = pngjs
 import { readdirSync, renameSync, mkdirSync, writeFileSync, rmSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
