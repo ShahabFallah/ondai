@@ -87,7 +87,7 @@ export function Rewrite({ value, onAccept, presentation = 'toolbar', resultView 
         </Sheet>
       </>
     ) : (
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: 4, padding: 4 }} style={{ borderRadius: t.radii.pill, backgroundColor: t.colors.elevated, borderWidth: hairlineWidth, borderColor: t.colors.hairline, alignSelf: 'flex-start', maxWidth: '100%' }}>
+      <ScrollView horizontal focusable showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: 4, padding: 4 }} style={{ borderRadius: t.radii.pill, backgroundColor: t.colors.elevated, borderWidth: hairlineWidth, borderColor: t.colors.hairline, alignSelf: 'flex-start', maxWidth: '100%' }}>
         {list.map((m) => {
           const Icon = icons[m.id]
           const on = rw.mode === m.id && rw.isBusy

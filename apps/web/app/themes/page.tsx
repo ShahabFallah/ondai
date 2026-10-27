@@ -1,15 +1,21 @@
 import ThemesClient from '@/components/themes/ThemesClient'
+import { SiteHeader } from '@/components/site/SiteHeader'
+import { SiteFooter } from '@/components/site/SiteFooter'
 
 export const metadata = { title: 'Themes', description: 'Theme and accent builder with token export.' }
 
 export default function ThemesPage() {
   return (
-    <main className="mx-auto max-w-6xl px-6 py-12">
-      <header className="mb-8 flex flex-col gap-1">
-        <h1 className="text-[24px] font-medium tracking-tight">Themes</h1>
-        <p className="text-[13px] text-[color:var(--ondai-text-secondary)]">Pick a theme and accent, or set custom stops, then export the tokens as JSON or CSS variables.</p>
-      </header>
-      <ThemesClient />
-    </main>
+    <>
+      <SiteHeader />
+      <main className="wrap pt-10 pb-16 lg:pt-14">
+        <header className="mb-10 max-w-[64ch]">
+          <h1 className="text-[32px] font-semibold tracking-[-0.025em]">Themes</h1>
+          <p className="lead mt-2 text-[16px]">Pick a theme and an accent, or set your own three stops, then export the tokens as JSON or CSS variables for your app.</p>
+        </header>
+        <ThemesClient />
+      </main>
+      <SiteFooter />
+    </>
   )
 }

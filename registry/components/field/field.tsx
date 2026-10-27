@@ -36,6 +36,7 @@ export const Field = forwardRef<ComponentRef<typeof TextInput>, FieldProps>(func
           <TextInput
             ref={ref}
             {...input}
+            accessibilityLabel={input.accessibilityLabel ?? label ?? input.placeholder}
             editable={editable}
             onFocus={(e) => {
               setFocused(true)

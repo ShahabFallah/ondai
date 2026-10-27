@@ -8,6 +8,8 @@ import {
   ViewOptionsPopover,
 } from 'fumadocs-ui/layouts/docs/page';
 import { notFound } from 'next/navigation';
+import { SidebarTrigger } from 'fumadocs-ui/layouts/docs/slots/sidebar';
+import { Menu } from 'lucide-react';
 import { getMDXComponents } from '@/components/mdx';
 import type { Metadata } from 'next';
 import { createRelativeLink } from 'fumadocs-ui/mdx';
@@ -23,6 +25,12 @@ export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
 
   return (
     <DocsPage toc={page.data.toc} full={page.data.full}>
+      <div className="md:hidden">
+        <SidebarTrigger className="btn btn-secondary btn-sm">
+          <Menu size={14} />
+          Browse the docs
+        </SidebarTrigger>
+      </div>
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription className="mb-0">{page.data.description}</DocsDescription>
       <div className="flex flex-row gap-2 items-center border-b pb-6">

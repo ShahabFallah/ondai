@@ -36,9 +36,14 @@ export default function ReviewGrid({ component, theme, motion, clock }: { compon
   )
 
   useEffect(() => {
+    // Only report ready once the definitions have loaded; an empty grid is not a finished grid.
+    if (!defs.length) {
+      document.documentElement.dataset.ready = 'false'
+      return
+    }
     pending.current = cells.length
     document.documentElement.dataset.ready = cells.length ? 'false' : 'true'
-  }, [cells])
+  }, [cells, defs.length])
 
   const onReady = () => {
     pending.current -= 1

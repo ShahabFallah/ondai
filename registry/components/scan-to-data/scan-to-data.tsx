@@ -119,7 +119,7 @@ export function ScanToData<S extends z.ZodObject<z.ZodRawShape>>({ presentation 
   return (
     <View style={[{ gap: 12 }, style]} testID={testID}>
       <IonBorder active={busy} radius="xl" glow={busy}>
-        <Pressable onPress={() => void pick(true)} disabled={busy} accessibilityRole="button" accessibilityLabel="Open camera and scan" style={{ height: 220, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', backgroundColor: t.colors.bg }}>
+        <Pressable onPress={() => void pick(true)} disabled={busy} accessibilityRole="button" accessibilityLabel={busy ? 'Scanning' : undefined} style={{ height: 220, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', backgroundColor: t.colors.bg }}>
           {image ? <Image source={{ uri: image.uri }} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.55 } as never} resizeMode="cover" /> : null}
           {[0, 1, 2, 3].map((i) => (
             <View key={i} style={{ position: 'absolute', width: 22, height: 22, borderColor: busy ? t.colors.accent.solid : t.colors.textTertiary, borderTopWidth: i < 2 ? 1.5 : 0, borderBottomWidth: i >= 2 ? 1.5 : 0, borderLeftWidth: i % 2 === 0 ? 1.5 : 0, borderRightWidth: i % 2 === 1 ? 1.5 : 0, top: i < 2 ? 18 : undefined, bottom: i >= 2 ? 18 : undefined, left: i % 2 === 0 ? 18 : undefined, right: i % 2 === 1 ? 18 : undefined }} />

@@ -35,6 +35,8 @@ export interface CommandBarProps extends UseCommandBarOptions {
   initialQuery?: string
   /** Submit the initial query on mount. */
   autoRun?: boolean
+  /** Focus the input when the bar opens (default true; turn off for embedded demos). */
+  autoFocus?: boolean
   /** Render inside the current view instead of a Modal (web previews). */
   inline?: boolean
   renderIcon?: (action: CommandAction<any>) => ReactNode
@@ -61,6 +63,7 @@ export function CommandBar({
   onVoice,
   initialQuery = '',
   autoRun = false,
+  autoFocus = true,
   inline,
   renderIcon,
   style,
@@ -86,8 +89,8 @@ export function CommandBar({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialQuery, autoRun])
   useEffect(() => {
-    if (open && presentation !== 'pill') setTimeout(() => inputRef.current?.focus(), 60)
-  }, [open, presentation])
+    if (open && autoFocus && presentation !== 'pill') setTimeout(() => inputRef.current?.focus(), 60)
+  }, [open, autoFocus, presentation])
   useEffect(() => {
     if (bar.status === 'done') void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {})
   }, [bar.status])

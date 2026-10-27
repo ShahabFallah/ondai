@@ -84,6 +84,7 @@ export function SmartReply({ thread, onSelect, presentation = 'chips', showTone 
             value={value}
             onChangeText={onChangeText}
             placeholder={ghost ? '' : placeholder}
+            accessibilityLabel={placeholder || 'Reply'}
             placeholderTextColor={t.colors.textTertiary}
             onKeyPress={(e) => {
               if (e.nativeEvent.key === 'Tab' && ghost) {
@@ -124,7 +125,7 @@ export function SmartReply({ thread, onSelect, presentation = 'chips', showTone 
   return (
     <View style={[{ gap: 8 }, style]} testID={testID}>
       {toneRow}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: 8, paddingVertical: 2 }}>
+      <ScrollView horizontal focusable showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: 8, paddingVertical: 2 }}>
         {sr.isBusy && !sr.replies.length ? (
           <>
             <Skeleton width={120} height={34} radius="pill" />

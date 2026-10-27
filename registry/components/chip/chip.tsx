@@ -37,33 +37,58 @@ export function Chip({ label, meta, icon, variant = 'soft', size = 'md', selecte
   const bg = variant === 'solid' || on ? t.colors.text : variant === 'soft' ? t.colors.elevated : 'transparent'
   const fg = variant === 'solid' || on ? t.colors.bg : t.colors.text
   const border = variant === 'outline' ? t.colors.hairlineStrong : variant === 'soft' ? t.colors.hairline : 'transparent'
-  return (
-    <Pressable
-      onPress={onPress}
-      disabled={disabled || (!onPress && !onRemove)}
-      accessibilityRole={onPress ? 'button' : 'text'}
-      accessibilityState={{ selected: on, disabled }}
-      accessibilityLabel={accessibilityLabel ?? label}
-      testID={testID}
-      hitSlop={6}
-      style={({ pressed }) => [
-        { flexDirection: 'row', alignItems: 'center', borderRadius: t.radii.pill, borderWidth: hairlineWidth, opacity: disabled ? 0.4 : ghost ? 0.55 : pressed ? 0.75 : 1 },
-        ...variants({ size, variant }),
-        { backgroundColor: bg, borderColor: on ? t.colors.text : border },
-        style,
-      ]}
-    >
+  const gap = size === 'sm' ? 6 : 8
+  // With a meta value the name comes from the visible text itself, so voice control and the label match (WCAG 2.5.3).
+  const name = accessibilityLabel ?? (meta ? undefined : label)
+  const box = (pressed: boolean): StyleProp<ViewStyle> => [
+    { flexDirection: 'row', alignItems: 'center', borderRadius: t.radii.pill, borderWidth: hairlineWidth, opacity: disabled ? 0.4 : ghost ? 0.55 : pressed ? 0.75 : 1 },
+    ...variants({ size, variant }),
+    { backgroundColor: bg, borderColor: on ? t.colors.text : border },
+    style,
+  ]
+  const content = (
+    <>
       {icon ? <View style={{ marginLeft: -2 }}>{icon}</View> : null}
       <Text numberOfLines={1} style={[typeStyle(t, size === 'sm' ? 'sm' : 'md', { weight: 'medium' }), { color: fg }]}>
         {label}
       </Text>
       {meta ? <Text style={[typeStyle(t, 'xs', { mono: true }), { color: on ? t.colors.bg : t.colors.textTertiary }]}>{meta}</Text> : null}
-      {onRemove ? (
-        <Pressable onPress={onRemove} hitSlop={8} accessibilityRole="button" accessibilityLabel={`Remove ${label}`} style={{ marginRight: -4, padding: 2 }}>
-          <X size={14} strokeWidth={1.75} color={on ? t.colors.bg : t.colors.textTertiary} />
-        </Pressable>
-      ) : null}
-    </Pressable>
+    </>
+  )
+  if (!onRemove) {
+    return (
+      <Pressable
+        onPress={onPress}
+        disabled={disabled || !onPress}
+        accessibilityRole={onPress ? 'button' : 'text'}
+        accessibilityState={{ selected: on, disabled }}
+        accessibilityLabel={name}
+        testID={testID}
+        hitSlop={6}
+        style={({ pressed }) => box(pressed)}
+      >
+        {content}
+      </Pressable>
+    )
+  }
+  // With a remove control the pill is a plain row: the label area and the × are sibling buttons, never nested.
+  return (
+    <View style={box(false)} testID={testID}>
+      <Pressable
+        onPress={onPress}
+        disabled={disabled || !onPress}
+        accessibilityRole={onPress ? 'button' : 'text'}
+        accessibilityState={{ selected: on, disabled }}
+        accessibilityLabel={name}
+        hitSlop={6}
+        style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap, opacity: pressed ? 0.75 : 1 })}
+      >
+        {content}
+      </Pressable>
+      <Pressable onPress={onRemove} disabled={disabled} hitSlop={8} accessibilityRole="button" accessibilityLabel={`Remove ${label}`} style={{ marginRight: -4, padding: 2 }}>
+        <X size={14} strokeWidth={1.75} color={on ? t.colors.bg : t.colors.textTertiary} />
+      </Pressable>
+    </View>
   )
 }
 

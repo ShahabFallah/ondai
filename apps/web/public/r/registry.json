@@ -194,7 +194,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "0a57c839e75ba5eb",
+          "hash": "f06250fa709d038d",
           "priority": "P0",
           "capabilities": [],
           "variants": {
@@ -254,7 +254,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "55633dfb3de75624",
+          "hash": "81720524397450b1",
           "priority": "P0",
           "capabilities": [
             "tools",
@@ -343,7 +343,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "970ebf74348e6569",
+          "hash": "05557a1f78d1f66d",
           "priority": "P0",
           "capabilities": [],
           "variants": {
@@ -522,7 +522,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "18670d0a62b2fcaa",
+          "hash": "3a71358660c4d67b",
           "priority": "P0",
           "capabilities": [],
           "variants": {
@@ -580,7 +580,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "1a745a82492d97d7",
+          "hash": "53166dba254782bd",
           "priority": "P0",
           "capabilities": [
             "structured"
@@ -706,7 +706,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "249ecb3092ca8b7f",
+          "hash": "0574f9d06a16f84a",
           "priority": "P0",
           "capabilities": [
             "text"
@@ -792,7 +792,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "1fbd5513a49c24ea",
+          "hash": "99b04c36eb70ed78",
           "priority": "P0",
           "capabilities": [
             "structured",
@@ -989,7 +989,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "7982db050dd01a10",
+          "hash": "c2925ba9572db399",
           "priority": "P0",
           "capabilities": [],
           "variants": {
@@ -1120,7 +1120,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "69e790c546f88c66",
+          "hash": "65be941ff3942ab3",
           "priority": "P0",
           "capabilities": [
             "structured",
@@ -1380,7 +1380,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "fa0a206c57713887",
+          "hash": "9b6b255e5433eb62",
           "priority": "P0",
           "capabilities": [
             "tools"

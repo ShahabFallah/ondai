@@ -18,8 +18,14 @@ export default function ThemesClient() {
   return (
     <div className="grid gap-8 lg:grid-cols-[360px_1fr]">
       <aside className="flex flex-col gap-5">
-        <Segmented label="Theme" options={['void', 'paper', 'glass'] as const} value={theme} onChange={setTheme} />
-        <Segmented label="Accent" options={['ion', 'mono', 'aurora', 'ember', 'custom'] as const} value={accent} onChange={setAccent} />
+        <div className="flex flex-col gap-1.5">
+          <span className="label">Theme</span>
+          <Segmented label="Theme" options={['void', 'paper', 'glass'] as const} value={theme} onChange={setTheme} />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <span className="label">Accent</span>
+          <Segmented label="Accent" options={['ion', 'mono', 'aurora', 'ember', 'custom'] as const} value={accent} onChange={setAccent} />
+        </div>
         {accent === 'custom' ? (
           <div className="grid grid-cols-3 gap-3">
             {(['a', 'b', 'c'] as const).map((k) => (

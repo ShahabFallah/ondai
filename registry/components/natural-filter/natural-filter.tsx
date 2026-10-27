@@ -65,7 +65,7 @@ export function NaturalFilter<S extends z.ZodObject<z.ZodRawShape>>({ presentati
     void Haptics.selectionAsync().catch(() => {})
   }
   const chips = (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: 6, paddingVertical: 2 }}>
+    <ScrollView horizontal focusable showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: 6, paddingVertical: 2 }}>
       {nf.isLoading && !nf.chips.length ? (
         <>
           <Skeleton width={90} height={28} radius="pill" />
@@ -82,7 +82,7 @@ export function NaturalFilter<S extends z.ZodObject<z.ZodRawShape>>({ presentati
             ghost={c.confidence < 0.6}
             onPress={c.options ? () => cycle(c) : undefined}
             onRemove={() => nf.remove(c.key as never)}
-            accessibilityLabel={`${c.label} ${c.display}${c.options ? ', tap to change' : ''}`}
+            accessibilityLabel={`${c.label}: ${c.display}${c.options ? ', tap to change' : ''}`}
           />
         </Animated.View>
       ))}

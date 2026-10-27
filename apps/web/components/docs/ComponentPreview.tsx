@@ -5,12 +5,14 @@ export function ComponentPreview({ name, state, height = 420, query = '' }: { na
   if (state) qs.set('state', state)
   const src = `/playground/${name}?${qs.toString()}`
   return (
-    <div className="not-prose my-6 overflow-hidden rounded-[16px] ondai-hairline bg-[color:var(--ondai-bg)]">
-      <iframe src={src} title={`${name} preview`} className="block w-full border-0" style={{ height }} loading="lazy" />
-      <div className="flex items-center justify-between px-3 py-2 border-t border-[color:var(--ondai-hairline)]">
-        <span className="ondai-mono text-[color:var(--ondai-text-tertiary)]">Simulated output. Real inference runs on device.</span>
-        <a href={`/playground/${name}${state ? `?state=${state}` : ''}`} className="ondai-mono text-[color:var(--ondai-text-secondary)] hover:text-[color:var(--ondai-text)]">
-          Open in playground →
+    <div className="not-prose card my-6 overflow-hidden p-2">
+      <div className="card-stage">
+        <iframe src={src} title={`${name} preview`} className="block w-full border-0" style={{ height }} loading="lazy" />
+      </div>
+      <div className="flex items-center justify-between gap-3 px-3 pt-3 pb-1">
+        <span className="label">Simulated output. In an app this runs on the phone&apos;s own model.</span>
+        <a href={`/playground/${name}${state ? `?state=${state}` : ''}`} className="label whitespace-nowrap text-[color:var(--ondai-text)] underline-offset-4 hover:underline">
+          Open in the playground
         </a>
       </div>
     </div>

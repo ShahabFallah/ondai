@@ -10,12 +10,11 @@ export function CopyCommand({ command }: { command: string }) {
         setCopied(true)
         setTimeout(() => setCopied(false), 1500)
       }}
-      className="group flex items-center gap-3 rounded-[12px] ondai-hairline bg-[color:var(--ondai-surface)] px-4 py-3 font-mono text-[14px] text-[color:var(--ondai-text)]"
-      aria-label={`Copy ${command}`}
+      className="group flex items-center gap-3 rounded-[10px] bg-[color:var(--ondai-surface)] px-4 py-2.5 font-mono text-[14px] text-[color:var(--ondai-text)] shadow-[inset_0_0_0_1px_var(--ondai-hairline)] transition-colors hover:bg-[color:var(--ondai-elevated)]"
     >
-      <span className="text-[color:var(--ondai-text-tertiary)]">$</span>
+      <span aria-hidden className="text-[color:var(--ondai-text-tertiary)]">$</span>
       <span>{command}</span>
-      <span className="ondai-mono ml-2 text-[color:var(--ondai-text-tertiary)] group-hover:text-[color:var(--ondai-text-secondary)]">{copied ? 'copied' : 'copy'}</span>
+      <span className="ml-2 font-sans text-[12px] text-[color:var(--ondai-text-tertiary)] group-hover:text-[color:var(--ondai-text-secondary)]">{copied ? 'Copied' : 'Copy'}</span>
     </button>
   )
 }

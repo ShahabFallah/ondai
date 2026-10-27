@@ -51,7 +51,7 @@ function Block({ width, height, radius, shimmer, delay = 0, style, testID }: Req
   const g = t.colors.accent
   const onLayout = (e: LayoutChangeEvent) => setW(Math.round(e.nativeEvent.layout.width))
   return (
-    <View onLayout={onLayout} testID={testID} accessibilityLabel="Loading" style={[{ width, height, borderRadius: r, backgroundColor: t.colors.input, overflow: 'hidden' }, style]}>
+    <View onLayout={onLayout} testID={testID} accessibilityRole="progressbar" accessibilityLabel="Loading" style={[{ width, height, borderRadius: r, backgroundColor: t.colors.input, overflow: 'hidden' }, style]}>
       {shimmer && w > 0 ? (
         <Animated.View style={[{ position: 'absolute', top: 0, bottom: 0, width: w }, s]}>
           <Svg width={w} height={height}>

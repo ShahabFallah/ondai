@@ -35,7 +35,7 @@ export function ModelDownload({ progress, variant = 'bar', size = 'md', label = 
   const bar = <Bar v={v} size={size} />
   if (variant === 'bar') {
     return (
-      <View testID={testID} accessibilityRole="progressbar" accessibilityValue={{ now: Math.round(p * 100), min: 0, max: 100 }} style={[{ gap: 8 }, style]}>
+      <View testID={testID} accessibilityRole="progressbar" accessibilityLabel={label} accessibilityValue={{ now: Math.round(p * 100), min: 0, max: 100 }} style={[{ gap: 8 }, style]}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 }}>
           <Text style={labelStyle}>{label}</Text>
           <Text style={monoStyle}>{pct}</Text>
@@ -46,7 +46,7 @@ export function ModelDownload({ progress, variant = 'bar', size = 'md', label = 
     )
   }
   return (
-    <View testID={testID} accessibilityRole="progressbar" style={[{ padding: t.spacing[4], gap: 12, borderRadius: t.radii.lg, borderWidth: hairlineWidth, borderColor: t.colors.hairline, backgroundColor: t.colors.surface }, style]}>
+    <View testID={testID} accessibilityRole="progressbar" accessibilityLabel={label} style={[{ padding: t.spacing[4], gap: 12, borderRadius: t.radii.lg, borderWidth: hairlineWidth, borderColor: t.colors.hairline, backgroundColor: t.colors.surface }, style]}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 }}>
         <Text style={labelStyle}>{label}</Text>
         <Text style={monoStyle}>{pct}</Text>
@@ -94,7 +94,7 @@ function Ring({ v, pct, size, label, style, testID }: { v: SharedValue<number>; 
   const c = 2 * Math.PI * r
   const props = useAnimatedProps(() => ({ strokeDashoffset: c * (1 - v.value) }), [v, c])
   return (
-    <View testID={testID} accessibilityRole="progressbar" style={[{ flexDirection: 'row', alignItems: 'center', gap: 12 }, style]}>
+    <View testID={testID} accessibilityRole="progressbar" accessibilityLabel={label} style={[{ flexDirection: 'row', alignItems: 'center', gap: 12 }, style]}>
       <View style={{ width: d, height: d }}>
         <Svg width={d} height={d}>
           <Defs>

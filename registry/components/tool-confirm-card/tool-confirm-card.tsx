@@ -87,7 +87,7 @@ export function ToolConfirmCard({ pending, presentation = 'card', editable = tru
                 {labels?.[k] ?? humanize(k)}
               </Text>
               {editing ? (
-                <TextInput value={draft[k] ?? ''} onChangeText={(x) => setDraft((d) => ({ ...d, [k]: x }))} style={[typeStyle(t, 'sm'), { flex: 1, color: t.colors.text, paddingVertical: 8 }]} />
+                <TextInput value={draft[k] ?? ''} accessibilityLabel={k} onChangeText={(x) => setDraft((d) => ({ ...d, [k]: x }))} style={[typeStyle(t, 'sm'), { flex: 1, color: t.colors.text, paddingVertical: 8 }]} />
               ) : (
                 <Text style={[typeStyle(t, 'sm'), { color: t.colors.text, flex: 1 }]} numberOfLines={2}>
                   {typeof v === 'string' ? v : JSON.stringify(v)}
