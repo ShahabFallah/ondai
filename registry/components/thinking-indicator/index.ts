@@ -1,1 +1,1 @@
-export { ThinkingIndicator, type ThinkingIndicatorProps } from './thinking-indicator'
+export { ThinkingIndicator, type ThinkingIndicatorProps, type ThinkingState } from './thinking-indicator'

@@ -1,0 +1,51 @@
+---
+title: "AgentAvatar"
+description: "A living face for the on-device assistant: a soft, lit body whose eyes glance and blink. Idle, thinking, speaking and sleeping; blob, square, pill or drop."
+---
+
+<ComponentPreview name="agent-avatar" state="idle" height={260} />
+
+## Install
+
+```bash
+npx ondai add agent-avatar
+```
+
+## Usage
+
+```tsx
+import { AgentAvatar } from '@/components/ondai/agent-avatar'
+
+<AgentAvatar size={64} shape="blob" state={isThinking ? 'thinking' : 'idle'} interactive />
+```
+
+- States: `idle` (glances around and blinks), `thinking` (looks up with an orbiting light), `speaking` (mouth moves), `sleeping` (eyes closed, slow breathing).
+- On web, `interactive` makes the eyes follow the pointer.
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `shape` | `blob`, `square`, `pill`, `drop` |
+| `state` | `idle`, `thinking`, `speaking`, `sleeping` |
+| `eyes` | `dots`, `ovals` |
+
+Every variant is live in the [playground](/playground/agent-avatar).
+
+## Runs on
+
+| Capability | Apple FM | Gemini Nano | Llama | Cloud |
+| --- | --- | --- | --- | --- |
+| none (pure UI) | ✅ | ✅ | ✅ | ✅ |
+
+## Fallback
+
+Pure UI: no model required.
+
+## Eval score
+
+No model-driven fixtures for this component.
+
+## Files
+
+npm dependencies: `@ondai/tokens`, `react-native-reanimated`, `react-native-svg`

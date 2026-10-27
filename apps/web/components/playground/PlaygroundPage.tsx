@@ -89,11 +89,11 @@ export function PlaygroundPage({ name }: { name: string }) {
   const stateInfo = def.states[query.state]?.description
 
   return (
-    <div className="pb-24">
+    <div className="pb-8">
       <header>
-        <h1 className="text-[32px] font-semibold tracking-[-0.025em]">{def.title}</h1>
-        <p className="lead mt-2 max-w-[64ch] text-[16px]">{def.description}</p>
-        <div className="mt-5 flex flex-wrap items-center gap-3">
+        <h1 className="h2">{def.title}</h1>
+        <p className="lead mt-3 max-w-[64ch]">{def.description}</p>
+        <div className="mt-6 flex flex-wrap items-center gap-3">
           <CopyCommand command={`npx ondai add ${def.name}`} />
           <Link href={`/docs/components/${def.name}`} className="btn btn-secondary">
             Read the docs
@@ -110,43 +110,50 @@ export function PlaygroundPage({ name }: { name: string }) {
       </div>
       <p className="label mt-3 min-h-5">{stateInfo ?? ' '}</p>
 
-      <section className="card mt-4 p-2" aria-label="Preview">
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-2 py-2">
-          <Segmented options={['void', 'paper', 'glass'] as const} value={query.theme} onChange={(theme) => set({ theme })} label="Theme" format={(v) => themeLabel[v] ?? v} />
-          <Segmented options={['ion', 'mono', 'aurora', 'ember'] as const} value={query.accent} onChange={(accent) => set({ accent })} label="Accent" format={(v) => accentLabel[v] ?? v} />
-          <Segmented options={['apple', 'nano', 'llama', 'unavailable'] as const} value={query.device} onChange={(device) => set({ device })} label="Simulated device" format={(v) => deviceLabel[v] ?? v} />
-          <Segmented options={['none', 'iphone', 'android'] as const} value={query.frame} onChange={(frame) => set({ frame })} label="Frame" format={(v) => frameLabel[v] ?? v} />
-          <div className="ml-auto flex items-center gap-2 text-[13px] text-[color:var(--ondai-text-secondary)]">
+      <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2" role="group" aria-label="Preview settings">
+        <Segmented options={['void', 'paper', 'glass'] as const} value={query.theme} onChange={(theme) => set({ theme })} label="Theme" format={(v) => themeLabel[v] ?? v} />
+        <Segmented options={['ion', 'mono', 'aurora', 'ember'] as const} value={query.accent} onChange={(accent) => set({ accent })} label="Accent" format={(v) => accentLabel[v] ?? v} />
+        <Segmented options={['apple', 'nano', 'llama', 'unavailable'] as const} value={query.device} onChange={(device) => set({ device })} label="Simulated device" format={(v) => deviceLabel[v] ?? v} />
+        <Segmented options={['none', 'iphone', 'android'] as const} value={query.frame} onChange={(frame) => set({ frame })} label="Frame" format={(v) => frameLabel[v] ?? v} />
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:ml-auto">
+          <label className="flex items-center gap-2 text-[13px] text-[color:var(--ondai-text-secondary)]">
             <span>Motion</span>
             <Switch checked={query.motion === 'system'} onChange={(on) => set({ motion: on ? 'system' : 'off' })} label="Motion" />
-          </div>
-          <div className="flex items-center gap-2 text-[13px] text-[color:var(--ondai-text-secondary)]">
-            <span className="whitespace-nowrap">{query.tps} tok/s</span>
-            <input type="range" className="range w-28" min={5} max={200} step={5} value={query.tps} onChange={(e) => set({ tps: Number(e.target.value) })} aria-label="Mock speed, tokens per second" />
-          </div>
+          </label>
+          <label className="flex items-center gap-2 text-[13px] text-[color:var(--ondai-text-secondary)]">
+            <span className="whitespace-nowrap tabular-nums">{query.tps} tok/s</span>
+            <input type="range" className="range w-24" min={5} max={200} step={5} value={query.tps} onChange={(e) => set({ tps: Number(e.target.value) })} aria-label="Mock speed, tokens per second" />
+          </label>
         </div>
-        <div className="card-stage flex min-h-[420px] items-center justify-center overflow-auto p-4 sm:p-8">
+      </div>
+
+      <section className="card mt-3 p-3" aria-label="Preview">
+        <div className="stage flex min-h-[560px] items-center justify-center overflow-auto p-4 sm:p-8">
           <Preview def={def} query={query} />
         </div>
       </section>
 
-      <section className="card mt-3 p-2" aria-label="Code">
-        <div className="flex items-center justify-between px-3 py-1">
+      <section className="card mt-3 p-3" aria-label="Code">
+        <div className="flex items-center justify-between px-2 pt-1 pb-3">
           <span className="label">Code</span>
           <CopyButton text={code} />
         </div>
-        <pre className="code-block px-3 pb-3">{code}</pre>
+        <div className="stage">
+          <pre className="code-block p-4">{code}</pre>
+        </div>
       </section>
 
-      <section className="mt-12" aria-labelledby="props">
-        <h2 id="props" className="text-[20px] font-semibold tracking-tight">
+      <section className="card mt-3 p-5 sm:p-6" aria-labelledby="props">
+        <h2 id="props" className="h3">
           Props
         </h2>
-        <p className="label mt-1 mb-4">Every control updates the URL, so a state is a link you can share.</p>
-        <PropsTable def={def} query={query} onChange={setQuery} />
+        <p className="label mt-1">Every control updates the URL, so a state is a link you can share.</p>
+        <div className="mt-4">
+          <PropsTable def={def} query={query} onChange={setQuery} />
+        </div>
       </section>
 
-      <p className="label mt-10">Simulated output. In an app, the same component runs on the phone&apos;s own model.</p>
+      <p className="label mt-8">Simulated output. In an app, the same component runs on the phone&apos;s own model.</p>
     </div>
   )
 }

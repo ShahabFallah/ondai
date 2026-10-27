@@ -1,0 +1,11 @@
+{
+  "name": "agent-avatar",
+  "title": "AgentAvatar",
+  "description": "A living face for the on-device assistant: a soft, lit body whose eyes glance and blink. Idle, thinking, speaking and sleeping; blob, square, pill or drop.",
+  "category": "primitive",
+  "priority": "P1",
+  "capabilities": [],
+  "variants": { "shape": ["blob", "square", "pill", "drop"], "state": ["idle", "thinking", "speaking", "sleeping"], "eyes": ["dots", "ovals"] },
+  "registryDependencies": [],
+  "files": ["agent-avatar.tsx", "index.ts"]
+}

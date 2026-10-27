@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Image, Pressable, Text, View, type StyleProp, type ViewStyle } from 'react-native'
+import { Image, Pressable, Text, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native'
 import Animated, { Easing, FadeInDown, cancelAnimation, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated'
 import * as ImagePicker from 'expo-image-picker'
 import * as Haptics from 'expo-haptics'
@@ -9,6 +9,7 @@ import { humanize } from '@ondai/core'
 import { typeStyle, useMotion, useTheme } from '@ondai/tokens/react'
 import { Button } from '../button/button'
 import { Field } from '../field/field'
+import { ImageReveal } from '../image-reveal/image-reveal'
 import { IonBorder } from '../ion-border/ion-border'
 import { OnDeviceBadge } from '../on-device-badge/on-device-badge'
 import { Skeleton } from '../skeleton/skeleton'
@@ -109,7 +110,7 @@ export function ScanToData<S extends z.ZodObject<z.ZodRawShape>>({ presentation 
           <Button title="Choose photo" variant="soft" icon={<ImageIcon size={16} strokeWidth={1.5} color={t.colors.text} />} onPress={() => void pick(false)} loading={busy} />
           <Button title="Camera" variant="outline" icon={<Camera size={16} strokeWidth={1.5} color={t.colors.text} />} onPress={() => void pick(true)} disabled={busy} />
         </View>
-        {image ? <Image source={{ uri: image.uri }} style={{ width: '100%', height: 160, borderRadius: t.radii.md }} resizeMode="cover" accessibilityLabel="Selected photo" /> : null}
+        {image ? <ScanPhoto image={image} busy={busy} height={160} radius={t.radii.md} accessibilityLabel="Selected photo" /> : null}
         {busy ? <Skeleton lines={3} height={14} /> : result}
         {error}
         {status}
@@ -120,7 +121,7 @@ export function ScanToData<S extends z.ZodObject<z.ZodRawShape>>({ presentation 
     <View style={[{ gap: 12 }, style]} testID={testID}>
       <IonBorder active={busy} radius="xl" glow={busy}>
         <Pressable onPress={() => void pick(true)} disabled={busy} accessibilityRole="button" accessibilityLabel={busy ? 'Scanning' : undefined} style={{ height: 220, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', backgroundColor: t.colors.bg }}>
-          {image ? <Image source={{ uri: image.uri }} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.55 } as never} resizeMode="cover" /> : null}
+          {image ? <ScanPhoto image={image} busy={busy} height={220} radius={0} opacity={0.55} style={{ position: 'absolute', top: 0, left: 0, right: 0 }} /> : null}
           {[0, 1, 2, 3].map((i) => (
             <View key={i} style={{ position: 'absolute', width: 22, height: 22, borderColor: busy ? t.colors.accent.solid : t.colors.textTertiary, borderTopWidth: i < 2 ? 1.5 : 0, borderBottomWidth: i >= 2 ? 1.5 : 0, borderLeftWidth: i % 2 === 0 ? 1.5 : 0, borderRightWidth: i % 2 === 1 ? 1.5 : 0, top: i < 2 ? 18 : undefined, bottom: i >= 2 ? 18 : undefined, left: i % 2 === 0 ? 18 : undefined, right: i % 2 === 1 ? 18 : undefined }} />
           ))}
@@ -139,6 +140,21 @@ export function ScanToData<S extends z.ZodObject<z.ZodRawShape>>({ presentation 
       {busy && sc.phase === 'extract' ? <Skeleton lines={3} height={14} /> : result}
       {error}
       {status}
+    </View>
+  )
+}
+
+/** The captured photo: while OCR and extraction run it resolves out of an ASCII field; afterwards it is the plain image. */
+function ScanPhoto({ image, busy, height, radius, opacity = 1, accessibilityLabel, style }: { image: ScanImage; busy: boolean; height: number; radius: number; opacity?: number; accessibilityLabel?: string; style?: StyleProp<ViewStyle> }) {
+  const [w, setW] = useState(0)
+  const onLayout = (e: LayoutChangeEvent) => setW(Math.round(e.nativeEvent.layout.width))
+  return (
+    <View onLayout={onLayout} style={[{ width: '100%', height, borderRadius: radius, overflow: 'hidden' }, style]}>
+      {busy && w > 0 ? (
+        <ImageReveal source={{ uri: image.uri }} width={w} height={height} radius={radius} mode="ascii" progress="auto" accessibilityLabel={accessibilityLabel ?? 'Reading photo'} />
+      ) : (
+        <Image source={{ uri: image.uri }} style={{ width: '100%', height, opacity }} resizeMode="cover" accessibilityLabel={accessibilityLabel} />
+      )}
     </View>
   )
 }

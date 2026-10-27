@@ -114,9 +114,9 @@ const usage: Record<string, { imports: string; code: string; previewState?: stri
   },
   'availability-gate': { imports: `import { AvailabilityGate } from '@/components/ondai/availability-gate'`, code: `<AvailabilityGate capability="text" variant="card">\n  <YourAiFeature />\n</AvailabilityGate>`, previewState: 'not-eligible', height: 300 },
   'on-device-badge': { imports: `import { OnDeviceBadge } from '@/components/ondai/on-device-badge'`, code: `<OnDeviceBadge size="sm" state={status} />`, previewState: 'thinking', height: 160 },
-  'ion-border': { imports: `import { IonBorder } from '@/components/ondai/ion-border'`, code: `<IonBorder active={isThinking} radius="lg" glow>\n  <YourCard />\n</IonBorder>`, previewState: 'thinking', height: 240 },
+  'ion-border': { imports: `import { IonBorder } from '@/components/ondai/ion-border'`, code: `<IonBorder active={isThinking} variant="beam" radius="lg" glow>\n  <YourCard />\n</IonBorder>`, previewState: 'beam', height: 240, notes: ['`variant`: `sweep` (the slow gradient light), `beam` (a bright comet with a tail and an outer halo), `pulse` (the whole ring breathes).'] },
   'streaming-text': { imports: `import { StreamingText } from '@/components/ondai/streaming-text'`, code: `<StreamingText text={text} streaming={isStreaming} />`, previewState: 'streaming', height: 220 },
-  'thinking-indicator': { imports: `import { ThinkingIndicator } from '@/components/ondai/thinking-indicator'`, code: `<ThinkingIndicator variant="dots" label="Thinking" />`, previewState: 'thinking', height: 160 },
+  'thinking-indicator': { imports: `import { ThinkingIndicator } from '@/components/ondai/thinking-indicator'`, code: `<ThinkingIndicator variant="orb" size="lg" state="thinking" label="Thinking" />`, previewState: 'thinking', previewQuery: 'variant=orb&size=lg', height: 180, notes: ['The `orb` is a metallic sphere with a drifting highlight; `state` (`thinking`, `listening`, `speaking`) changes its rhythm.'] },
   skeleton: { imports: `import { Skeleton } from '@/components/ondai/skeleton'`, code: `<Skeleton lines={3} />`, previewState: 'loading', height: 200 },
   'key-hint': { imports: `import { KeyHint } from '@/components/ondai/key-hint'`, code: `<KeyHint keys={['cmd', 'K']} />`, previewState: 'default', height: 140 },
   'latency-chip': { imports: `import { LatencyChip } from '@/components/ondai/latency-chip'`, code: `<LatencyChip latencyMs={metrics.latencyMs} tokensPerSecond={metrics.tokensPerSecond} provider="apple" />`, previewState: 'default', height: 140 },
@@ -124,6 +124,34 @@ const usage: Record<string, { imports: string; code: string; previewState?: stri
   chip: { imports: `import { Chip } from '@/components/ondai/chip'`, code: `<Chip label="Groceries" selected onPress={toggle} />`, previewState: 'idle', height: 160 },
   button: { imports: `import { Button } from '@/components/ondai/button'`, code: `<Button title="Summarize" variant="solid" onPress={run} />`, previewState: 'idle', height: 160 },
   sheet: { imports: `import { Sheet } from '@/components/ondai/sheet'`, code: `<Sheet open={open} onClose={close} presentation="sheet" variant="glass">…</Sheet>`, previewState: 'open', height: 560 },
+  'voice-input': {
+    imports: `import { VoiceInput, type Recorder } from '@/components/ondai/voice-input'`,
+    code: `// Audio capture is yours to provide (expo-audio, react-native-audio-record, your own module).
+const recorder: Recorder = {
+  start: () => audio.start(),
+  stop: () => audio.stop(), // resolves WAV/PCM bytes
+  onLevel: (cb) => audio.subscribeLevel(cb),
+}
+
+<VoiceInput recorder={recorder} presentation="pill" visual="bars" onTranscript={(text) => setQuery(text)} />`,
+    previewState: 'listening',
+    height: 320,
+    notes: ['Transcription runs on device through `useTranscribe` (Apple SpeechAnalyzer on iOS 26). Without a `recorder` a simulated one runs, so the mock and the playground work out of the box.', '`mode="hold"` is push-to-talk; `mode="tap"` toggles. `visual` is `bars` (a rippling waveform) or `glow` (a bloom rising from the bottom edge).'],
+  },
+  'agent-avatar': {
+    imports: `import { AgentAvatar } from '@/components/ondai/agent-avatar'`,
+    code: `<AgentAvatar size={64} shape="blob" state={isThinking ? 'thinking' : 'idle'} interactive />`,
+    previewState: 'idle',
+    height: 260,
+    notes: ['States: `idle` (glances around and blinks), `thinking` (looks up with an orbiting light), `speaking` (mouth moves), `sleeping` (eyes closed, slow breathing).', 'On web, `interactive` makes the eyes follow the pointer.'],
+  },
+  'image-reveal': {
+    imports: `import { ImageReveal } from '@/components/ondai/image-reveal'`,
+    code: `<ImageReveal source={{ uri }} width={320} height={220} mode="ascii" progress={busy ? 'auto' : 1} />`,
+    previewState: 'revealing',
+    height: 320,
+    notes: ['`progress` is 0–1 from your own pipeline, or `"auto"` to loop while you wait. `mode="ascii"` suits scans and documents; `mosaic` suits pictures.', 'ScanToData uses it while OCR and extraction run.'],
+  },
   field: { imports: `import { Field } from '@/components/ondai/field'`, code: `<Field label="Merchant" value={v} onChangeText={setV} state={status} confidence={0.9} />`, previewState: 'filled', height: 200 },
 }
 

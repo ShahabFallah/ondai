@@ -261,6 +261,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@lucasmarkes/hairline':
+        specifier: 0.5.1
+        version: 0.5.1(react@19.3.0)
       '@ondai/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -2031,6 +2034,14 @@ packages:
 
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
+
+  '@lucasmarkes/hairline@0.5.1':
+    resolution: {integrity: sha512-zjY3bdMC3As/+enKitZ1X+D1HjpesQiAKzG1sbCFsOrb5xIuJEoepkJTBIO4jmFh6JXOQlGGylhV71nr9ipNpQ==}
+    peerDependencies:
+      react: '>=18'
+    peerDependenciesMeta:
+      react:
+        optional: true
 
   '@mdx-js/mdx@3.1.1':
     resolution: {integrity: sha512-f6ZO2ifpwAQIpzGWaBQT2TXxPv6z3RBzQKpVftEWN78Vl/YweF1uwussDx8ECAXVtr3Rs89fKyG9YlzUs9DyGQ==}
@@ -8728,6 +8739,10 @@ snapshots:
       keyv: 5.6.0
 
   '@keyv/serialize@1.1.1': {}
+
+  '@lucasmarkes/hairline@0.5.1(react@19.3.0)':
+    optionalDependencies:
+      react: 19.3.0
 
   '@mdx-js/mdx@3.1.1':
     dependencies:

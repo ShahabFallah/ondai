@@ -1,9 +1,9 @@
 ---
 title: "IonBorder"
-description: "The signature thinking border - a slow gradient light travels around any container while the AI works."
+description: "The signature thinking border: a slow gradient light, a bright comet, or a breathing ring around any container while the AI works."
 ---
 
-<ComponentPreview name="ion-border" state="thinking" height={240} />
+<ComponentPreview name="ion-border" state="beam" height={240} />
 
 ## Install
 
@@ -16,15 +16,18 @@ npx ondai add ion-border
 ```tsx
 import { IonBorder } from '@/components/ondai/ion-border'
 
-<IonBorder active={isThinking} radius="lg" glow>
+<IonBorder active={isThinking} variant="beam" radius="lg" glow>
   <YourCard />
 </IonBorder>
 ```
+
+- `variant`: `sweep` (the slow gradient light), `beam` (a bright comet with a tail and an outer halo), `pulse` (the whole ring breathes).
 
 ## Variants
 
 | Prop | Options |
 | --- | --- |
+| `variant` | `sweep`, `beam`, `pulse` |
 | `radius` | `none`, `sm`, `md`, `lg`, `xl`, `pill` |
 
 Every variant is live in the [playground](/playground/ion-border).

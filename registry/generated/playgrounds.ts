@@ -2,12 +2,14 @@
 import type { PlaygroundDef } from '@ondai/playground'
 
 export const playgrounds = {
+  'agent-avatar': () => import('../components/agent-avatar/playground'),
   'auto-tag': () => import('../components/auto-tag/playground'),
   'availability-gate': () => import('../components/availability-gate/playground'),
   'button': () => import('../components/button/playground'),
   'chip': () => import('../components/chip/playground'),
   'command-bar': () => import('../components/command-bar/playground'),
   'field': () => import('../components/field/playground'),
+  'image-reveal': () => import('../components/image-reveal/playground'),
   'ion-border': () => import('../components/ion-border/playground'),
   'key-hint': () => import('../components/key-hint/playground'),
   'latency-chip': () => import('../components/latency-chip/playground'),
@@ -25,6 +27,7 @@ export const playgrounds = {
   'summarize': () => import('../components/summarize/playground'),
   'thinking-indicator': () => import('../components/thinking-indicator/playground'),
   'tool-confirm-card': () => import('../components/tool-confirm-card/playground'),
+  'voice-input': () => import('../components/voice-input/playground'),
 } as const satisfies Record<string, () => Promise<{ default: PlaygroundDef<any, any> }>>
 
 export type PlaygroundName = keyof typeof playgrounds

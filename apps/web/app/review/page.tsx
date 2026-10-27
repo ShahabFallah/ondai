@@ -10,10 +10,10 @@ export default async function ReviewPage({ searchParams }: { searchParams: Promi
   return (
     <>
       <SiteHeader />
-      <main className="wrap min-h-screen pt-10 pb-16">
+      <main className="wrap min-h-screen pt-24 pb-16">
         <header className="mb-8 max-w-[64ch]">
-          <h1 className="text-[32px] font-semibold tracking-[-0.025em]">Review grid</h1>
-          <p className="lead mt-2 text-[16px]">Every component in every review state, in Void and Paper. Filter with component, theme, motion and clock in the URL.</p>
+          <h1 className="h2">Review grid</h1>
+          <p className="lead mt-3">Every component in every review state, in Void and Paper. Filter with component, theme, motion and clock in the URL.</p>
         </header>
         <ReviewClient component={one('component')} theme={one('theme')} motion={one('motion')} clock={one('clock')} />
       </main>

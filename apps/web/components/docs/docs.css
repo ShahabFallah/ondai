@@ -1,0 +1,29 @@
+/* Docs chrome under the floating pill nav (52 px tall at top 16 px, fixed, overlaying the page).
+   Imported by app/docs/layout.tsx. Fumadocs 16 offsets its sticky sidebar, table of contents and the
+   mobile TOC bar by --fd-banner-height (its --fd-docs-row-1); --fd-nav-height is kept for anything
+   else that reads it. */
+#nd-docs-layout.docs-shell {
+  --fd-banner-height: 80px;
+  --fd-nav-height: 80px;
+}
+
+/* The article sits in the first grid row, so its own top padding has to clear the pill. */
+#nd-docs-layout.docs-shell #nd-page {
+  padding-top: 96px;
+}
+
+/* Fumadocs scrolls the active sidebar item into view on load (scroll-into-view-if-needed, block
+   "center", boundary #nd-sidebar). Give the item breathing room so it never lands against the
+   faded edge of the viewport, and let keyboard focus land clear of the pill. */
+#nd-sidebar [data-active='true'] {
+  scroll-margin-block: 48px;
+}
+#nd-sidebar [data-radix-scroll-area-viewport],
+#nd-sidebar [data-slot='scroll-area-viewport'] {
+  scroll-padding-block: 48px;
+}
+
+/* Page type: medium weights, the site's own scale. */
+#nd-page h1.h2 {
+  margin-bottom: 4px;
+}

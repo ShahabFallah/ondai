@@ -1,0 +1,204 @@
+/* Theme studio: the preview is the page, the controls float on it.
+   Imported by ThemesClient. Builds on .stage / .glass / .card from app/global.css. */
+
+.themes-studio {
+  position: relative;
+}
+
+.themes-stage {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 640px;
+  padding: 16px 12px 24px;
+}
+@media (min-width: 640px) {
+  .themes-stage {
+    padding: 32px 28px 40px;
+  }
+}
+/* On desktop the control panel floats on the left; the screens centre in the room that is left. */
+@media (min-width: 1024px) {
+  .themes-stage {
+    align-items: center;
+    padding: 40px 28px 48px 368px;
+  }
+}
+
+/* Glass needs something behind it to blur: a quiet light field, chrome and white only. */
+.themes-stage[data-theme='glass']::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(560px 380px at 72% 14%, rgba(255, 255, 255, 0.14), transparent 62%),
+    radial-gradient(480px 440px at 30% 92%, rgba(255, 255, 255, 0.08), transparent 60%),
+    radial-gradient(320px 320px at 48% 50%, rgba(124, 247, 255, 0.05), transparent 65%);
+}
+
+.themes-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-radius: 24px;
+  padding: 20px;
+}
+@media (max-width: 1023.98px) {
+  .themes-panel {
+    margin-bottom: 12px;
+  }
+}
+@media (min-width: 1024px) {
+  .themes-panel {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 2;
+    width: 320px;
+    max-width: calc(100% - 40px);
+  }
+}
+
+.themes-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.themes-row-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.themes-row-head strong {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ondai-text);
+}
+
+/* Accent swatches: 36 px circles showing each accent's gradient. */
+.accent-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.accent-swatch {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+  transition: box-shadow 0.15s;
+}
+.accent-swatch:hover {
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 4px rgba(255, 255, 255, 0.35);
+}
+.accent-swatch[aria-checked='true'] {
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 4px var(--ondai-text);
+}
+.accent-swatch[data-custom='true']::after {
+  /* a small plus so the custom swatch reads as "yours" */
+  content: '+';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+/* Native colour inputs, drawn as the same circles. */
+.custom-stops {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.custom-stop {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+.custom-stop span {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ondai-text-secondary);
+}
+.stop-input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  cursor: pointer;
+}
+.stop-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.stop-input::-webkit-color-swatch {
+  border: 0;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+}
+.stop-input::-moz-color-swatch {
+  border: 0;
+  border-radius: 999px;
+}
+
+.themes-gradient {
+  height: 6px;
+  border-radius: 999px;
+}
+
+.themes-export {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* The colour ribbon below the stage. */
+.swatch-ribbon {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+.swatch {
+  display: flex;
+  flex: 1 0 56px;
+  min-width: 56px;
+  flex-direction: column;
+  gap: 6px;
+}
+.swatch > i {
+  display: block;
+  height: 48px;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.swatch > span {
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.3;
+  color: var(--ondai-text-secondary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.themes-code {
+  max-height: 360px;
+  overflow: auto;
+  padding: 16px 18px;
+}

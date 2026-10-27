@@ -5,6 +5,60 @@
   "items": [
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "agent-avatar",
+      "type": "registry:component",
+      "title": "AgentAvatar",
+      "description": "A living face for the on-device assistant: a soft, lit body whose eyes glance and blink. Idle, thinking, speaking and sleeping; blob, square, pill or drop.",
+      "dependencies": [
+        "@ondai/tokens",
+        "react-native-reanimated",
+        "react-native-svg"
+      ],
+      "registryDependencies": [],
+      "categories": [
+        "primitive"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "8b9a53774570f1a1",
+          "priority": "P1",
+          "capabilities": [],
+          "variants": {
+            "shape": [
+              "blob",
+              "square",
+              "pill",
+              "drop"
+            ],
+            "state": [
+              "idle",
+              "thinking",
+              "speaking",
+              "sleeping"
+            ],
+            "eyes": [
+              "dots",
+              "ovals"
+            ]
+          }
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/agent-avatar/agent-avatar.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/agent-avatar/agent-avatar.tsx"
+        },
+        {
+          "path": "registry/components/agent-avatar/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/agent-avatar/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "auto-tag",
       "type": "registry:component",
       "title": "AutoTag",
@@ -254,7 +308,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "81720524397450b1",
+          "hash": "b00f27cb17791fbc",
           "priority": "P0",
           "capabilities": [
             "tools",
@@ -375,10 +429,53 @@
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "image-reveal",
+      "type": "registry:component",
+      "title": "ImageReveal",
+      "description": "An image that resolves out of a churning mosaic or an ASCII field as progress rises. The loader for anything the model draws or reads.",
+      "dependencies": [
+        "@ondai/tokens",
+        "react-native-reanimated",
+        "react-native-svg"
+      ],
+      "registryDependencies": [],
+      "docs": "Pass `progress` (0–1) from your own pipeline, or `progress=\"auto\"` to loop while you wait. `mode=\"ascii\"` suits scans and documents; `mosaic` suits generated pictures.",
+      "categories": [
+        "primitive"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "d6d609d0623c2029",
+          "priority": "P1",
+          "capabilities": [],
+          "variants": {
+            "mode": [
+              "mosaic",
+              "ascii"
+            ]
+          }
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/image-reveal/image-reveal.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/image-reveal/image-reveal.tsx"
+        },
+        {
+          "path": "registry/components/image-reveal/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/image-reveal/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "ion-border",
       "type": "registry:component",
       "title": "IonBorder",
-      "description": "The signature thinking border: a slow gradient light travels around any container while the AI works.",
+      "description": "The signature thinking border: a slow gradient light, a bright comet, or a breathing ring around any container while the AI works.",
       "dependencies": [
         "@ondai/tokens",
         "react-native-reanimated",
@@ -391,10 +488,15 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "9d975a53cf20287f",
+          "hash": "6f71be147ad62ffc",
           "priority": "P0",
           "capabilities": [],
           "variants": {
+            "variant": [
+              "sweep",
+              "beam",
+              "pulse"
+            ],
             "radius": [
               "none",
               "sm",
@@ -781,6 +883,7 @@
       "registryDependencies": [
         "button",
         "field",
+        "image-reveal",
         "ion-border",
         "on-device-badge",
         "skeleton"
@@ -792,7 +895,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "99b04c36eb70ed78",
+          "hash": "f8b6a7689b117631",
           "priority": "P0",
           "capabilities": [
             "structured",
@@ -1314,7 +1417,7 @@
       "name": "thinking-indicator",
       "type": "registry:component",
       "title": "ThinkingIndicator",
-      "description": "Dots, orb, line or sweep: calm indicators that the on-device model is working.",
+      "description": "Dots, a metallic orb, line or sweep: calm indicators that the on-device model is working.",
       "dependencies": [
         "@ondai/tokens",
         "react-native-reanimated",
@@ -1327,7 +1430,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "62ffc866dd7de427",
+          "hash": "c6e429b7ae538dd7",
           "priority": "P0",
           "capabilities": [],
           "variants": {
@@ -1341,6 +1444,11 @@
               "sm",
               "md",
               "lg"
+            ],
+            "state": [
+              "thinking",
+              "listening",
+              "speaking"
             ]
           }
         }
@@ -1410,6 +1518,69 @@
           "path": "registry/components/tool-confirm-card/index.ts",
           "type": "registry:lib",
           "target": "components/ondai/tool-confirm-card/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "voice-input",
+      "type": "registry:component",
+      "title": "VoiceInput",
+      "description": "Push-to-talk that transcribes on device: a round mic, a level-driven waveform or glow, then the transcript with Use and Retry.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens",
+        "expo-haptics",
+        "lucide-react-native",
+        "react-native-reanimated",
+        "react-native-svg"
+      ],
+      "registryDependencies": [
+        "button",
+        "streaming-text"
+      ],
+      "docs": "Audio capture is not bundled: pass `recorder` (expo-audio, react-native-audio-record or your own module) with `start()`, `stop()` → WAV/PCM bytes and `onLevel()`. Without one a simulated recorder runs, so the mock and the playground just work.",
+      "categories": [
+        "voice"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "f988fb38875b9a2d",
+          "priority": "P1",
+          "capabilities": [
+            "transcription"
+          ],
+          "variants": {
+            "presentation": [
+              "pill",
+              "card"
+            ],
+            "visual": [
+              "bars",
+              "glow"
+            ]
+          },
+          "runsOn": [
+            "apple"
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/voice-input/voice-input.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/voice-input/voice-input.tsx"
+        },
+        {
+          "path": "registry/components/voice-input/use-voice-input.ts",
+          "type": "registry:hook",
+          "target": "components/ondai/voice-input/use-voice-input.ts"
+        },
+        {
+          "path": "registry/components/voice-input/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/voice-input/index.ts"
         }
       ]
     }

@@ -4,7 +4,7 @@ import { Segmented } from '../ui/Segmented'
 
 function Row({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
-    <div className="grid gap-2 border-t border-[color:var(--ondai-hairline)] py-3 sm:grid-cols-[180px_1fr] sm:items-center sm:gap-6">
+    <div className="grid gap-2 border-t border-[color:var(--ring-strong)] py-3 first:border-t-0 first:pt-0 sm:grid-cols-[180px_1fr] sm:items-center sm:gap-6">
       <div>
         <div className="text-[14px] font-medium">{label}</div>
         {hint ? <div className="text-[12px] text-[color:var(--ondai-text-tertiary)]">{hint}</div> : null}

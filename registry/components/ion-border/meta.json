@@ -1,11 +1,11 @@
 {
   "name": "ion-border",
   "title": "IonBorder",
-  "description": "The signature thinking border: a slow gradient light travels around any container while the AI works.",
+  "description": "The signature thinking border: a slow gradient light, a bright comet, or a breathing ring around any container while the AI works.",
   "category": "primitive",
   "priority": "P0",
   "capabilities": [],
-  "variants": { "radius": ["none", "sm", "md", "lg", "xl", "pill"] },
+  "variants": { "variant": ["sweep", "beam", "pulse"], "radius": ["none", "sm", "md", "lg", "xl", "pill"] },
   "registryDependencies": [],
   "files": ["ion-border.tsx", "index.ts"]
 }

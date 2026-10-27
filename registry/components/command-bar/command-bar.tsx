@@ -89,7 +89,8 @@ export function CommandBar({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialQuery, autoRun])
   useEffect(() => {
-    if (open && autoFocus && presentation !== 'pill') setTimeout(() => inputRef.current?.focus(), 60)
+    // On web the DOM input takes `preventScroll`; native ignores the argument.
+    if (open && autoFocus && presentation !== 'pill') setTimeout(() => (inputRef.current as unknown as { focus: (o?: { preventScroll: boolean }) => void } | null)?.focus({ preventScroll: true }), 60)
   }, [open, autoFocus, presentation])
   useEffect(() => {
     if (bar.status === 'done') void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {})

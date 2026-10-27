@@ -1,7 +1,7 @@
 import { mockScript } from '@ondai/core/mock'
 import { definePlayground, select } from '@ondai/playground'
 import { ScanToData } from './scan-to-data'
-import { cardAnswer, cardOcr, receiptAnswer, receiptOcr } from './sample-data'
+import { cardAnswer, cardOcr, receiptAnswer, receiptImage, receiptOcr } from './sample-data'
 
 export default definePlayground({
   name: 'scan-to-data',
@@ -16,8 +16,8 @@ export default definePlayground({
   variantKeys: ['presentation', 'preset'],
   states: {
     idle: {},
-    scanning: { script: mockScript.thinking(60_000), props: { initialText: receiptOcr, autoRun: true } },
-    done: { script: mockScript.thinking(900).object(receiptAnswer), props: { initialText: receiptOcr, autoRun: true }, freezeAt: 1800, description: '"restaurant" → food, "VISA" → card, "25/10/2026" → ISO date.' },
+    scanning: { script: mockScript.thinking(60_000), props: { initialImage: receiptImage, initialText: receiptOcr, autoRun: true }, description: 'The photo resolves out of an ASCII field while OCR and extraction run.' },
+    done: { script: mockScript.thinking(900).object(receiptAnswer), props: { initialImage: receiptImage, initialText: receiptOcr, autoRun: true }, freezeAt: 1800, description: '"restaurant" → food, "VISA" → card, "25/10/2026" → ISO date.' },
     'business-card': { script: mockScript.thinking(900).object(cardAnswer), props: { preset: 'businessCard', initialText: cardOcr, autoRun: true }, freezeAt: 1800 },
     error: { script: mockScript.error('invalid-output'), props: { initialText: receiptOcr, autoRun: true } },
     'no-ocr': { props: { ocr: undefined }, description: 'Without an OCR provider the frame explains itself.' },

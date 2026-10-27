@@ -1,0 +1,59 @@
+---
+title: "VoiceInput"
+description: "Push-to-talk that transcribes on device: a round mic, a level-driven waveform or glow, then the transcript with Use and Retry."
+---
+
+<ComponentPreview name="voice-input" state="listening" height={320} />
+
+## Install
+
+```bash
+npx ondai add voice-input
+```
+
+## Usage
+
+```tsx
+import { VoiceInput, type Recorder } from '@/components/ondai/voice-input'
+
+// Audio capture is yours to provide (expo-audio, react-native-audio-record, your own module).
+const recorder: Recorder = {
+  start: () => audio.start(),
+  stop: () => audio.stop(), // resolves WAV/PCM bytes
+  onLevel: (cb) => audio.subscribeLevel(cb),
+}
+
+<VoiceInput recorder={recorder} presentation="pill" visual="bars" onTranscript={(text) => setQuery(text)} />
+```
+
+- Transcription runs on device through `useTranscribe` (Apple SpeechAnalyzer on iOS 26). Without a `recorder` a simulated one runs, so the mock and the playground work out of the box.
+- `mode="hold"` is push-to-talk; `mode="tap"` toggles. `visual` is `bars` (a rippling waveform) or `glow` (a bloom rising from the bottom edge).
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `presentation` | `pill`, `card` |
+| `visual` | `bars`, `glow` |
+
+Every variant is live in the [playground](/playground/voice-input).
+
+## Runs on
+
+| Capability | Apple FM | Gemini Nano | Llama | Cloud |
+| --- | --- | --- | --- | --- |
+| transcription | ✅ | — | — | — |
+
+## Fallback
+
+When no provider is ready the component renders the unavailable state (`AvailabilityGate` copy) and, where a deterministic path exists, keeps working without the model.
+
+## Eval score
+
+No model-driven fixtures for this component.
+
+## Files
+
+Registry dependencies: [button](/docs/components/button), [streaming-text](/docs/components/streaming-text)
+
+npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-haptics`, `lucide-react-native`, `react-native-reanimated`, `react-native-svg`

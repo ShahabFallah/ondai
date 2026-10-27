@@ -1,0 +1,97 @@
+/* BorderBeam: a conic hot spot travelling around a card's border ring, with a blurred halo.
+   Pure CSS motion: `@property --beam-angle` lets the keyframes interpolate the gradient angle.
+   The ring is the box minus its content box (mask-composite: exclude with padding = beam width).
+   The halo is a wider ring inside a blurred span: the blur runs after the mask, so it spills. */
+@property --beam-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.fx-beam {
+  position: relative;
+  isolation: isolate;
+  border-radius: var(--beam-radius, 24px);
+  --beam-width: 1px;
+  --beam-duration: 4s;
+  --beam-strength: 0.7;
+  --beam-a: #7cf7ff;
+  --beam-b: #8b7cff;
+  --beam-c: #ff7ce5;
+  --beam-play: running;
+  --beam-halo: 1;
+}
+.fx-beam[data-active='false'] {
+  --beam-play: paused;
+  --beam-halo: 0;
+}
+
+.fx-beam::before,
+.fx-beam-halo,
+.fx-beam-halo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.fx-beam::before,
+.fx-beam-halo::before {
+  --beam-angle: 0deg;
+  padding: var(--beam-width);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: fx-beam-spin var(--beam-duration) linear infinite;
+  animation-play-state: var(--beam-play);
+}
+.fx-beam::before {
+  z-index: 2;
+  background: conic-gradient(
+    from var(--beam-angle),
+    transparent 0 72%,
+    var(--beam-a) 80%,
+    #fff 88%,
+    var(--beam-c) 94%,
+    transparent
+  );
+  opacity: calc(0.6 + 0.4 * var(--beam-strength));
+}
+.fx-beam-halo {
+  z-index: 1;
+  filter: blur(14px);
+  opacity: calc(var(--beam-strength) * var(--beam-halo));
+  mix-blend-mode: screen;
+  transition: opacity 0.3s;
+}
+.fx-beam-halo::before {
+  padding: calc(var(--beam-width) + 3px);
+  background: conic-gradient(
+    from var(--beam-angle),
+    transparent 0 68%,
+    var(--beam-b) 78%,
+    var(--beam-a) 86%,
+    #fff 90%,
+    var(--beam-c) 95%,
+    transparent
+  );
+}
+
+@keyframes fx-beam-spin {
+  to {
+    --beam-angle: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-beam::before,
+  .fx-beam-halo::before {
+    animation: none;
+    --beam-angle: 300deg;
+  }
+}

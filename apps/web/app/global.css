@@ -16,19 +16,34 @@ html > body[data-scroll-locked] {
 }
 
 /* ------------------------------------------------------------------ */
-/* Site tokens: the same Void palette the components use, plus the few  */
+/* Site tokens: the Void palette the components use, plus the few       */
 /* things only the website needs (glass, the ion light, hover tint).    */
+/* See docs/decisions/0007-site-v3-silicon.md for the material rules.   */
 /* ------------------------------------------------------------------ */
 :root {
-  --font-sans: var(--font-geist-sans), var(--ondai-font-sans);
+  --font-sans: var(--font-site-sans), var(--ondai-font-sans);
   --font-mono: var(--font-geist-mono), var(--ondai-font-mono);
   --ion-a: #7cf7ff;
   --ion-b: #8b7cff;
   --ion-c: #ff7ce5;
-  --glass: rgba(13, 13, 17, 0.8);
-  --hover: color-mix(in oklab, var(--ondai-text) 7%, transparent);
-  --hover-strong: color-mix(in oklab, var(--ondai-text) 13%, transparent);
-  --fd-nav-height: 56px;
+  --void: #07080a;
+  --surface: #0e1013;
+  --surface-hover: #111419;
+  --elevated: #15181c;
+  --hover: rgba(255, 255, 255, 0.06);
+  --hover-strong: rgba(255, 255, 255, 0.11);
+  --line: rgba(255, 255, 255, 0.06);
+  --line-strong: rgba(255, 255, 255, 0.1);
+  --edge: rgba(255, 255, 255, 0.05);
+  --glass-fill: rgba(14, 16, 19, 0.62);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+html:root {
+  /* The tokens emit shadcn's accent `--ring`; the site's hairline ring lives in --line. */
+  --ring: var(--line);
+  --ring-strong: var(--line-strong);
 }
 
 html,
@@ -65,6 +80,10 @@ body {
   font-family: var(--font-sans);
 }
 
+::selection {
+  background: rgba(139, 124, 255, 0.35);
+}
+
 :focus-visible {
   outline: 2px solid var(--ondai-accent-ring);
   outline-offset: 2px;
@@ -84,32 +103,46 @@ body {
 }
 
 /* ------------------------------------------------------------------ */
-/* Type                                                                 */
+/* Type. Medium weights, normal tracking, air. Sentence case.           */
 /* ------------------------------------------------------------------ */
 .display {
-  font-size: clamp(42px, 6.2vw, 76px);
-  font-weight: 600;
-  letter-spacing: -0.035em;
-  line-height: 1.02;
+  font-size: clamp(40px, 5vw, 60px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
   text-wrap: balance;
 }
 .h2 {
-  font-size: clamp(26px, 3vw, 36px);
-  font-weight: 600;
-  letter-spacing: -0.028em;
-  line-height: 1.1;
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
   text-wrap: balance;
 }
+.h3 {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
 .lead {
-  font-size: clamp(16px, 1.3vw, 18px);
-  line-height: 1.55;
+  font-size: clamp(17px, 1.3vw, 19px);
+  line-height: 1.5;
   color: var(--ondai-text-secondary);
   text-wrap: pretty;
 }
+.body {
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--ondai-text-secondary);
+}
 .label {
   font-size: 13px;
-  line-height: 1.4;
+  line-height: 1.45;
   color: var(--ondai-text-secondary);
+}
+.muted {
+  color: var(--ondai-text-tertiary);
 }
 
 /* ------------------------------------------------------------------ */
@@ -127,152 +160,64 @@ body {
   margin-inline: auto;
   padding-inline: 20px;
 }
+.section {
+  padding-block: clamp(64px, 8vw, 120px);
+}
+.section-tight {
+  padding-top: 0;
+}
 
 /* ------------------------------------------------------------------ */
-/* Header: a sticky bar whose background is a progressive blur of what  */
-/* scrolls underneath (seven backdrop-filter layers, each masked to a   */
-/* band), plus a dim gradient so text stays readable.                   */
+/* Material. One card recipe, one stage recipe, one glass recipe.       */
+/* No CSS borders on surfaces: an inset ring and a lit top edge.        */
 /* ------------------------------------------------------------------ */
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  height: var(--fd-nav-height);
-}
-.glass-bar {
-  position: absolute;
-  inset-inline: 0;
-  top: 0;
-  height: 92px;
-  z-index: -1;
-  pointer-events: none;
-}
-.glass-bar > span {
-  position: absolute;
-  inset: 0;
-}
-.gb-1 {
-  backdrop-filter: blur(0.5px);
-  mask-image: linear-gradient(transparent 62.5%, #000 75%, #000 87.5%, transparent);
-}
-.gb-2 {
-  backdrop-filter: blur(1px);
-  mask-image: linear-gradient(transparent 50%, #000 62.5%, #000 75%, transparent 87.5%);
-}
-.gb-3 {
-  backdrop-filter: blur(2px);
-  mask-image: linear-gradient(transparent 37.5%, #000 50%, #000 62.5%, transparent 75%);
-}
-.gb-4 {
-  backdrop-filter: blur(4px);
-  mask-image: linear-gradient(transparent 25%, #000 37.5%, #000 50%, transparent 62.5%);
-}
-.gb-5 {
-  backdrop-filter: blur(8px);
-  mask-image: linear-gradient(transparent 12.5%, #000 25%, #000 37.5%, transparent 50%);
-}
-.gb-6 {
-  backdrop-filter: blur(16px);
-  mask-image: linear-gradient(transparent, #000 12.5%, #000 25%, transparent 37.5%);
-}
-.gb-7 {
-  backdrop-filter: blur(28px);
-  mask-image: linear-gradient(#000 0, #000 12.5%, transparent 25%);
-}
-.glass-dim {
-  background: linear-gradient(
-    to bottom,
-    color-mix(in oklab, var(--ondai-bg) 86%, transparent) 0,
-    color-mix(in oklab, var(--ondai-bg) 62%, transparent) 45%,
-    color-mix(in oklab, var(--ondai-bg) 22%, transparent) 78%,
-    transparent 100%
-  );
-}
-
-.nav-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  height: 36px;
-  padding-inline: 12px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--ondai-text-secondary);
-  white-space: nowrap;
-  transition:
-    color 0.15s,
-    background-color 0.15s;
-}
-.nav-item:hover,
-.nav-item[aria-expanded='true'],
-.nav-item[data-active='true'] {
-  color: var(--ondai-text);
-}
-@media (hover: hover) {
-  .nav-item:hover,
-  .nav-item[aria-expanded='true'] {
-    background: var(--hover);
-  }
-}
-.nav-item[data-active='true'] {
-  background: var(--hover);
-}
-.nav-item svg {
-  transition: transform 0.2s;
-}
-.nav-item[aria-expanded='true'] svg {
-  transform: rotate(180deg);
-}
-
-.glass-panel {
-  background: var(--glass);
-  backdrop-filter: blur(32px) saturate(140%);
+.card {
+  position: relative;
+  min-width: 0;
+  border-radius: 24px;
+  background: var(--surface);
   box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 30px 80px -24px rgba(0, 0, 0, 0.8);
-  border-radius: 20px;
-}
-.menu-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  padding: 9px 12px;
-  border-radius: 12px;
-  text-align: left;
+    inset 0 0 0 1px var(--line),
+    inset 0 1px 0 var(--edge),
+    0 1px 2px rgba(0, 0, 0, 0.4);
   transition: background-color 0.15s;
 }
-.menu-row:hover {
-  background: var(--hover);
+a.card:hover,
+.card[data-hover]:hover {
+  background: var(--surface-hover);
 }
-.menu-row:hover .menu-arrow {
-  transform: translateX(2px);
-  opacity: 1;
+.stage,
+.card-stage {
+  position: relative;
+  border-radius: 16px;
+  background: var(--void);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  overflow: hidden;
 }
-.menu-arrow {
+.glass {
+  background: var(--glass-fill);
+  backdrop-filter: blur(24px) saturate(160%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 24px 64px -24px rgba(0, 0, 0, 0.7);
+}
+.spot {
+  /* Pointer-following spotlight: the component sets --mx / --my in px. */
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 40%), rgba(255, 255, 255, 0.07), transparent 65%);
   opacity: 0;
-  transition:
-    transform 0.2s,
-    opacity 0.2s;
+  transition: opacity 0.4s;
 }
-.menu-enter {
-  animation: menu-in 0.2s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-@keyframes menu-in {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+[data-hot='true'] > .spot {
+  opacity: 1;
 }
 
 /* ------------------------------------------------------------------ */
-/* Buttons                                                              */
+/* Buttons: pills, 40px, medium.                                        */
 /* ------------------------------------------------------------------ */
 .btn {
   display: inline-flex;
@@ -281,7 +226,7 @@ body {
   gap: 8px;
   height: 40px;
   padding-inline: 18px;
-  border-radius: 10px;
+  border-radius: 999px;
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
@@ -297,24 +242,35 @@ body {
 .btn-primary {
   background: var(--ondai-text);
   color: var(--ondai-bg);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 .btn-primary:hover {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.35),
-    0 10px 28px -12px var(--ondai-accent-glow);
+  background: #fff;
 }
 .btn-secondary {
   background: var(--hover);
   color: var(--ondai-text);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 .btn-secondary:hover {
   background: var(--hover-strong);
 }
+.btn-ghost {
+  color: var(--ondai-text-secondary);
+}
+.btn-ghost:hover {
+  color: var(--ondai-text);
+  background: var(--hover);
+}
 .btn-sm {
   height: 32px;
-  padding-inline: 12px;
+  padding-inline: 13px;
   font-size: 13px;
+}
+.btn-lg {
+  height: 48px;
+  padding-inline: 24px;
+  font-size: 15px;
 }
 .icon-btn {
   display: inline-flex;
@@ -322,7 +278,7 @@ body {
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: 8px;
+  border-radius: 999px;
   color: var(--ondai-text-secondary);
   transition:
     color 0.15s,
@@ -332,105 +288,41 @@ body {
   color: var(--ondai-text);
   background: var(--hover);
 }
+kbd.key {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding-inline: 6px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.07);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ondai-text-secondary);
+}
 
-/* ------------------------------------------------------------------ */
-/* The ion light: three soft blobs in the brand colours drifting behind */
-/* the hero. The glass bar blurs them as you scroll.                    */
-/* ------------------------------------------------------------------ */
-.ion-field {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-  mask-image: linear-gradient(#000 35%, transparent 100%);
-}
-.ion-blob {
-  position: absolute;
-  border-radius: 9999px;
-  filter: blur(90px);
-  will-change: transform;
-}
-.ion-blob-a {
-  width: 640px;
-  height: 640px;
-  top: -260px;
-  left: 8%;
-  background: var(--ion-b);
-  opacity: 0.42;
-  animation: drift-a 26s ease-in-out infinite alternate;
-}
-.ion-blob-b {
-  width: 460px;
-  height: 460px;
-  top: -160px;
-  right: 10%;
-  background: var(--ion-a);
-  opacity: 0.22;
-  animation: drift-b 22s ease-in-out infinite alternate;
-}
-.ion-blob-c {
-  width: 380px;
-  height: 380px;
-  top: 120px;
-  left: 44%;
-  background: var(--ion-c);
-  opacity: 0.16;
-  animation: drift-c 30s ease-in-out infinite alternate;
-}
-@keyframes drift-a {
-  to {
-    transform: translate(160px, 90px) scale(1.08);
-  }
-}
-@keyframes drift-b {
-  to {
-    transform: translate(-140px, 120px);
-  }
-}
-@keyframes drift-c {
-  to {
-    transform: translate(-200px, -60px) scale(1.15);
-  }
-}
 @media (prefers-reduced-motion: reduce) {
-  .ion-blob,
-  .menu-enter {
-    animation: none;
+  .spot {
+    transition: none;
   }
 }
 
 /* ------------------------------------------------------------------ */
-/* Cards used for live demos and the playground stage                   */
-/* ------------------------------------------------------------------ */
-.card {
-  position: relative;
-  min-width: 0;
-  border-radius: 20px;
-  background: var(--ondai-surface);
-  box-shadow: inset 0 0 0 1px var(--ondai-hairline);
-}
-.card-stage {
-  border-radius: 14px;
-  background: var(--ondai-bg);
-  box-shadow: inset 0 0 0 1px var(--ondai-hairline);
-  overflow: hidden;
-}
-
-/* ------------------------------------------------------------------ */
-/* Form controls on the playground                                      */
+/* Form controls on the playground and the theme studio                 */
 /* ------------------------------------------------------------------ */
 .pill-group {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 2px;
   padding: 3px;
-  border-radius: 10px;
-  background: var(--ondai-elevated);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 .pill {
   height: 28px;
-  padding-inline: 10px;
-  border-radius: 7px;
+  padding-inline: 11px;
+  border-radius: 999px;
   font-size: 13px;
   font-weight: 500;
   color: var(--ondai-text-secondary);
@@ -442,9 +334,11 @@ body {
   color: var(--ondai-text);
 }
 .pill[aria-checked='true'] {
-  background: var(--ondai-bg);
+  background: var(--elevated);
   color: var(--ondai-text);
-  box-shadow: inset 0 0 0 1px var(--ondai-hairline-strong);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 .tab {
   position: relative;
@@ -475,8 +369,8 @@ body {
   width: 40px;
   height: 24px;
   border-radius: 999px;
-  background: var(--ondai-elevated);
-  box-shadow: inset 0 0 0 1px var(--ondai-hairline);
+  background: var(--elevated);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
   transition: background-color 0.15s;
 }
 .switch[aria-checked='true'] {
@@ -500,9 +394,9 @@ body {
 .input {
   height: 36px;
   padding-inline: 12px;
-  border-radius: 9px;
-  background: var(--ondai-bg);
-  box-shadow: inset 0 0 0 1px var(--ondai-hairline);
+  border-radius: 10px;
+  background: var(--void);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
   font-size: 13px;
   color: var(--ondai-text);
 }
@@ -517,7 +411,7 @@ input[type='range'].range {
 .sidebar-link {
   display: block;
   padding: 6px 10px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 14px;
   color: var(--ondai-text-secondary);
   transition:

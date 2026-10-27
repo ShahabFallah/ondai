@@ -1,0 +1,12 @@
+{
+  "name": "image-reveal",
+  "title": "ImageReveal",
+  "description": "An image that resolves out of a churning mosaic or an ASCII field as progress rises. The loader for anything the model draws or reads.",
+  "category": "primitive",
+  "priority": "P1",
+  "capabilities": [],
+  "variants": { "mode": ["mosaic", "ascii"] },
+  "registryDependencies": [],
+  "files": ["image-reveal.tsx", "index.ts"],
+  "docs": "Pass `progress` (0–1) from your own pipeline, or `progress=\"auto\"` to loop while you wait. `mode=\"ascii\"` suits scans and documents; `mosaic` suits generated pictures."
+}

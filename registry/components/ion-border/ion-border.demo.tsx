@@ -1,13 +1,13 @@
 import { Text, View } from 'react-native'
 import { typeStyle, useTheme } from '@ondai/tokens/react'
 import type { RadiusKey } from '@ondai/tokens'
-import { IonBorder } from './ion-border'
+import { IonBorder, type IonBorderVariant } from './ion-border'
 
 /** Demo wrapper used by the playground and stories; not part of the installed component. */
-export function IonBorderDemo({ active, focused, radius, width, glow, label }: { active?: boolean; focused?: boolean; radius?: RadiusKey; width?: number; glow?: boolean; label?: 'short' | 'long' }) {
+export function IonBorderDemo({ active, focused, variant, radius, width, glow, label }: { active?: boolean; focused?: boolean; variant?: IonBorderVariant; radius?: RadiusKey; width?: number; glow?: boolean; label?: 'short' | 'long' }) {
   const t = useTheme()
   return (
-    <IonBorder active={active} focused={focused} radius={radius} width={width} glow={glow}>
+    <IonBorder active={active} focused={focused} variant={variant} radius={radius} width={width} glow={glow}>
       <View style={{ padding: t.spacing[4], gap: 6 }}>
         <Text style={[typeStyle(t, 'md', { weight: 'medium' }), { color: t.colors.text }]}>Summarizing 3 messages</Text>
         {label === 'long' ? (

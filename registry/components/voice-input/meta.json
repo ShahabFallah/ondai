@@ -1,0 +1,13 @@
+{
+  "name": "voice-input",
+  "title": "VoiceInput",
+  "description": "Push-to-talk that transcribes on device: a round mic, a level-driven waveform or glow, then the transcript with Use and Retry.",
+  "category": "voice",
+  "priority": "P1",
+  "capabilities": ["transcription"],
+  "variants": { "presentation": ["pill", "card"], "visual": ["bars", "glow"] },
+  "registryDependencies": ["button", "streaming-text"],
+  "files": ["voice-input.tsx", "use-voice-input.ts", "index.ts"],
+  "runsOn": ["apple"],
+  "docs": "Audio capture is not bundled: pass `recorder` (expo-audio, react-native-audio-record or your own module) with `start()`, `stop()` → WAV/PCM bytes and `onLevel()`. Without one a simulated recorder runs, so the mock and the playground just work."
+}

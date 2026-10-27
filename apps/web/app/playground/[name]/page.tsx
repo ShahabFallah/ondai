@@ -29,8 +29,8 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   return (
     <>
       <SiteHeader />
-      <div className="wrap flex gap-10 pt-8 lg:pt-12">
-        <aside className="sticky top-[72px] hidden max-h-[calc(100vh-96px)] w-[200px] shrink-0 overflow-y-auto self-start pb-8 lg:block">
+      <div className="wrap flex gap-10 pt-24 pb-16">
+        <aside className="sticky top-24 hidden max-h-[calc(100vh-120px)] w-[200px] shrink-0 self-start overflow-y-auto pb-8 lg:block">
           <PlaygroundNav current={name} />
         </aside>
         <main className="min-w-0 flex-1">

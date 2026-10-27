@@ -5,7 +5,8 @@ import { mockScript, type MockCallInfo, type ScriptSource } from '@ondai/core/mo
  * The scripts read the prompt so the answer follows what was typed; on a phone the real model does this.
  */
 export interface Demo {
-  script: ScriptSource
+  /** What the mock model answers. Primitives that never call the model leave it out. */
+  script?: ScriptSource
   props?: Record<string, unknown>
 }
 
@@ -144,6 +145,9 @@ const autoTag: ScriptSource = (call: MockCallInfo) => {
   return mockScript.thinking(500).object({ tags: tags.length ? tags.slice(0, 3) : ['personal'] })
 }
 
+// Embeddings come from the mock's pseudo-embedding model; no script step is needed.
+const semanticSearch: ScriptSource = () => mockScript.empty()
+
 export const demos = {
   'command-bar': { script: commandBar, props: { presentation: 'inline', variant: 'solid', showKeyHints: true, autoFocus: false } },
   'smart-input': { script: smartInput, props: { presentation: 'field' } },
@@ -152,6 +156,14 @@ export const demos = {
   'natural-filter': { script: naturalFilter, props: { presentation: 'inline' } },
   'smart-reply': { script: smartReply, props: { presentation: 'chips' } },
   'auto-tag': { script: autoTag, props: { presentation: 'chips' } },
+  'semantic-search': { script: semanticSearch, props: { presentation: 'bar', resultStyle: 'list', initialQuery: 'trips and tickets', autoRun: true } },
+
+  // Primitives on the "Primitives, alive" row. Props follow decision 0007; the last three land with the registry build.
+  'thinking-indicator': { props: { variant: 'orb', size: 'lg', state: 'thinking', label: '' } },
+  'ion-border': { props: { variant: 'beam', active: true, glow: true, radius: 'lg' } },
+  'agent-avatar': { props: { state: 'idle', interactive: true } },
+  'voice-input': { props: { visual: 'bars', stage: 'listening' } },
+  'image-reveal': { props: { progress: 'auto' } },
 } satisfies Record<string, Demo>
 
 export type DemoName = keyof typeof demos

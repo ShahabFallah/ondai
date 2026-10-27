@@ -1,8 +1,12 @@
 import { RootProvider } from 'fumadocs-ui/provider/next'
-import { GeistSans } from 'geist/font/sans'
+import { Instrument_Sans } from 'next/font/google'
 import { GeistMono } from 'geist/font/mono'
 import { generateCss } from '@ondai/tokens'
 import './global.css'
+
+// Site chrome: Instrument Sans (OFL), the closest open match to OpenAI Sans' round geometric character,
+// set at 400/500 with normal tracking. Component previews keep Geist from the tokens, like the apps they stand in for.
+const siteSans = Instrument_Sans({ subsets: ['latin'], axes: ['wdth'], variable: '--font-site-sans', display: 'swap' })
 
 const tokensCss = generateCss()
 
@@ -14,7 +18,7 @@ export const metadata = {
 
 export default function Layout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} dark`} data-theme="void" suppressHydrationWarning>
+    <html lang="en" className={`${siteSans.variable} ${GeistMono.variable} dark`} data-theme="void" suppressHydrationWarning>
       <head>
         <style id="ondai-tokens" dangerouslySetInnerHTML={{ __html: tokensCss }} />
       </head>

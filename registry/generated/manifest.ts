@@ -17,6 +17,43 @@ export interface ManifestEntry {
 
 export const manifest: ManifestEntry[] = [
   {
+    "name": "agent-avatar",
+    "title": "AgentAvatar",
+    "description": "A living face for the on-device assistant: a soft, lit body whose eyes glance and blink. Idle, thinking, speaking and sleeping; blob, square, pill or drop.",
+    "category": "primitive",
+    "priority": "P1",
+    "capabilities": [],
+    "variants": {
+      "shape": [
+        "blob",
+        "square",
+        "pill",
+        "drop"
+      ],
+      "state": [
+        "idle",
+        "thinking",
+        "speaking",
+        "sleeping"
+      ],
+      "eyes": [
+        "dots",
+        "ovals"
+      ]
+    },
+    "registryDependencies": [],
+    "files": [
+      "agent-avatar.tsx",
+      "index.ts"
+    ],
+    "dependencies": [
+      "@ondai/tokens",
+      "react-native-reanimated",
+      "react-native-svg"
+    ],
+    "hasPlayground": true
+  },
+  {
     "name": "auto-tag",
     "title": "AutoTag",
     "description": "Tag and category suggestions constrained to the app's own list, fuzzy-matched after the model answers.",
@@ -256,13 +293,43 @@ export const manifest: ManifestEntry[] = [
     "hasPlayground": true
   },
   {
+    "name": "image-reveal",
+    "title": "ImageReveal",
+    "description": "An image that resolves out of a churning mosaic or an ASCII field as progress rises. The loader for anything the model draws or reads.",
+    "category": "primitive",
+    "priority": "P1",
+    "capabilities": [],
+    "variants": {
+      "mode": [
+        "mosaic",
+        "ascii"
+      ]
+    },
+    "registryDependencies": [],
+    "files": [
+      "image-reveal.tsx",
+      "index.ts"
+    ],
+    "dependencies": [
+      "@ondai/tokens",
+      "react-native-reanimated",
+      "react-native-svg"
+    ],
+    "hasPlayground": true
+  },
+  {
     "name": "ion-border",
     "title": "IonBorder",
-    "description": "The signature thinking border: a slow gradient light travels around any container while the AI works.",
+    "description": "The signature thinking border: a slow gradient light, a bright comet, or a breathing ring around any container while the AI works.",
     "category": "primitive",
     "priority": "P0",
     "capabilities": [],
     "variants": {
+      "variant": [
+        "sweep",
+        "beam",
+        "pulse"
+      ],
       "radius": [
         "none",
         "sm",
@@ -532,6 +599,7 @@ export const manifest: ManifestEntry[] = [
     "registryDependencies": [
       "button",
       "field",
+      "image-reveal",
       "ion-border",
       "on-device-badge",
       "skeleton"
@@ -874,7 +942,7 @@ export const manifest: ManifestEntry[] = [
   {
     "name": "thinking-indicator",
     "title": "ThinkingIndicator",
-    "description": "Dots, orb, line or sweep: calm indicators that the on-device model is working.",
+    "description": "Dots, a metallic orb, line or sweep: calm indicators that the on-device model is working.",
     "category": "primitive",
     "priority": "P0",
     "capabilities": [],
@@ -889,6 +957,11 @@ export const manifest: ManifestEntry[] = [
         "sm",
         "md",
         "lg"
+      ],
+      "state": [
+        "thinking",
+        "listening",
+        "speaking"
       ]
     },
     "registryDependencies": [],
@@ -938,6 +1011,47 @@ export const manifest: ManifestEntry[] = [
       "@ondai/tokens",
       "lucide-react-native",
       "react-native-reanimated"
+    ],
+    "hasPlayground": true
+  },
+  {
+    "name": "voice-input",
+    "title": "VoiceInput",
+    "description": "Push-to-talk that transcribes on device: a round mic, a level-driven waveform or glow, then the transcript with Use and Retry.",
+    "category": "voice",
+    "priority": "P1",
+    "capabilities": [
+      "transcription"
+    ],
+    "variants": {
+      "presentation": [
+        "pill",
+        "card"
+      ],
+      "visual": [
+        "bars",
+        "glow"
+      ]
+    },
+    "registryDependencies": [
+      "button",
+      "streaming-text"
+    ],
+    "files": [
+      "voice-input.tsx",
+      "use-voice-input.ts",
+      "index.ts"
+    ],
+    "runsOn": [
+      "apple"
+    ],
+    "dependencies": [
+      "@ondai/core",
+      "@ondai/tokens",
+      "expo-haptics",
+      "lucide-react-native",
+      "react-native-reanimated",
+      "react-native-svg"
     ],
     "hasPlayground": true
   }

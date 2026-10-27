@@ -1,0 +1,431 @@
+/* ------------------------------------------------------------------ */
+/* Floating glass pill navigation (SiteHeader). Builds on `.glass`,     */
+/* `.icon-btn`, `.stage`, `.btn*` and `kbd.key` from global.css.        */
+/* Material and motion rules: docs/decisions/0007-site-v3-silicon.md.   */
+/* ------------------------------------------------------------------ */
+
+.nav-root {
+  position: fixed;
+  top: 16px;
+  inset-inline: 0;
+  z-index: 40; /* below the Fumadocs search dialog (z-50) */
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+@media (max-width: 640px) {
+  .nav-root {
+    top: 12px;
+  }
+}
+
+/* The pill. Width hugs its content; the fill darkens a step once the page has scrolled. */
+.nav-pill {
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  width: fit-content;
+  max-width: min(1200px, 100vw - 24px);
+  height: 52px;
+  padding: 0 8px;
+  border-radius: 999px;
+  will-change: transform;
+  transition: background-color 0.3s var(--ease-out);
+}
+.nav-pill::before {
+  /* A faint top sheen so the pill reads as one solid object, not a grey bar. */
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0) 55%);
+}
+.nav-pill[data-scrolled='true'] {
+  background: rgba(14, 16, 19, 0.8);
+}
+
+.nav-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 10px 0 8px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ondai-text);
+  white-space: nowrap;
+}
+
+/* Primary links and the one sliding highlight that follows the pointer. */
+.nav-links {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-left: 4px;
+}
+.nav-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 36px;
+  border-radius: 999px;
+  background: var(--hover);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 0.22s var(--ease-out),
+    width 0.22s var(--ease-out),
+    opacity 0.18s;
+}
+.nav-glow[data-instant='true'] {
+  transition: opacity 0.18s;
+}
+.nav-glow[data-visible='true'] {
+  opacity: 1;
+}
+.nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 13px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--ondai-text-secondary);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color 0.18s,
+    background-color 0.22s var(--ease-out);
+}
+.nav-link:hover,
+.nav-link[aria-expanded='true'],
+.nav-link[data-active='true'] {
+  color: var(--ondai-text);
+}
+.nav-link[data-active='true'],
+.nav-link[aria-expanded='true'] {
+  background: var(--hover);
+}
+/* While the sliding highlight is out it is the only fill in the row. */
+.nav-links[data-glow='true'] .nav-link[data-active='true'],
+.nav-links[data-glow='true'] .nav-link[aria-expanded='true'] {
+  background: transparent;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 8px;
+}
+.nav-search {
+  padding: 0 7px 0 11px;
+}
+.nav-search kbd {
+  margin-left: 2px;
+}
+.nav-burger {
+  display: none;
+}
+@media (max-width: 1023.98px) {
+  .nav-links {
+    display: none;
+  }
+  .nav-right {
+    margin-left: 2px;
+  }
+  .nav-search {
+    width: 36px;
+    padding: 0;
+    justify-content: center;
+    gap: 0;
+  }
+  .nav-search > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .nav-search > kbd {
+    display: none;
+  }
+  .nav-burger {
+    display: inline-flex;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Components menu: a glass panel 8 px under the pill.                  */
+/* ------------------------------------------------------------------ */
+.nav-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  inset-inline: 0;
+  margin-inline: auto;
+  width: min(960px, 100vw - 32px);
+  max-height: calc(100vh - 92px);
+  overflow: auto;
+  pointer-events: auto;
+  border-radius: 24px;
+  padding: 12px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px) scale(0.985);
+  transform-origin: 50% 0;
+  transition:
+    opacity 0.15s var(--ease-out),
+    transform 0.15s var(--ease-out),
+    visibility 0s linear 0.15s;
+}
+.nav-menu[data-state='open'] {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity 0.2s var(--ease-out),
+    transform 0.2s var(--ease-out),
+    visibility 0s;
+}
+@media (max-width: 1023.98px) {
+  .nav-menu {
+    display: none;
+  }
+}
+.nav-menu-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  gap: 12px;
+}
+.nav-menu-list {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+}
+.nav-menu-heading {
+  display: block;
+  padding: 8px 10px 4px;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--ondai-text-secondary);
+}
+ul + .nav-menu-heading {
+  margin-top: 10px;
+}
+.nav-menu-list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.nav-row {
+  display: block;
+  min-width: 0;
+  padding: 6px 10px;
+  border-radius: 10px;
+  transition: background-color 0.15s;
+}
+.nav-row:hover,
+.nav-row[data-hot='true'] {
+  background: var(--hover);
+}
+.nav-row-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--ondai-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nav-row-desc {
+  display: block;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--ondai-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nav-feats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 4px;
+}
+.nav-prims {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 4px;
+}
+.nav-prims .nav-row {
+  padding: 7px 10px;
+}
+
+.nav-preview {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.nav-tile {
+  display: block;
+  border-radius: 16px;
+  color: inherit;
+}
+.nav-tile-media {
+  display: block;
+  position: relative;
+  aspect-ratio: 16 / 10;
+}
+.nav-tile-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.36s var(--ease-out);
+}
+.nav-tile-img[data-active='true'] {
+  opacity: 1;
+}
+.nav-tile-fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ondai-text);
+}
+.nav-tile-caption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 10px 4px;
+}
+.nav-tile-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ondai-text);
+}
+.nav-tile-hint {
+  font-size: 13px;
+  color: var(--ondai-text-secondary);
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+.nav-tile:hover .nav-tile-hint {
+  color: var(--ondai-text);
+}
+.nav-menu-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 10px 4px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Mobile sheet (below 1024 px): full-screen glass, links stagger in.   */
+/* ------------------------------------------------------------------ */
+.nav-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 92px max(20px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+  overflow: auto;
+  background: rgba(7, 8, 10, 0.76);
+  backdrop-filter: blur(24px) saturate(160%);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.2s var(--ease-out),
+    visibility 0s linear 0.2s;
+}
+.nav-sheet[data-state='open'] {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 0.2s var(--ease-out),
+    visibility 0s;
+}
+@media (min-width: 1024px) {
+  .nav-sheet {
+    display: none;
+  }
+}
+.nav-sheet ul {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.nav-sheet-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 16px;
+  border-radius: 14px;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ondai-text);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: background-color 0.15s;
+}
+.nav-sheet-link:hover,
+.nav-sheet-link[data-active='true'] {
+  background: var(--hover);
+}
+.nav-sheet[data-state='open'] .nav-sheet-link {
+  animation: nav-sheet-in 0.36s var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+@keyframes nav-sheet-in {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-menu {
+    transform: none;
+    transition:
+      opacity 0.15s,
+      visibility 0s linear 0.15s;
+  }
+  .nav-menu[data-state='open'] {
+    transition:
+      opacity 0.2s,
+      visibility 0s;
+  }
+  .nav-glow {
+    transition: opacity 0.18s;
+  }
+  .nav-tile-img {
+    transition: none;
+  }
+  .nav-sheet[data-state='open'] .nav-sheet-link {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

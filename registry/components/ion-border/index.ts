@@ -1,1 +1,1 @@
-export { IonBorder, type IonBorderProps } from './ion-border'
+export { IonBorder, type IonBorderProps, type IonBorderVariant } from './ion-border'

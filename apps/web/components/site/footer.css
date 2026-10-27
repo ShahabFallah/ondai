@@ -1,0 +1,126 @@
+/* ------------------------------------------------------------------ */
+/* Site footer (SiteFooter). No border-top: the stage band and air     */
+/* separate it from the page. Builds on `.stage` and `.wrap`.           */
+/* ------------------------------------------------------------------ */
+
+.footer {
+  padding: 120px 0 40px;
+}
+@media (max-width: 640px) {
+  .footer {
+    padding-top: 80px;
+  }
+}
+
+.footer-band {
+  height: 260px;
+}
+@media (max-width: 640px) {
+  .footer-band {
+    height: 180px;
+  }
+}
+.footer-ascii {
+  position: absolute;
+  inset: 0;
+}
+.footer-band > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) repeat(4, minmax(0, 1fr));
+  gap: 32px 24px;
+  margin-top: 64px;
+}
+@media (max-width: 1023.98px) {
+  .footer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 48px;
+  }
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 480px) {
+  .footer-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.footer-brand-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ondai-text);
+}
+.footer-tagline {
+  max-width: 28ch;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ondai-text-secondary);
+}
+
+.footer-col-title {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ondai-text);
+}
+.footer-col ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.footer-link {
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--ondai-text-secondary);
+  transition: color 0.15s;
+}
+.footer-link:hover {
+  color: var(--ondai-text);
+}
+
+.footer-mark {
+  margin-top: 96px;
+  overflow: hidden;
+}
+@media (max-width: 640px) {
+  .footer-mark {
+    margin-top: 64px;
+  }
+}
+.wordmark {
+  display: block;
+  margin: 0;
+  font-size: clamp(96px, 16vw, 220px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 0.9;
+  color: var(--ondai-text);
+}
+.footer-legal {
+  /* Secondary, not tertiary: #5D636B on the void is 3.3:1 and fails AA for 13 px text. */
+  margin: 24px 0 0;
+  font-size: 13px;
+  color: var(--ondai-text-secondary);
+}

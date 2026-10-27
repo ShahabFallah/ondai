@@ -1,15 +1,22 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useId, useMemo, useState, type ReactNode } from 'react'
 import { Platform, StyleSheet, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native'
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming, cancelAnimation } from 'react-native-reanimated'
-import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg'
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming, cancelAnimation } from 'react-native-reanimated'
+import Svg, { Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg'
 import { hairlineWidth, useMotion, useTheme } from '@ondai/tokens/react'
-import type { RadiusKey } from '@ondai/tokens'
+import { hexToRgba, type AccentStops, type RadiusKey } from '@ondai/tokens'
+
+export type IonBorderVariant = 'sweep' | 'beam' | 'pulse'
 
 export interface IonBorderProps {
   /** Show the traveling light (thinking / streaming). */
   active?: boolean
   /** Fade the border in when focused: a faint static ring. */
   focused?: boolean
+  /**
+   * `sweep` (default): a soft gradient light travels around the edge. `beam`: a bright comet with a long
+   * fading tail and an outer halo. `pulse`: no travelling light, the whole ring breathes in the accent.
+   */
+  variant?: IonBorderVariant
   radius?: RadiusKey | number
   /** Ring thickness in pt. */
   width?: number
@@ -25,28 +32,51 @@ export interface IonBorderProps {
   testID?: string
 }
 
+/** Where the beam's head rests when motion is off: just past the top-right corner, tail along the top edge. */
+const beamStill = 335
+/** The halo bleeds `haloStep × haloRings` pt outside the border; each ring adds a little opacity closer to the edge. */
+const haloStep = 2
+const haloRings = 6
+const haloOpacity = [0.1, 0.08, 0.07, 0.06, 0.05, 0.04] as const
+
 /**
  * The signature "thinking" border: a slow gradient light travels around the edge of any container.
- * Idle: hairline. Focus: faint ring. Active: the ion sweep. Done: fades out within 300ms.
+ * Idle: hairline. Focus: faint ring. Active: the ion sweep (or a comet beam, or a breathing pulse). Done: fades out within 300ms.
  */
-export function IonBorder({ active = false, focused = false, radius = 'lg', width = 1.5, speed, fill, glow = false, style, contentStyle, children, testID }: IonBorderProps) {
+export function IonBorder({ active = false, focused = false, variant = 'sweep', radius = 'lg', width = 1.5, speed, fill, glow = false, style, contentStyle, children, testID }: IonBorderProps) {
   const t = useTheme()
   const motion = useMotion()
+  const uid = useId().replace(/[^a-zA-Z0-9_-]/g, '')
   const r = typeof radius === 'number' ? radius : t.radii[radius]
   const [size, setSize] = useState({ w: 0, h: 0 })
-  const rotation = useSharedValue(0)
+  const rotation = useSharedValue(variant === 'beam' && !motion.enabled ? beamStill : 0)
   const opacity = useSharedValue(active ? 1 : 0)
+  const breath = useSharedValue(0.75)
   const lapMs = (speed ?? t.durations.sweep / 1000) * 1000
+  const travelling = variant !== 'pulse'
 
   useEffect(() => {
-    if (active && motion.enabled) {
+    if (active && motion.enabled && travelling) {
       rotation.value = 0
       rotation.value = withRepeat(withTiming(360, { duration: lapMs, easing: Easing.linear }), -1, false)
     } else {
       cancelAnimation(rotation)
+      if (variant === 'beam' && !motion.enabled) rotation.value = beamStill
     }
     return () => cancelAnimation(rotation)
-  }, [active, motion.enabled, lapMs, rotation])
+  }, [active, motion.enabled, lapMs, rotation, travelling, variant])
+
+  useEffect(() => {
+    if (variant !== 'pulse') return
+    if (active && motion.enabled) {
+      breath.value = 0.3
+      breath.value = withRepeat(withSequence(withTiming(1, { duration: t.durations.pulse / 2, easing: Easing.inOut(Easing.sin) }), withTiming(0.3, { duration: t.durations.pulse / 2, easing: Easing.inOut(Easing.sin) })), -1, false)
+    } else {
+      cancelAnimation(breath)
+      breath.value = 0.75
+    }
+    return () => cancelAnimation(breath)
+  }, [variant, active, motion.enabled, breath, t.durations.pulse])
 
   useEffect(() => {
     opacity.value = motion.enabled ? withTiming(active ? 1 : 0, { duration: active ? 200 : t.durations.settle }) : active ? 1 : 0
@@ -54,6 +84,7 @@ export function IonBorder({ active = false, focused = false, radius = 'lg', widt
 
   const spin = useAnimatedStyle(() => ({ transform: [{ rotate: `${rotation.value}deg` }] }), [rotation])
   const fade = useAnimatedStyle(() => ({ opacity: opacity.value }), [opacity])
+  const pulse = useAnimatedStyle(() => ({ opacity: breath.value }), [breath])
 
   const onLayout = (e: LayoutChangeEvent) => {
     const { width: w, height: h } = e.nativeEvent.layout
@@ -69,25 +100,60 @@ export function IonBorder({ active = false, focused = false, radius = 'lg', widt
         : { shadowColor: g.solid, shadowOpacity: 0.35, shadowRadius: 16, shadowOffset: { width: 0, height: 0 } }
       : {}
 
+  // Beam geometry: one fan for the ring, a larger softer one for the halo outside it.
+  const beamD = Math.ceil(Math.hypot(size.w, size.h)) + 16
+  const haloD = Math.ceil(Math.hypot(size.w + 2 * haloStep * haloRings, size.h + 2 * haloStep * haloRings)) + 16
+  const beam = useMemo(() => (variant === 'beam' && size.w > 0 ? comet(beamD, g, { lead: 4, alpha: 0.98, layers: 36 }) : []), [variant, size.w, beamD, g])
+  const haloBeam = useMemo(() => (variant === 'beam' && size.w > 0 ? comet(haloD, g, { lead: 5, alpha: 0.95, layers: 16 }) : []), [variant, size.w, haloD, g])
+
+  const layer = testID ? (k: string) => `${testID}-${k}` : () => undefined
+
   return (
     <View style={[glowStyle, { borderRadius: r }, style]} testID={testID}>
-      <View onLayout={onLayout} style={[styles.clip, { borderRadius: r, backgroundColor: bg, borderWidth: hairlineWidth, borderColor: focused ? t.colors.accent.ring : t.colors.hairline }]}>
+      {variant !== 'sweep' && size.w > 0 ? (
+        <Animated.View pointerEvents="none" testID={layer('halo')} style={[StyleSheet.absoluteFill, fade]}>
+          {Array.from({ length: haloRings }, (_, i) => {
+            const k = haloRings - i
+            const inset = -k * haloStep
+            return (
+              <View key={k} pointerEvents="none" style={[styles.center, { position: 'absolute', left: inset, top: inset, right: inset, bottom: inset, borderRadius: r + k * haloStep, overflow: 'hidden', opacity: haloOpacity[k - 1] }]}>
+                {variant === 'beam' ? (
+                  <Animated.View style={spin}>
+                    <Fan size={haloD} layers={haloBeam} />
+                  </Animated.View>
+                ) : (
+                  <Animated.View style={[StyleSheet.absoluteFill, { backgroundColor: g.solid }, pulse]} />
+                )}
+              </View>
+            )
+          })}
+        </Animated.View>
+      ) : null}
+      <View onLayout={onLayout} testID={layer('clip')} style={[styles.clip, { borderRadius: r, backgroundColor: bg, borderWidth: hairlineWidth, borderColor: focused ? t.colors.accent.ring : t.colors.hairline }]}>
         {size.w > 0 ? (
           <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.center, fade]}>
-            <Animated.View style={spin}>
-              <Svg width={d} height={d}>
-                <Defs>
-                  <LinearGradient id="ondai-ion" x1="0" y1="0" x2="1" y2="1">
-                    <Stop offset="0" stopColor={g.a} stopOpacity={0} />
-                    <Stop offset="0.3" stopColor={g.a} stopOpacity={0.15} />
-                    <Stop offset="0.5" stopColor={g.b} stopOpacity={1} />
-                    <Stop offset="0.62" stopColor={g.c} stopOpacity={0.9} />
-                    <Stop offset="0.8" stopColor={g.c} stopOpacity={0} />
-                  </LinearGradient>
-                </Defs>
-                <Rect x={0} y={0} width={d} height={d} fill="url(#ondai-ion)" />
-              </Svg>
-            </Animated.View>
+            {variant === 'pulse' ? (
+              <Animated.View testID={layer('pulse')} style={[StyleSheet.absoluteFill, { backgroundColor: g.solid }, pulse]} />
+            ) : variant === 'beam' ? (
+              <Animated.View testID={layer('beam')} style={spin}>
+                <Fan size={beamD} layers={beam} />
+              </Animated.View>
+            ) : (
+              <Animated.View testID={layer('sweep')} style={spin}>
+                <Svg width={d} height={d}>
+                  <Defs>
+                    <LinearGradient id={`ondai-ion-${uid}`} x1="0" y1="0" x2="1" y2="1">
+                      <Stop offset="0" stopColor={g.a} stopOpacity={0} />
+                      <Stop offset="0.3" stopColor={g.a} stopOpacity={0.15} />
+                      <Stop offset="0.5" stopColor={g.b} stopOpacity={1} />
+                      <Stop offset="0.62" stopColor={g.c} stopOpacity={0.9} />
+                      <Stop offset="0.8" stopColor={g.c} stopOpacity={0} />
+                    </LinearGradient>
+                  </Defs>
+                  <Rect x={0} y={0} width={d} height={d} fill={`url(#ondai-ion-${uid})`} />
+                </Svg>
+              </Animated.View>
+            )}
           </Animated.View>
         ) : null}
         <View pointerEvents="none" style={[StyleSheet.absoluteFill, { margin: width, borderRadius: Math.max(0, r - width), backgroundColor: bg }]} />
@@ -95,6 +161,84 @@ export function IonBorder({ active = false, focused = false, radius = 'lg', widt
       </View>
     </View>
   )
+}
+
+/* ---------------------------------------------------------------------------------------------- */
+/* The comet: a fan of nested wedges from the centre of a rotating square                          */
+/* ---------------------------------------------------------------------------------------------- */
+
+interface Wedge {
+  d: string
+  fill: string
+  opacity: number
+}
+
+/** Degrees of tail behind the head. */
+const tailAngle = 150
+
+function Fan({ size, layers }: { size: number; layers: Wedge[] }) {
+  return (
+    <Svg width={size} height={size}>
+      {layers.map((w, i) => (
+        <Path key={i} d={w.d} fill={w.fill} fillOpacity={w.opacity} />
+      ))}
+    </Svg>
+  )
+}
+
+type Rgb = [number, number, number]
+const rgbOf = (hex: string): Rgb => hexToRgba(hex).slice(0, 3) as Rgb
+const lerp = (a: Rgb, b: Rgb, t: number): Rgb => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]
+const css = ([r, g, b]: Rgb) => `rgb(${Math.round(r)},${Math.round(g)},${Math.round(b)})`
+
+/** Colour along the tail (u = 0 at the head, 1 at the end): white-hot accent.b, then accent.a, fading into accent.c. */
+function cometColor(u: number, g: AccentStops): string {
+  const white: Rgb = [255, 255, 255]
+  const a = rgbOf(g.a)
+  const b = rgbOf(g.b)
+  const c = rgbOf(g.c)
+  const stops: Array<[number, Rgb]> = [
+    [0, lerp(b, white, 0.82)],
+    [0.05, lerp(a, white, 0.55)],
+    [0.14, a],
+    [0.62, c],
+    [1, c],
+  ]
+  for (let i = 1; i < stops.length; i++) {
+    const [u0, c0] = stops[i - 1]!
+    const [u1, c1] = stops[i]!
+    if (u <= u1) return css(lerp(c0, c1, (u - u0) / (u1 - u0)))
+  }
+  return css(c)
+}
+
+/**
+ * Nested wedges that all start at the head and end further down the tail, each with the opacity delta that
+ * makes the stack sum to `alpha · (1 − u)^2.2`. Nesting (instead of adjacent wedges) avoids seams at the joins.
+ * The head leads the 0° ray by `lead` degrees; the tail trails counter-clockwise behind it.
+ */
+function comet(size: number, g: AccentStops, { lead, alpha, layers }: { lead: number; alpha: number; layers: number }): Wedge[] {
+  const c = size / 2
+  const rad = size / 2 + 2
+  const profile = (u: number) => alpha * Math.pow(1 - u, 2.2)
+  const out: Wedge[] = []
+  let prev = 0
+  for (let k = 1; k <= layers; k++) {
+    const u = Math.pow(k / layers, 1.5)
+    const delta = 1 - (1 - profile(prev)) / (1 - profile(u))
+    const from = lead
+    const to = -tailAngle * u
+    const n = Math.max(2, Math.ceil((from - to) / 6))
+    const pts: string[] = []
+    for (let i = 0; i <= n; i++) {
+      const a = ((from + ((to - from) * i) / n) * Math.PI) / 180
+      pts.push(`${(c + Math.cos(a) * rad).toFixed(2)} ${(c + Math.sin(a) * rad).toFixed(2)}`)
+    }
+    out.push({ d: `M${c} ${c} L${pts.join(' L')} Z`, fill: cometColor((prev + u) / 2, g), opacity: Math.max(0, Math.min(1, delta)) })
+    prev = u
+  }
+  // Longest first, so the white head is drawn last and sits on top.
+  return out.reverse()
 }
 
 const styles = StyleSheet.create({

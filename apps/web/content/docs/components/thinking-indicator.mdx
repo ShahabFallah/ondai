@@ -1,9 +1,9 @@
 ---
 title: "ThinkingIndicator"
-description: "Dots, orb, line or sweep - calm indicators that the on-device model is working."
+description: "Dots, a metallic orb, line or sweep: calm indicators that the on-device model is working."
 ---
 
-<ComponentPreview name="thinking-indicator" state="thinking" height={160} />
+<ComponentPreview name="thinking-indicator" state="thinking" height={180} query="variant=orb&size=lg" />
 
 ## Install
 
@@ -16,8 +16,10 @@ npx ondai add thinking-indicator
 ```tsx
 import { ThinkingIndicator } from '@/components/ondai/thinking-indicator'
 
-<ThinkingIndicator variant="dots" label="Thinking" />
+<ThinkingIndicator variant="orb" size="lg" state="thinking" label="Thinking" />
 ```
+
+- The `orb` is a metallic sphere with a drifting highlight; `state` (`thinking`, `listening`, `speaking`) changes its rhythm.
 
 ## Variants
 
@@ -25,6 +27,7 @@ import { ThinkingIndicator } from '@/components/ondai/thinking-indicator'
 | --- | --- |
 | `variant` | `dots`, `orb`, `line`, `sweep` |
 | `size` | `sm`, `md`, `lg` |
+| `state` | `thinking`, `listening`, `speaking` |
 
 Every variant is live in the [playground](/playground/thinking-indicator).
 
