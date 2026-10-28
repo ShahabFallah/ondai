@@ -1,39 +1,86 @@
 import Link from 'next/link'
-import { CopyCommand } from '@/components/site/CopyCommand'
-import { AsciiCanvas } from '@/components/fx'
-import { HeroPhone } from './HeroPhone'
+import type { CSSProperties, ReactNode } from 'react'
+import { ArrowRight } from 'lucide-react'
+import { OrbFrame, TypeFrame } from './hero/InlineFrames'
+import { ProductStage } from './hero/ProductStage'
+import { Tiles } from './hero/Tiles'
+import './hero.css'
+
+/** One headline word that rises and unblurs in the entrance sequence. */
+function W({ i, children }: { i: number; children: ReactNode }) {
+  return (
+    <span className="hx-word hx-in" style={{ '--i': i } as CSSProperties}>
+      {children}
+    </span>
+  )
+}
+
+/** Split button: a short fact, a divider, the action. The labels roll on hover. */
+function SplitCta() {
+  const face = (
+    <>
+      <span className="hx-cta-a">Free</span>
+      <span className="hx-cta-b">
+        Get started
+        <ArrowRight size={15} strokeWidth={2} />
+      </span>
+    </>
+  )
+  return (
+    <Link href="/docs/installation" className="hx-cta">
+      <span className="hx-cta-roll">
+        <span className="hx-cta-face">{face}</span>
+        <span className="hx-cta-face" aria-hidden>
+          {face}
+        </span>
+      </span>
+    </Link>
+  )
+}
 
 export function Hero() {
   return (
-    <section className="hero" aria-labelledby="hero-title">
-      <div className="wrap hero-grid">
-        <div className="hero-copy">
-          <h1 id="hero-title" className="display max-w-[13ch]">
-            The model is already on the phone.
-          </h1>
-          <p className="lead mt-6 max-w-[52ch]">
-            Ondai is a set of copy-paste React Native components, each one a finished on-device AI feature: a command bar, forms that fill themselves, summaries, replies, filters. It runs on the phone&apos;s own model, so it is free, private, and works in airplane mode.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Link href="/docs/installation" className="btn btn-primary btn-lg">
-              Get started
-            </Link>
-            <Link href="/playground" className="btn btn-secondary btn-lg">
-              Browse components
-            </Link>
-          </div>
-          <div className="mt-5">
-            <CopyCommand command="npx ondai add command-bar" />
-          </div>
+    <section className="hx" aria-labelledby="hero-title">
+      <div className="hx-intro">
+        <p className="hx-label hx-in" style={{ '--i': 0 } as CSSProperties}>
+          Twenty-six components. Zero servers.
+        </p>
+        <Tiles />
+
+        <h1 id="hero-title" className="hx-title" aria-label="Your app thinks on the phone.">
+          <span className="hx-line">
+            <W i={3}>Your</W>
+            <W i={4}>app</W>
+            <OrbFrame i={5} />
+            <W i={6}>thinks</W>
+          </span>
+          <span className="hx-line">
+            <W i={7}>on</W>
+            <W i={8}>the</W>
+            <TypeFrame i={9} />
+            <W i={10}>phone.</W>
+          </span>
+        </h1>
+
+        <p className="hx-lead hx-in" style={{ '--i': 11 } as CSSProperties}>
+          Copy-paste React Native components that run on the phone&apos;s own model. Free, private,
+          and fast in airplane mode.
+        </p>
+
+        <div className="hx-actions hx-in" style={{ '--i': 12 } as CSSProperties}>
+          <SplitCta />
+          <Link href="/playground" className="hx-secondary">
+            Browse components
+          </Link>
         </div>
-        <div className="hero-visual">
-          <div className="relative">
-            <AsciiCanvas src="/img/hero-chip.png" drift cell={10} color="var(--ondai-text-tertiary)" className="phone-ascii left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
-            <HeroPhone />
-          </div>
-          <p className="label muted mt-2 text-center">The real CommandBar on a scripted mock. Type a request and press Enter.</p>
-        </div>
+
+        <p className="hx-proof hx-in" style={{ '--i': 13 } as CSSProperties}>
+          <span className="hx-live-dot" aria-hidden />
+          Runs on iPhone 15 Pro, Pixel 9, and anything with Llama
+        </p>
       </div>
+
+      <ProductStage />
     </section>
   )
 }

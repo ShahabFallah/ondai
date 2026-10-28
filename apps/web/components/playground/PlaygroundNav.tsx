@@ -1,39 +1,49 @@
+'use client'
+import { useLayoutEffect, useRef } from 'react'
 import Link from 'next/link'
-import { manifest } from '@ondai/registry/manifest'
+import { useIndicator } from '../ui/useIndicator'
+import type { CatalogGroup } from './catalog'
+import '../ui/ui.css'
+import './playground.css'
 
-/** Category order shared by the sidebar and the gallery. Categories not listed here are appended. */
-export const categoryOrder: ReadonlyArray<readonly [string, string]> = [
-  ['agentic', 'Agentic'],
-  ['input', 'Input'],
-  ['text', 'Text'],
-  ['search', 'Search'],
-  ['organize', 'Organize'],
-  ['vision', 'Vision'],
-  ['voice', 'Voice'],
-  ['feed', 'Feed'],
-  ['primitive', 'Primitives'],
-]
+let savedScroll = 0
 
-export function PlaygroundNav({ current }: { current?: string }) {
-  const items = manifest.filter((m) => m.hasPlayground)
-  const known = categoryOrder.map(([id]) => id)
-  const extra = [...new Set(items.map((m) => m.category))].filter((c) => !known.includes(c)).map((c) => [c, c.charAt(0).toUpperCase() + c.slice(1)] as const)
-  const groups = [...categoryOrder, ...extra].map(([c, title]) => ({ c, title, items: items.filter((m) => m.category === c) })).filter((g) => g.items.length)
+/** The component list. The highlight slides to the open page, even across navigations. */
+export function PlaygroundNav({ current, groups }: { current?: string; groups: CatalogGroup[] }) {
+  const { ref, style, animate } = useIndicator<HTMLElement>(current, 'playground-nav')
+  const aside = useRef<HTMLElement>(null)
+
+  useLayoutEffect(() => {
+    const el = aside.current
+    if (!el) return
+    el.scrollTop = savedScroll
+    const active = el.querySelector<HTMLElement>('[data-active="true"]')
+    if (active) {
+      const top = active.offsetTop
+      if (top < el.scrollTop + 40 || top > el.scrollTop + el.clientHeight - 80) el.scrollTop = Math.max(0, top - el.clientHeight / 3)
+    }
+  }, [current])
+
   return (
-    <nav aria-label="Components" className="flex flex-col gap-6">
-      <Link href="/playground" className="sidebar-link text-[color:var(--ondai-text)]">
-        All components
-      </Link>
-      {groups.map((g) => (
-        <div key={g.c}>
-          <div className="label mb-1 px-2.5">{g.title}</div>
-          {g.items.map((m) => (
-            <Link key={m.name} href={`/playground/${m.name}`} className="sidebar-link" data-active={m.name === current}>
-              {m.title}
-            </Link>
-          ))}
+    <aside ref={aside} className="pg-aside" onScroll={(e) => (savedScroll = e.currentTarget.scrollTop)}>
+      <nav ref={ref} aria-label="Components" className="pg-nav">
+        <span aria-hidden className="ui-ind pg-nav-ind" data-animate={animate} style={style} />
+        <div>
+          <Link href="/playground" className="pg-nav-link" data-active={!current}>
+            All components
+          </Link>
         </div>
-      ))}
-    </nav>
+        {groups.map((g) => (
+          <div key={g.id}>
+            <div className="pg-nav-head">{g.title}</div>
+            {g.items.map((m) => (
+              <Link key={m.name} href={`/playground/${m.name}`} className="pg-nav-link" data-active={m.name === current} aria-current={m.name === current ? 'page' : undefined}>
+                {m.title}
+              </Link>
+            ))}
+          </div>
+        ))}
+      </nav>
+    </aside>
   )
 }

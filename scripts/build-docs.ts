@@ -173,7 +173,7 @@ for (const item of manifest.items) {
   }
   lines.push('## Runs on', '', '| Capability | Apple FM | Gemini Nano | Llama | Cloud |', '| --- | --- | --- | --- | --- |')
   const cap = o.capabilities.length ? o.capabilities.join(', ') : 'none (pure UI)'
-  lines.push(`| ${cap} | ${runsOn.includes('apple') ? '✅' : '—'} | ${runsOn.includes('nano') ? '✅' : '—'} | ${runsOn.includes('llama') ? '✅' : '—'} | ${runsOn.includes('cloud') ? '✅' : '—'} |`, '')
+  lines.push(`| ${cap} | ${runsOn.includes('apple') ? '✅' : 'No'} | ${runsOn.includes('nano') ? '✅' : 'No'} | ${runsOn.includes('llama') ? '✅' : 'No'} | ${runsOn.includes('cloud') ? '✅' : 'No'} |`, '')
   if (o.budget) lines.push('## Token budget', '', `Input budget: **${o.budget.input} tokens**. ${o.budget.strategy}`, '')
   lines.push('## Fallback', '', o.capabilities.length ? 'When no provider is ready the component renders the unavailable state (`AvailabilityGate` copy) and, where a deterministic path exists, keeps working without the model.' : 'Pure UI: no model required.', '')
   lines.push('## Eval score', '', existsSync(join(root, 'evals', item.name, 'fixtures.json')) ? `Fixtures: \`evals/${item.name}/fixtures.json\`.` : '', '')

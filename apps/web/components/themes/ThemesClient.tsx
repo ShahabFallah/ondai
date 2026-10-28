@@ -1,14 +1,16 @@
 'use client'
 import dynamic from 'next/dynamic'
-import { useCallback, useMemo, useRef, useState } from 'react'
-import { Check, Copy } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Check, Copy, Plus } from 'lucide-react'
+import { useTheme } from 'next-themes'
 import { resolveTheme, themeToCssVars, type AccentName, type ThemeName } from '@ondai/tokens'
 import { Segmented } from '../ui/Segmented'
+import '../ui/ui.css'
 import './themes.css'
 
 const ThemePreview = dynamic(() => import('./ThemePreview'), {
   ssr: false,
-  loading: () => <p className="ondai-waiting label p-8">Mounting the screen…</p>,
+  loading: () => <p className="ondai-waiting label p-8">Mounting the screens…</p>,
 })
 
 type StudioTheme = Exclude<ThemeName, 'system'>
@@ -25,8 +27,9 @@ const swatchKeys = ['bg', 'surface', 'elevated', 'elevatedHover', 'input', 'hair
 function useCopied() {
   const [copied, setCopied] = useState<string | null>(null)
   const timer = useRef<number>(0)
+  useEffect(() => () => window.clearTimeout(timer.current), [])
   const copy = useCallback((key: string, text: string) => {
-    void navigator.clipboard.writeText(text)
+    void navigator.clipboard?.writeText(text).catch(() => {})
     setCopied(key)
     window.clearTimeout(timer.current)
     timer.current = window.setTimeout(() => setCopied(null), 1500)
@@ -34,10 +37,53 @@ function useCopied() {
   return { copied, copy }
 }
 
+const isColor = (v: string) => /^(#|rgba?\(|hsla?\()/i.test(v.trim())
+
+/** `--name: value;` lines, with a tiny chip for every colour. */
+function CssLines({ vars }: { vars: Record<string, string> }) {
+  return (
+    <pre className="th-code">
+      <span className="k">:root</span> {'{'}
+      {'\n'}
+      {Object.entries(vars).map(([k, v]) => (
+        <span key={k} className="th-line">
+          {'  '}
+          <span className="n">{k}</span>: {isColor(v) ? <i className="th-chip" style={{ background: v }} /> : null}
+          {v};{'\n'}
+        </span>
+      ))}
+      {'}'}
+    </pre>
+  )
+}
+
+function Row({ title, value, children }: { title: string; value: string; children: ReactNode }) {
+  return (
+    <div className="th-row">
+      <div className="th-row-head">
+        <span>{title}</span>
+        <strong>{value}</strong>
+      </div>
+      {children}
+    </div>
+  )
+}
+
 export default function ThemesClient() {
-  const [theme, setTheme] = useState<StudioTheme>('void')
+  const [theme, setThemeState] = useState<StudioTheme>('paper')
+  const picked = useRef(false)
+  const { resolvedTheme } = useTheme()
+  // Start in the site's own mode (Paper by day, Void by night) until the visitor picks one.
+  useEffect(() => {
+    if (!picked.current && resolvedTheme) setThemeState(resolvedTheme === 'dark' ? 'void' : 'paper')
+  }, [resolvedTheme])
+  const setTheme = (t: StudioTheme) => {
+    picked.current = true
+    setThemeState(t)
+  }
   const [accent, setAccent] = useState<AccentName>('ion')
   const [custom, setCustom] = useState<Stops>({ a: '#7CF7FF', b: '#8B7CFF', c: '#FF7CE5' })
+  const [format, setFormat] = useState<'css' | 'json'>('css')
   const { copied, copy } = useCopied()
 
   const resolved = useMemo(() => resolveTheme({ theme, accent, customAccent: custom }), [theme, accent, custom])
@@ -50,94 +96,89 @@ export default function ThemesClient() {
     const value = key.startsWith('accent.') ? resolved.colors.accent[key.slice(7) as 'a' | 'b' | 'c'] : (resolved.colors[key as keyof typeof resolved.colors] as string)
     return { key, value }
   })
+  // The page follows the preview: Paper puts the stage in daylight, Void and Glass at night.
+  const tone = theme === 'paper' ? 'tone-light' : 'tone-dark'
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="themes-studio">
-        <div className="glass themes-panel" role="group" aria-label="Theme controls">
-          <div className="themes-row">
-            <div className="themes-row-head">
-              <span className="label">Theme</span>
-              <strong>{themeLabel[theme]}</strong>
-            </div>
+    <div className="flex flex-col gap-4">
+      <section className={`th-stage ${tone}`} data-theme={theme} aria-label="Preview">
+        <div className="th-panel" role="group" aria-label="Theme controls">
+          <Row title="Theme" value={themeLabel[theme]}>
             <Segmented label="Theme" options={['void', 'paper', 'glass'] as const} value={theme} onChange={setTheme} format={(v) => themeLabel[v]} />
-          </div>
+          </Row>
 
-          <div className="themes-row">
-            <div className="themes-row-head">
-              <span className="label">Accent</span>
-              <strong>{accentLabel[accent]}</strong>
-            </div>
-            <div className="accent-row" role="radiogroup" aria-label="Accent">
+          <Row title="Accent" value={accentLabel[accent]}>
+            <div className="th-accents" role="radiogroup" aria-label="Accent">
               {accentOrder.map((a) => (
-                <button key={a} type="button" role="radio" aria-checked={a === accent} aria-label={accentLabel[a]} title={accentLabel[a]} data-custom={a === 'custom'} className="accent-swatch" style={{ background: gradient(presetStops[a]) }} onClick={() => setAccent(a)} />
+                <button key={a} type="button" role="radio" aria-checked={a === accent} aria-label={accentLabel[a]} title={accentLabel[a]} className="th-accent" style={{ background: gradient(presetStops[a]) }} onClick={() => setAccent(a)}>
+                  {a === 'custom' ? <Plus size={16} strokeWidth={2} aria-hidden /> : null}
+                </button>
               ))}
             </div>
-          </div>
+          </Row>
 
-          {accent === 'custom' ? (
-            <div className="custom-stops">
+          <div className="th-stops" data-open={accent === 'custom'} aria-hidden={accent !== 'custom'}>
+            <div className="th-stops-inner">
               {(['a', 'b', 'c'] as const).map((k) => (
-                <label key={k} className="custom-stop">
-                  <input type="color" className="stop-input" value={custom[k]} aria-label={`Stop ${k}`} onChange={(e) => setCustom((c) => ({ ...c, [k]: e.target.value.toUpperCase() }))} />
+                <label key={k} className="th-stop">
+                  <input type="color" value={custom[k]} aria-label={`Stop ${k}`} tabIndex={accent === 'custom' ? 0 : -1} onChange={(e) => setCustom((c) => ({ ...c, [k]: e.target.value.toUpperCase() }))} />
                   <span>{custom[k]}</span>
                 </label>
               ))}
             </div>
-          ) : null}
+          </div>
 
-          <div className="themes-gradient" aria-hidden style={{ background: `linear-gradient(90deg, ${resolved.colors.accent.a}, ${resolved.colors.accent.b}, ${resolved.colors.accent.c})` }} />
+          <div className="th-bar" aria-hidden style={{ background: `linear-gradient(90deg, ${resolved.colors.accent.a}, ${resolved.colors.accent.b}, ${resolved.colors.accent.c})` }} />
 
-          <div className="themes-export">
-            <button type="button" className="btn btn-secondary btn-sm" onClick={() => copy('json', json)}>
-              {copied === 'json' ? 'Copied' : 'Copy JSON'}
+          <div className="th-export">
+            <button type="button" className="th-btn" onClick={() => copy('json', json)}>
+              {copied === 'json' ? <Check size={14} strokeWidth={2} /> : <Copy size={14} strokeWidth={1.75} />}
+              {copied === 'json' ? 'Copied' : 'JSON'}
             </button>
-            <button type="button" className="btn btn-secondary btn-sm" onClick={() => copy('css', css)}>
+            <button type="button" className="th-btn th-btn-ink" onClick={() => copy('css', css)}>
+              {copied === 'css' ? <Check size={14} strokeWidth={2} /> : <Copy size={14} strokeWidth={1.75} />}
               {copied === 'css' ? 'Copied' : 'Copy CSS'}
             </button>
           </div>
         </div>
 
-        <section className="stage themes-stage" data-theme={theme} aria-label="Preview" style={{ background: resolved.colors.bg }}>
+        <div className="th-screens">
           <ThemePreview theme={theme} accent={accent} custom={custom} />
+        </div>
+      </section>
+
+      <div className="th-lower">
+        <section className="ui-card th-card" aria-labelledby="palette">
+          <div className="th-card-head">
+            <h2 id="palette">Palette</h2>
+            <span>
+              {themeLabel[theme]} · {accentLabel[accent]}
+            </span>
+          </div>
+          <div className="th-swatches">
+            {swatches.map((s) => (
+              <button key={s.key} type="button" className="th-swatch" onClick={() => copy(`sw-${s.key}`, s.value)} aria-label={`Copy ${s.key} ${s.value}`}>
+                <i style={{ background: s.value }} />
+                <span>{s.key}</span>
+                <small>{copied === `sw-${s.key}` ? 'Copied' : s.value}</small>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className="ui-card th-card th-card-code" aria-labelledby="tokens">
+          <div className="th-card-head">
+            <h2 id="tokens">Tokens</h2>
+            <div className="flex items-center gap-1">
+              <Segmented size="sm" label="Format" options={['css', 'json'] as const} value={format} onChange={setFormat} format={(v) => v.toUpperCase()} />
+              <button type="button" className="ui-icon-btn" aria-label={`Copy ${format.toUpperCase()}`} onClick={() => copy('code', format === 'css' ? css : json)}>
+                {copied === 'code' ? <Check size={15} strokeWidth={2} /> : <Copy size={15} strokeWidth={1.75} />}
+              </button>
+            </div>
+          </div>
+          {format === 'css' ? <CssLines vars={vars} /> : <pre className="th-code">{json}</pre>}
         </section>
       </div>
-
-      <section className="card p-5" aria-labelledby="colours">
-        <div className="mb-4 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-          <h2 id="colours" className="text-[15px] font-medium">
-            Colours
-          </h2>
-          <span className="label">
-            {themeLabel[theme]} with {accentLabel[accent].toLowerCase()}. Hover a swatch for its value.
-          </span>
-        </div>
-        <div className="swatch-ribbon">
-          {swatches.map((s) => (
-            <div key={s.key} className="swatch" title={`${s.key} ${s.value}`}>
-              <i style={{ background: s.value }} />
-              <span>{s.key}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="card p-3 sm:p-4" aria-labelledby="vars">
-        <div className="mb-3 flex items-center justify-between gap-3 px-1">
-          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <h2 id="vars" className="text-[15px] font-medium">
-              CSS variables
-            </h2>
-            <span className="label">shadcn names plus the ondai extras, ready for a web app.</span>
-          </div>
-          <button type="button" className="icon-btn" aria-label="Copy CSS variables" onClick={() => copy('vars', css)}>
-            {copied === 'vars' ? <Check size={16} /> : <Copy size={16} />}
-          </button>
-        </div>
-        <div className="stage">
-          <pre className="code-block themes-code">{css}</pre>
-        </div>
-      </section>
     </div>
   )
 }

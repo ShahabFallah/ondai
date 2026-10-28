@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useTheme } from 'next-themes'
 import { playgroundDefaults, queryDefaults, type PlaygroundDef, type PlaygroundQuery } from '@ondai/playground'
 import { PlaygroundHost } from '@ondai/playground/host'
 import { playgrounds } from '@ondai/registry/playgrounds'
@@ -17,17 +18,21 @@ const titleOf = (name: string) =>
 /** The react-native-web tree for one live demo. Loaded client-only; the mock answers from `demos.ts`. */
 export default function LiveDemoTree({
   name,
-  theme,
+  theme: themeProp,
   overrides,
   title,
   onReady,
 }: {
   name: DemoName
-  theme: 'void' | 'paper' | 'glass'
+  /** Unset follows the site theme: paper in light mode, void in dark. */
+  theme?: 'void' | 'paper' | 'glass'
   overrides?: Record<string, unknown>
   title?: string
   onReady?: () => void
 }) {
+  const { resolvedTheme } = useTheme()
+  const siteDark = resolvedTheme ? resolvedTheme === 'dark' : typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
+  const theme = themeProp ?? (siteDark ? 'void' : 'paper')
   const loader = registered[name]
   const [def, setDef] = useState<PlaygroundDef | null>(null)
   useEffect(() => {

@@ -7,7 +7,7 @@ export default function Layout({ children }: LayoutProps<'/docs'>) {
   return (
     <>
       <SiteHeader />
-      <DocsLayout tree={source.getPageTree()} nav={{ enabled: false }} themeSwitch={{ enabled: false }} searchToggle={{ enabled: false }} containerProps={{ className: 'docs-shell' }}>
+      <DocsLayout tree={source.getPageTree()} nav={{ enabled: false }} sidebar={{ collapsible: false }} themeSwitch={{ enabled: false }} searchToggle={{ enabled: false }} containerProps={{ className: 'docs-shell' }}>
         {children}
       </DocsLayout>
     </>

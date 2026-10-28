@@ -14,7 +14,6 @@
     "contact-sheets": "tsx scripts/contact-sheets.ts"
   },
   "dependencies": {
-    "@lucasmarkes/hairline": "0.5.1",
     "@ondai/core": "workspace:*",
     "@ondai/playground": "workspace:*",
     "@ondai/registry": "workspace:*",
@@ -28,6 +27,7 @@
     "lucide-react": "^1.61.0",
     "lucide-react-native": "catalog:",
     "next": "16.4.3",
+    "next-themes": "0.4.6",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-native": "catalog:",

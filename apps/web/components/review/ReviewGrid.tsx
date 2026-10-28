@@ -50,28 +50,38 @@ export default function ReviewGrid({ component, theme, motion, clock }: { compon
     if (pending.current <= 0) document.documentElement.dataset.ready = 'true'
   }
 
+  const groups = useMemo(() => {
+    const out: { def: PlaygroundDef; cells: typeof cells }[] = []
+    for (const c of cells) {
+      const last = out[out.length - 1]
+      if (last && last.def.name === c.def.name) last.cells.push(c)
+      else out.push({ def: c.def, cells: [c] })
+    }
+    return out
+  }, [cells])
+
   return (
-    <div className="flex flex-col gap-10">
-      {cells.map((c, i) => {
-        const header = i === 0 || cells[i - 1]!.def.name !== c.def.name
-        return (
-          <div key={c.key} className="flex flex-col gap-3">
-            {header ? (
-              <h2 className="text-[17px] font-medium tracking-tight mt-6" id={c.def.name}>
-                {c.def.title}
-              </h2>
-            ) : null}
-            <div className="flex flex-col sm:flex-row items-start gap-2 sm:gap-4 min-w-0">
-              <span className="ondai-mono sm:w-28 shrink-0 pt-2 text-[color:var(--ondai-text-tertiary)]">
-                {c.query.state} · {c.query.theme}
-              </span>
-              <div data-theme={c.query.theme} className="rounded-[16px] ondai-hairline overflow-hidden max-w-full" style={{ background: c.query.theme === 'paper' ? '#FAFAFA' : '#07080A' }}>
-                <PlaygroundHost def={c.def} query={c.query} onReady={onReady} />
-              </div>
-            </div>
+    <div className="flex flex-col gap-14">
+      {groups.map((g) => (
+        <section key={g.def.name} aria-labelledby={g.def.name} className="flex flex-col gap-5">
+          <h2 id={g.def.name} className="text-[18px] leading-[1.3] font-semibold tracking-[-0.02em] text-[color:var(--fg)]">
+            {g.def.title}
+          </h2>
+          <div className="flex flex-wrap items-start gap-x-6 gap-y-8">
+            {g.cells.map((c) => (
+              <figure key={c.key} className="m-0 flex min-w-0 max-w-full flex-col gap-2.5">
+                <div data-theme={c.query.theme} className="ondai-hairline max-w-full overflow-hidden rounded-[var(--r-card)]" style={{ background: c.query.theme === 'paper' ? '#FAFAFA' : '#07080A' }}>
+                  <PlaygroundHost def={c.def} query={c.query} onReady={onReady} />
+                </div>
+                <figcaption className="flex items-center gap-2 px-1 text-[12.5px]">
+                  <span className="font-medium text-[color:var(--fg)]">{c.query.state}</span>
+                  <span className="ondai-mono text-[color:var(--fg-2)]">{c.query.theme}</span>
+                </figcaption>
+              </figure>
+            ))}
           </div>
-        )
-      })}
+        </section>
+      ))}
     </div>
   )
 }

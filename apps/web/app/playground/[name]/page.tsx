@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { PlaygroundPage } from '@/components/playground/PlaygroundPage'
 import { manifest } from '@ondai/registry/manifest'
 import { PlaygroundNav } from '@/components/playground/PlaygroundNav'
+import { catalogGroups } from '@/components/playground/catalog'
 import { SiteHeader } from '@/components/site/SiteHeader'
 import { SiteFooter } from '@/components/site/SiteFooter'
 
@@ -26,16 +27,20 @@ export default async function Page({ params, searchParams }: { params: Promise<{
       </Suspense>
     )
   }
+  const groups = catalogGroups()
+  const flat = groups.flatMap((g) => g.items.map((m) => ({ ...m, group: g.title })))
+  const at = flat.findIndex((m) => m.name === name)
+  const here = flat[at]
+  const link = (m?: { name: string; title: string }) => (m ? { name: m.name, title: m.title } : undefined)
+  const meta = here ? { line: here.line, category: here.group, prev: link(flat[at - 1]), next: link(flat[at + 1]) } : undefined
   return (
     <>
       <SiteHeader />
-      <div className="wrap flex gap-10 pt-24 pb-16">
-        <aside className="sticky top-24 hidden max-h-[calc(100vh-120px)] w-[200px] shrink-0 self-start overflow-y-auto pb-8 lg:block">
-          <PlaygroundNav current={name} />
-        </aside>
-        <main className="min-w-0 flex-1">
+      <div className="wrap flex gap-12 pt-24 pb-16">
+        <PlaygroundNav current={name} groups={groups} />
+        <main className="min-w-0 flex-1 pt-4">
           <Suspense fallback={null}>
-            <PlaygroundPage name={name} />
+            <PlaygroundPage name={name} meta={meta} />
           </Suspense>
         </main>
       </div>

@@ -18,7 +18,7 @@ Everything is built from `@ondai/tokens`: a 12-step cool gray scale, one accent 
 
 Accents: `ion` (cyan → violet → magenta, the default), `mono` (white or black only), `aurora` (green-teal), `ember` (orange-red), or `custom` with three stops.
 
-The accent is used **only** for AI states: thinking borders, the streaming caret, the badge dot, focus rings on AI inputs. Static UI stays monochrome.
+The accent is **only** for AI states: thinking borders, the streaming caret, the badge dot, focus rings on AI inputs. Everything else stays monochrome.
 
 ## Using the tokens in your own UI
 
@@ -28,6 +28,6 @@ const t = useTheme()
 <Text style={[typeStyle(t, 'md', { weight: 'medium' }), { color: t.colors.text }]} />
 ```
 
-For NativeWind or react-native-reusables projects, `@ondai/tokens/tailwind-preset` maps the same palette onto the shadcn variable names, and `@ondai/tokens/css` generates the CSS variables for the web.
+On NativeWind or react-native-reusables, `@ondai/tokens/tailwind-preset` maps the palette onto the shadcn variable names. `@ondai/tokens/css` generates the CSS variables for the web.
 
-Try every theme and accent live on the [Themes](/themes) page.
+Try every theme and accent on the [Themes](/themes) page.

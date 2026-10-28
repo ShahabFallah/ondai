@@ -9,6 +9,7 @@ const Tree = dynamic(() => import('./LiveDemoTree'), {
 
 export interface LiveDemoProps {
   name: DemoName
+  /** Leave unset to follow the site: paper in light mode, void in dark. */
   theme?: 'void' | 'paper' | 'glass'
   /** Props merged over the demo's defaults (e.g. a shorter placeholder inside the phone). */
   props?: Record<string, unknown>
@@ -19,6 +20,6 @@ export interface LiveDemoProps {
 }
 
 /** A registry component, live, on the scripted mock. Everything the visitor types gets a scripted answer. */
-export function LiveDemo({ name, theme = 'void', props, title, onReady }: LiveDemoProps) {
+export function LiveDemo({ name, theme, props, title, onReady }: LiveDemoProps) {
   return <Tree name={name} theme={theme} overrides={props} title={title} onReady={onReady} />
 }

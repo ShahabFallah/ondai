@@ -16,7 +16,7 @@ description: "Add Ondai to an Expo or bare React Native app in a few minutes."
 npx ondai init
 ```
 
-`init` detects Expo or bare React Native and your package manager, installs `@ondai/core`, `@ondai/tokens`, `ai` (v6), `zod` and the Callstack providers, writes `ondai.json`, adds `components/ondai/provider.tsx`, and prints the native steps.
+`init` detects Expo or bare React Native and your package manager. It installs `@ondai/core`, `@ondai/tokens`, `ai` (v6), `zod` and the Callstack providers, writes `ondai.json`, adds `components/ondai/provider.tsx` and prints the native steps.
 
 ## 2. Wrap your app
 
@@ -39,7 +39,7 @@ On Android, add `nano: nanoAdapter(adk)` from `@ondai/core/adk` and `@react-nati
 
 ## 3. Polyfills
 
-The AI SDK needs two polyfills in the React Native runtime. Create `polyfills.ts` and import it first in your entry file:
+The AI SDK needs two polyfills on React Native. Create `polyfills.ts` and import it first in your entry file:
 
 ```ts
 import { Platform } from 'react-native'
@@ -60,7 +60,7 @@ if (Platform.OS !== 'web') {
 npx ondai add command-bar summarize
 ```
 
-Files land in `components/ondai/<name>/`. Dependencies (including other registry components) are installed automatically.
+Files land in `components/ondai/<name>/`. Dependencies, including other registry components, install automatically.
 
 ## 5. Rebuild
 
@@ -68,4 +68,4 @@ Files land in `components/ondai/<name>/`. Dependencies (including other registry
 npx expo prebuild && npx expo run:ios
 ```
 
-Run `npx ondai doctor` whenever something looks off: it checks Node, React Native, Reanimated, the `ai` major version, polyfills, the New Architecture flag and the Android `minSdkVersion` (26 for Gemini Nano).
+Something off? Run `npx ondai doctor`. It checks Node, React Native, Reanimated, the `ai` major version, polyfills, the New Architecture flag and the Android `minSdkVersion` (26 for Gemini Nano).

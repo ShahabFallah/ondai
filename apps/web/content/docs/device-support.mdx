@@ -11,7 +11,7 @@ description: "Which devices have a built-in model, and what happens on the ones 
 - iPad Pro and iPad Air with M1 or later, iPad mini (A17 Pro).
 - Apple silicon Macs.
 - Not available in mainland China; language support varies by region.
-- The iOS Simulator can run the model on an Apple-silicon Mac with Apple Intelligence enabled, when the simulator runtime matches the host's model assets (see ECOSYSTEM.md for the mismatch we hit with an iOS 26.2 runtime on macOS 26.6).
+- The iOS Simulator can run the model on an Apple-silicon Mac with Apple Intelligence on, as long as the simulator runtime matches the host's model assets.
 
 ## Gemini Nano (ML Kit GenAI Prompt API, Android 14+ with AICore)
 
@@ -22,4 +22,4 @@ description: "Which devices have a built-in model, and what happens on the ones 
 
 ## Everything else
 
-The router falls back in order: Apple → Nano → Llama (opt-in GGUF download) → cloud (only if you allow it). With no provider, `AvailabilityGate` renders an elegant empty state with a "Learn how to enable" link, and components that have a deterministic fallback (CommandBar keyword search, SemanticSearch keyword matching) keep working.
+The router falls back in order: Apple → Nano → Llama (opt-in GGUF download) → cloud (only if you allow it). With no provider, `AvailabilityGate` shows a calm empty state with a "Learn how to enable" link. Components with a deterministic fallback (CommandBar keyword search, SemanticSearch keyword matching) keep working.

@@ -13,7 +13,7 @@ const ai = createOndai({
 })
 ```
 
-Requests declare a **capability** (`text`, `structured`, `tools`, `vision`, `embeddings`, `transcription`, `speech`). The router picks the first provider in `policy.order` that is ready and supports it, and returns the provider id so the UI can show `ON DEVICE · APPLE`. Cloud is only ever used when `allowCloud` is true and you configured a cloud model; components can be marked `localOnly`.
+Requests declare a **capability** (`text`, `structured`, `tools`, `vision`, `embeddings`, `transcription`, `speech`). The router picks the first provider in `policy.order` that is ready and supports it, and returns its id so the UI can show `ON DEVICE · APPLE`. Cloud runs only when `allowCloud` is true and a cloud model is configured. Components can be marked `localOnly`.
 
 ## Availability
 
@@ -49,7 +49,7 @@ Every hook shares one state machine (`idle → thinking → streaming → done |
 
 ## Errors
 
-Every error becomes an `OndaiError` with a `kind` (`context-overflow`, `refusal`, `unsupported-language`, `quota`, `unavailable`, `cancelled`, `invalid-output`, `tool-error`, `network`, `unknown`), a human message and the raw cause. Only context overflow and invalid output are retried, exactly once, with a smaller budget. Never in a loop.
+Every error becomes an `OndaiError` with a `kind` (`context-overflow`, `refusal`, `unsupported-language`, `quota`, `unavailable`, `cancelled`, `invalid-output`, `tool-error`, `network`, `unknown`), a human message and the raw cause. Only context overflow and invalid output are retried: once, with a smaller budget. Never in a loop.
 
 ## Mock provider
 
@@ -58,4 +58,4 @@ import { mockAdapter, mockScript } from '@ondai/core/mock'
 const mock = mockAdapter({ script: mockScript.thinking(800).stream('Hello from the phone.', 40) })
 ```
 
-The mock is a real AI SDK `LanguageModelV3`, so `generateText`, `streamText`, structured output and tool calls run the genuine code path on the web and in tests. Scripts can stream at a configurable rate, return objects, call tools, fail, refuse, or report an unavailable device, with deterministic seeds and a manual clock for screenshots.
+The mock is a real AI SDK `LanguageModelV3`, so `generateText`, `streamText`, structured output and tool calls run the real code path on the web and in tests. Scripts can stream at any rate, return objects, call tools, fail, refuse or report an unavailable device. Seeds are deterministic and a manual clock freezes frames for screenshots.

@@ -28,12 +28,12 @@ export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
       <div className="md:hidden">
         <SidebarTrigger className="btn btn-secondary btn-sm">
           <Menu size={14} />
-          Browse the docs
+          Browse docs
         </SidebarTrigger>
       </div>
-      <DocsTitle className="h2">{page.data.title}</DocsTitle>
-      <DocsDescription className="lead mb-0">{page.data.description}</DocsDescription>
-      <div className="flex flex-row items-center gap-2 border-b border-[color:var(--ondai-hairline)] pb-6">
+      <DocsTitle className="docs-title">{page.data.title}</DocsTitle>
+      <DocsDescription className="docs-lead mb-0">{page.data.description}</DocsDescription>
+      <div className="docs-actions flex flex-row items-center gap-2 pb-4">
         <MarkdownCopyButton markdownUrl={markdownUrl} />
         <ViewOptionsPopover
           markdownUrl={markdownUrl}

@@ -1,20 +1,105 @@
-/* Docs chrome under the floating pill nav (52 px tall at top 16 px, fixed, overlaying the page).
-   Imported by app/docs/layout.tsx. Fumadocs 16 offsets its sticky sidebar, table of contents and the
-   mobile TOC bar by --fd-banner-height (its --fd-docs-row-1); --fd-nav-height is kept for anything
-   else that reads it. */
+/* Docs chrome: Fumadocs restyled with the site tokens, light and dark.
+   Imported by app/docs/layout.tsx. The floating pill nav (52 px tall at top 16 px) overlays the page;
+   Fumadocs 16 offsets its sticky sidebar, table of contents and the mobile TOC bar by
+   --fd-banner-height (its --fd-docs-row-1). --fd-nav-height is kept for anything else that reads it. */
+/* Quiet text that still reads (AA on the docs ground in both modes); --fg-3 is for decoration. */
+html {
+  --docs-quiet: color-mix(in oklab, var(--fg-2) 72%, var(--fg-3));
+}
+
 #nd-docs-layout.docs-shell {
   --fd-banner-height: 80px;
   --fd-nav-height: 80px;
+  /* Tailwind radius utilities inside Fumadocs: items and small buttons 8, blocks 12. */
+  --radius-md: var(--r-sm);
+  --radius-lg: var(--r-sm);
+  --radius-xl: var(--r-md);
+  background: transparent;
 }
 
 /* The article sits in the first grid row, so its own top padding has to clear the pill. */
 #nd-docs-layout.docs-shell #nd-page {
   padding-top: 96px;
+  padding-bottom: 96px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Sidebar: a glass panel floating over the gradient.                   */
+/* ------------------------------------------------------------------ */
+html #nd-sidebar,
+html.dark #nd-sidebar {
+  --color-fd-muted: var(--hover);
+  --color-fd-secondary: var(--elevated);
+  --color-fd-muted-foreground: var(--fg-2);
+}
+#nd-docs-layout #nd-sidebar {
+  inset: 8px 4px 16px 16px;
+  width: auto;
+  border: 0;
+  border-radius: var(--r-lg);
+  background: color-mix(in oklab, var(--glass-fill) 70%, transparent);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  box-shadow:
+    inset 0 0 0 1px var(--line),
+    inset 0 1px 0 var(--edge);
+  overflow: hidden;
+}
+#nd-docs-layout #nd-sidebar > * {
+  width: 100%;
+}
+/* No title row and no collapse trigger: the nav above carries the brand. */
+#nd-sidebar > div:first-child:has(> div.flex > a:empty:only-child) {
+  display: none;
+}
+
+#nd-sidebar a[data-active],
+#nd-sidebar-mobile a[data-active] {
+  min-height: 32px;
+  padding: 6px 10px;
+  border-radius: var(--r-sm);
+  font-size: 13.5px;
+  line-height: 1.35;
+  color: var(--fg-2);
+  transition:
+    color 0.15s,
+    background-color 0.15s;
+}
+#nd-sidebar a[data-active]:hover,
+#nd-sidebar-mobile a[data-active]:hover {
+  color: var(--fg);
+  background: var(--hover);
+}
+#nd-sidebar a[data-active='true'],
+#nd-sidebar-mobile a[data-active='true'] {
+  color: var(--fg);
+  font-weight: 500;
+  background: var(--hover-strong);
+}
+#nd-sidebar a[data-active]::before,
+#nd-sidebar-mobile a[data-active]::before {
+  display: none;
+}
+
+/* Category headings: small and quiet. */
+#nd-sidebar p,
+#nd-sidebar-mobile p {
+  margin-top: 22px;
+  margin-bottom: 4px;
+  padding-inline: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--docs-quiet);
+}
+#nd-sidebar p:first-child,
+#nd-sidebar-mobile p:first-child {
+  margin-top: 4px;
 }
 
 /* Fumadocs scrolls the active sidebar item into view on load (scroll-into-view-if-needed, block
    "center", boundary #nd-sidebar). Give the item breathing room so it never lands against the
-   faded edge of the viewport, and let keyboard focus land clear of the pill. */
+   faded edge of the panel, and let keyboard focus land clear of the pill. */
 #nd-sidebar [data-active='true'] {
   scroll-margin-block: 48px;
 }
@@ -23,7 +108,395 @@
   scroll-padding-block: 48px;
 }
 
-/* Page type: medium weights, the site's own scale. */
-#nd-page h1.h2 {
-  margin-bottom: 4px;
+/* Mobile drawer: an inset glass sheet. */
+#nd-sidebar-mobile {
+  inset: 8px 8px 8px auto;
+  border: 0;
+  border-radius: var(--r-lg);
+  background: color-mix(in oklab, var(--bg) 86%, transparent);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  box-shadow:
+    inset 0 0 0 1px var(--line),
+    var(--shadow-float);
+}
+
+/* ------------------------------------------------------------------ */
+/* Table of contents                                                    */
+/* ------------------------------------------------------------------ */
+#nd-toc {
+  padding-top: 36px;
+}
+#nd-toc #toc-title,
+#nd-toc #nd-toc-title {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--fg);
+}
+#nd-toc #toc-title svg,
+#nd-toc #nd-toc-title svg {
+  display: none;
+}
+#nd-toc a {
+  font-size: 13px;
+  color: var(--fg-2);
+  transition: color 0.15s;
+}
+#nd-toc a:hover {
+  color: var(--fg);
+}
+#nd-toc a[data-active='true'] {
+  color: var(--fg);
+  font-weight: 500;
+}
+
+/* Mobile "on this page" bar: glass under the nav. */
+[data-toc-popover] > div {
+  border-color: var(--line);
+  background: color-mix(in oklab, var(--glass-fill) 80%, transparent);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+}
+
+/* ------------------------------------------------------------------ */
+/* Page head                                                            */
+/* ------------------------------------------------------------------ */
+#nd-page .docs-title {
+  font-size: clamp(30px, 3.2vw, 38px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--fg);
+  text-wrap: balance;
+}
+#nd-page .docs-lead {
+  margin-top: -4px;
+  font-size: 16.5px;
+  line-height: 1.55;
+  color: var(--fg-2);
+  text-wrap: pretty;
+  max-width: 64ch;
+}
+#nd-page .docs-actions button {
+  height: 30px;
+  padding-inline: 10px;
+  border: 0;
+  border-radius: var(--r-btn);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg-2);
+  background: var(--hover);
+  transition:
+    color 0.15s,
+    background-color 0.15s;
+}
+#nd-page .docs-actions button:hover {
+  color: var(--fg);
+  background: var(--hover-strong);
+}
+/* Breadcrumb on component pages. */
+#nd-page > div.text-sm:first-child {
+  font-size: 13px;
+  color: var(--docs-quiet);
+}
+#nd-page > div.text-sm:first-child .text-fd-primary {
+  color: var(--fg-2);
+}
+
+/* ------------------------------------------------------------------ */
+/* Prose                                                                */
+/* ------------------------------------------------------------------ */
+#nd-page .prose {
+  --tw-prose-body: var(--fg-2);
+  --tw-prose-headings: var(--fg);
+  --tw-prose-bold: var(--fg);
+  --tw-prose-links: var(--fg);
+  --tw-prose-bullets: var(--fg-3);
+  --tw-prose-counters: var(--fg-3);
+  --tw-prose-hr: var(--line);
+  --tw-prose-th-borders: var(--line);
+  --tw-prose-td-borders: var(--line);
+  --tw-prose-code: var(--fg);
+  font-size: 15.5px;
+  line-height: 1.75;
+  color: var(--fg-2);
+}
+#nd-page .prose > :first-child {
+  margin-top: 0;
+}
+#nd-page .prose :where(p, li) {
+  text-wrap: pretty;
+}
+#nd-page .prose strong {
+  color: var(--fg);
+  font-weight: 600;
+}
+#nd-page .prose :where(h2, h3, h4) {
+  color: var(--fg);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  scroll-margin-top: 104px;
+}
+#nd-page .prose h2 {
+  margin-top: 2.4em;
+  margin-bottom: 0.6em;
+  font-size: 22px;
+  line-height: 1.25;
+}
+#nd-page .prose h3 {
+  margin-top: 1.9em;
+  margin-bottom: 0.5em;
+  font-size: 17px;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+}
+#nd-page .prose a:not([data-card]):not(.not-prose *) {
+  color: var(--fg);
+  font-weight: 500;
+  text-decoration-line: underline;
+  text-decoration-color: var(--line-strong);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  transition: text-decoration-color 0.15s;
+}
+#nd-page .prose a:not([data-card]):not(.not-prose *):hover {
+  opacity: 1;
+  text-decoration-color: currentColor;
+}
+#nd-page .prose li::marker {
+  color: var(--fg-3);
+}
+#nd-page .prose hr {
+  border-color: var(--line);
+}
+
+/* Inline code chips. */
+#nd-page .prose :not(pre) > code:not(.not-prose *) {
+  padding: 0.12em 0.4em;
+  border: 0;
+  border-radius: var(--r-xs);
+  background: var(--hover);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-family: var(--font-mono);
+  font-size: 0.84em;
+  font-weight: 450;
+  color: var(--fg);
+  white-space: break-spaces;
+}
+#nd-page .prose a code {
+  color: inherit;
+}
+
+/* Code blocks: surface, hairline ring, 12 px corners. Shiki runs github-light / github-dark. */
+#nd-page figure.shiki {
+  margin-block: 20px;
+  border: 0;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+#nd-page figure.shiki pre {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.7;
+}
+#nd-page figure.shiki > div:first-child:not([role='region']) {
+  border-radius: var(--r-sm);
+}
+#nd-page figure.shiki button {
+  color: var(--fg-3);
+  border-radius: var(--r-sm);
+}
+#nd-page figure.shiki button:hover {
+  color: var(--fg);
+  background: var(--hover);
+}
+
+/* Tables (components/mdx.tsx wraps them in .docs-table). */
+#nd-page .docs-table {
+  margin-block: 24px;
+  border-radius: var(--r-md);
+  background: color-mix(in oklab, var(--surface) 72%, transparent);
+  box-shadow: inset 0 0 0 1px var(--line);
+  overflow: auto;
+}
+#nd-page .docs-table table {
+  margin: 0;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.55;
+}
+#nd-page .docs-table thead {
+  border-bottom: 1px solid var(--line);
+}
+#nd-page .docs-table th {
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg);
+  background: color-mix(in oklab, var(--fg) 2.5%, transparent);
+  white-space: nowrap;
+}
+#nd-page .docs-table td {
+  padding: 10px 14px;
+  vertical-align: top;
+  color: var(--fg-2);
+}
+#nd-page .docs-table :where(th, td):first-child {
+  padding-inline-start: 16px;
+}
+#nd-page .docs-table :where(th, td):last-child {
+  padding-inline-end: 16px;
+}
+#nd-page .docs-table tbody tr {
+  border-bottom: 1px solid var(--line);
+}
+#nd-page .docs-table tbody tr:last-child {
+  border-bottom: 0;
+}
+
+/* Blockquotes read as a quiet note. */
+#nd-page .prose blockquote {
+  margin-block: 24px;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: var(--r-md);
+  background: color-mix(in oklab, var(--surface) 72%, transparent);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14.5px;
+  color: var(--fg-2);
+}
+#nd-page .prose blockquote p::before,
+#nd-page .prose blockquote p::after {
+  content: none;
+}
+
+/* Callouts (components/mdx.tsx adds .docs-callout). */
+#nd-page .docs-callout {
+  border: 0;
+  border-radius: var(--r-md);
+  background: color-mix(in oklab, var(--surface) 72%, transparent);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-size: 14.5px;
+  color: var(--fg);
+}
+#nd-page .docs-callout > [role='none'] {
+  border-radius: 2px;
+}
+
+/* Tabs and cards from Fumadocs. */
+#nd-page .prose [role='tablist'] {
+  border-color: var(--line);
+}
+#nd-page .prose a[data-card]:not(:is(h1, h2, h3, h4, h5, h6) > a) {
+  border: 0;
+  border-radius: var(--r-md);
+  background: color-mix(in oklab, var(--surface) 72%, transparent);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+/* Previous / next. */
+#nd-page > .\@container > a {
+  border: 0;
+  border-radius: var(--r-md);
+  background: color-mix(in oklab, var(--surface) 55%, transparent);
+  box-shadow: inset 0 0 0 1px var(--line);
+  transition:
+    background-color 0.15s,
+    box-shadow 0.15s;
+}
+#nd-page > .\@container > a:hover {
+  background: var(--surface);
+  box-shadow:
+    inset 0 0 0 1px var(--line-strong),
+    var(--shadow-card);
+}
+#nd-page > .\@container > a > div {
+  color: var(--fg);
+}
+#nd-page > .\@container > a p {
+  color: var(--docs-quiet);
+}
+
+/* ------------------------------------------------------------------ */
+/* Live preview (components/docs/ComponentPreview.tsx)                  */
+/* ------------------------------------------------------------------ */
+.docs-preview {
+  margin-block: 28px 36px;
+  padding: 6px;
+  border-radius: var(--r-card);
+  background: color-mix(in oklab, var(--surface) 70%, transparent);
+  box-shadow:
+    inset 0 0 0 1px var(--line),
+    inset 0 1px 0 var(--edge),
+    var(--shadow-card);
+}
+.docs-preview-stage {
+  position: relative;
+  border-radius: calc(var(--r-card) - 6px);
+  background: var(--void);
+  box-shadow: inset 0 0 0 1px var(--line);
+  overflow: hidden;
+  padding-block: 16px;
+}
+.docs-preview-stage iframe {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color-scheme: normal;
+}
+.docs-preview-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 6px 2px 12px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--docs-quiet);
+}
+.docs-preview-foot a {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding-inline: 10px;
+  border-radius: var(--r-btn);
+  font-weight: 500;
+  color: var(--fg);
+  text-decoration: none;
+  transition: background-color 0.15s;
+}
+.docs-preview-foot a:hover {
+  background: var(--hover);
+}
+.docs-preview-foot a svg {
+  color: var(--fg-3);
+  transition: transform 0.25s var(--ease-out);
+}
+.docs-preview-foot a:hover svg {
+  transform: translate(1px, -1px);
+}
+
+@media (max-width: 640px) {
+  .docs-preview-foot {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding-left: 10px;
+  }
+  .docs-preview-foot a {
+    margin-left: -10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .docs-preview-foot a svg {
+    transition: none;
+  }
 }

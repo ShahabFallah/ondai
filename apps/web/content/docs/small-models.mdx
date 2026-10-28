@@ -1,6 +1,6 @@
 ---
 title: "Small-model guidelines"
-description: "How Ondai components are designed for 3B-parameter models with a 4,096-token context."
+description: "How Ondai designs for 3B-parameter models with a 4,096-token context."
 ---
 
 1. **Budget everything.** Assume 4,096 tokens worst case. Every component declares an input budget and a long-input strategy (truncate, map-reduce, last-N messages).

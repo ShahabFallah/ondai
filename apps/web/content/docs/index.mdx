@@ -1,24 +1,24 @@
 ---
 title: "Introduction"
-description: "Ondai is shadcn/ui for on-device AI in React Native. Copy-paste components, each a complete AI feature powered by the model already on the phone."
+description: "shadcn/ui for on-device AI in React Native. Copy-paste components, each a complete AI feature running on the model already in the phone."
 ---
 
-Phones ship with local language models: Apple Foundation Models on iOS 26, Gemini Nano on recent Android flagships. They are small (about 3B parameters, a 4,096-token context), bad at long reasoning and very good at short, focused tasks: extraction, classification, rewriting, short summaries, choosing among a few tools.
+Phones now ship with a language model: Apple Foundation Models on iOS 26, Gemini Nano on recent Android flagships. They are small (about 3B parameters, a 4,096-token context). Bad at long reasoning, very good at short, focused tasks: extraction, classification, rewriting, summaries, picking a tool.
 
-Ondai is the experience layer on top of those engines. You run `npx ondai add command-bar`, and minutes later your app has a working natural-language command bar that is **free** (no API bill), **private** (nothing leaves the phone), **offline** and **fast**.
+Ondai is the experience layer on top. Run `npx ondai add command-bar` and your app has a natural-language command bar that is **free** (no API bill), **private** (nothing leaves the phone), **offline** and **fast**.
 
 <ComponentPreview name="command-bar" state="tool" height={420} query="presentation=inline" />
 
 ## What you get
 
 - **Components you own.** The CLI copies TypeScript source into `components/ondai/`, like shadcn/ui. Change anything.
-- **A small runtime.** `@ondai/core` routes each request to the best provider on the device by capability (text, structured output, tools, embeddings, transcription, speech), handles availability, cold starts, token budgets, refusals and errors, and ships a scripted mock provider for tests and the web.
-- **One design language.** Quiet, monochrome UI that only glows while the AI works. Void (dark), Paper (light) and Glass themes, four accent presets, and the same state language in every component: idle, focus, thinking, streaming, tool, confirm, done, error, refusal, unavailable, preparing.
-- **Honesty built in.** Every component shows where it runs (`ON DEVICE · APPLE`) and degrades gracefully when no model is available.
+- **A small runtime.** `@ondai/core` routes each request to the best provider on the device by capability (text, structured output, tools, embeddings, transcription, speech). It handles availability, cold starts, token budgets, refusals and errors, and ships a scripted mock for tests and the web.
+- **One design language.** Quiet, monochrome UI that only glows while the AI works. Void (dark), Paper (light) and Glass themes, four accents, and one set of states everywhere: idle, focus, thinking, streaming, tool, confirm, done, error, refusal, unavailable, preparing.
+- **Clear about where it runs.** Every component shows where it runs (`ON DEVICE · APPLE`) and degrades gracefully without a model.
 
 ## Built on
 
-Ondai does not build model runtimes. It sits on [Callstack's react-native-ai](https://github.com/callstackincubator/ai) providers via the [Vercel AI SDK](https://ai-sdk.dev), and will add [Expo's expo-ai](https://github.com/expo/expo) when it ships. When their engines improve, Ondai improves.
+Ondai does not build model runtimes. It sits on [Callstack's react-native-ai](https://github.com/callstackincubator/ai) providers via the [Vercel AI SDK](https://ai-sdk.dev), and will add [Expo's expo-ai](https://github.com/expo/expo) when it ships. Better engines, better Ondai.
 
 ## Next
 

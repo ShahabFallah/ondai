@@ -18,3 +18,14 @@ export function fillInput(root: HTMLElement | null, text: string): boolean {
   }
   return true
 }
+
+/** Presses Enter in the first text input under `root`, so a single-line TextInput submits. */
+export function submitInput(root: HTMLElement | null): boolean {
+  const input = root?.querySelector<HTMLInputElement>('input, textarea')
+  if (!input) return false
+  const init = { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true, cancelable: true }
+  input.dispatchEvent(new KeyboardEvent('keydown', init))
+  input.dispatchEvent(new KeyboardEvent('keypress', init))
+  input.dispatchEvent(new KeyboardEvent('keyup', init))
+  return true
+}

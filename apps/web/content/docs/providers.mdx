@@ -3,7 +3,7 @@ title: "Providers"
 description: "Apple Foundation Models, Gemini Nano, llama.rn and cloud, through the Callstack react-native-ai providers."
 ---
 
-Ondai talks to models only through `@ondai/core` adapters. The adapters wrap the [Callstack react-native-ai](https://github.com/callstackincubator/ai) packages (0.12, Vercel AI SDK v6).
+Ondai reaches models only through `@ondai/core` adapters, which wrap the [Callstack react-native-ai](https://github.com/callstackincubator/ai) packages (0.12, Vercel AI SDK v6).
 
 | Provider | Package | Capabilities | Notes |
 | --- | --- | --- | --- |
@@ -21,7 +21,7 @@ import { cloudAdapter } from '@ondai/core'
 
 ## Apple specifics
 
-- Tools are **provider-executed**: the Foundation Models session runs the loop natively, so AI SDK step callbacks never fire. Ondai's tool policy still works because confirmation happens inside each tool's `execute`.
+- Tools are **provider-executed**: the Foundation Models session runs the loop natively, so AI SDK step callbacks never fire. Ondai's tool policy still works, because confirmation happens inside each tool's `execute`.
 - Structured output supports objects, arrays, strings, numbers, booleans and enums; no string formats, regex or unions. Streaming structured output is not supported.
 - The guardrail can refuse benign content; Ondai shows a calm refusal state and never retries refusals.
 - Cold start is roughly a second; `prewarm: 'on-focus'` hides it.

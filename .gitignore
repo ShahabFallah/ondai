@@ -17,3 +17,6 @@ apps/gallery/android/
 apps/web/.source/
 *.tsbuildinfo
 .pnpm-store/
+
+# Internal working notes, never committed
+HANDOFF-*.md

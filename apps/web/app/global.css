@@ -9,6 +9,9 @@ html {
 html:has([data-embed='1']) {
   scrollbar-gutter: auto;
 }
+html:has([data-embed='1']) .ambient {
+  display: none;
+}
 
 html > body[data-scroll-locked] {
   margin-right: 0px !important;
@@ -21,23 +24,82 @@ html > body[data-scroll-locked] {
 /* See docs/decisions/0007-site-v3-silicon.md for the material rules.   */
 /* ------------------------------------------------------------------ */
 :root {
-  --font-sans: var(--font-site-sans), var(--ondai-font-sans);
+  --font-sans: var(--font-site-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), var(--ondai-font-mono);
   --ion-a: #7cf7ff;
   --ion-b: #8b7cff;
   --ion-c: #ff7ce5;
-  --void: #07080a;
-  --surface: #0e1013;
-  --surface-hover: #111419;
-  --elevated: #15181c;
-  --hover: rgba(255, 255, 255, 0.06);
-  --hover-strong: rgba(255, 255, 255, 0.11);
-  --line: rgba(255, 255, 255, 0.06);
-  --line-strong: rgba(255, 255, 255, 0.1);
-  --edge: rgba(255, 255, 255, 0.05);
-  --glass-fill: rgba(14, 16, 19, 0.62);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  /* Radius scale: a 34 px button has ~10 px corners. Nothing is a pill except chips. */
+  --r-xs: 6px;
+  --r-sm: 8px;
+  --r-btn: 10px;
+  --r-md: 12px;
+  --r-card: 18px;
+  --r-lg: 24px;
+
+  /* Light (default). Soft paper greys, ink near-black. */
+  --bg: #f4f4f5;
+  --bg-2: #ececee;
+  --surface: #ffffff;
+  --surface-hover: #fafafa;
+  --elevated: #f7f7f8;
+  --void: #f1f1f3;
+  --fg: #0d0d0f;
+  --fg-2: #5e5e66;
+  --fg-3: #6e6e76;
+  --ink: #161618;
+  --ink-fg: #ffffff;
+  --hover: rgba(0, 0, 0, 0.045);
+  --hover-strong: rgba(0, 0, 0, 0.08);
+  --line: rgba(0, 0, 0, 0.07);
+  --line-strong: rgba(0, 0, 0, 0.12);
+  --edge: rgba(255, 255, 255, 0.9);
+  --glass-fill: rgba(255, 255, 255, 0.6);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px -12px rgba(0, 0, 0, 0.12);
+  --shadow-float: 0 1px 2px rgba(0, 0, 0, 0.06), 0 18px 40px -16px rgba(0, 0, 0, 0.22);
+  --grad-1: #e7e7ea;
+  --grad-2: #d9dbe2;
+  --grad-3: #f6f6f7;
+  --grad-4: #dcd9e6;
+}
+.dark {
+  --bg: #08080a;
+  --bg-2: #0e0e11;
+  --surface: #121215;
+  --surface-hover: #16161a;
+  --elevated: #1a1a1e;
+  --void: #0a0a0c;
+  --fg: #f2f2f3;
+  --fg-2: #a0a0a8;
+  --fg-3: #85858d;
+  --ink: #f2f2f3;
+  --ink-fg: #0a0a0c;
+  --hover: rgba(255, 255, 255, 0.06);
+  --hover-strong: rgba(255, 255, 255, 0.1);
+  --line: rgba(255, 255, 255, 0.07);
+  --line-strong: rgba(255, 255, 255, 0.12);
+  --edge: rgba(255, 255, 255, 0.06);
+  --glass-fill: rgba(22, 22, 26, 0.62);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.5), 0 12px 32px -16px rgba(0, 0, 0, 0.7);
+  --shadow-float: 0 1px 2px rgba(0, 0, 0, 0.5), 0 24px 56px -20px rgba(0, 0, 0, 0.85);
+  --grad-1: #141418;
+  --grad-2: #1c1d24;
+  --grad-3: #0b0b0d;
+  --grad-4: #1d1a26;
+}
+/* Older site code reads the token names; point them at the site palette in both modes. */
+html:root {
+  --ondai-bg: var(--bg);
+  --ondai-surface: var(--surface);
+  --ondai-elevated: var(--elevated);
+  --ondai-text: var(--fg);
+  --ondai-text-secondary: var(--fg-2);
+  --ondai-text-tertiary: var(--fg-3);
+  --ondai-hairline: var(--line);
+  --ondai-hairline-strong: var(--line-strong);
 }
 
 html:root {
@@ -48,34 +110,36 @@ html:root {
 
 html,
 .dark {
-  --color-fd-background: var(--ondai-bg);
-  --color-fd-foreground: var(--ondai-text);
-  --color-fd-muted: var(--ondai-surface);
-  --color-fd-muted-foreground: var(--ondai-text-secondary);
-  --color-fd-popover: #0f1014;
-  --color-fd-popover-foreground: var(--ondai-text);
-  --color-fd-card: var(--ondai-surface);
-  --color-fd-card-foreground: var(--ondai-text);
-  --color-fd-border: var(--ondai-hairline);
-  --color-fd-primary: var(--ondai-text);
-  --color-fd-primary-foreground: var(--ondai-bg);
-  --color-fd-secondary: var(--ondai-elevated);
-  --color-fd-secondary-foreground: var(--ondai-text);
+  /* Fumadocs reads these. Mapped onto the site tokens so the docs follow light and dark. */
+  --color-fd-background: var(--bg);
+  --color-fd-foreground: var(--fg);
+  --color-fd-muted: var(--hover);
+  --color-fd-muted-foreground: var(--fg-2);
+  --color-fd-popover: var(--surface);
+  --color-fd-popover-foreground: var(--fg);
+  --color-fd-card: var(--surface);
+  --color-fd-card-foreground: var(--fg);
+  --color-fd-border: var(--line);
+  --color-fd-primary: var(--fg);
+  --color-fd-primary-foreground: var(--bg);
+  --color-fd-secondary: var(--elevated);
+  --color-fd-secondary-foreground: var(--fg);
   --color-fd-accent: var(--hover);
-  --color-fd-accent-foreground: var(--ondai-text);
-  --color-fd-ring: var(--ondai-accent-ring);
+  --color-fd-accent-foreground: var(--fg);
+  --color-fd-ring: var(--line-strong);
+  --color-fd-overlay: rgba(0, 0, 0, 0.18);
 }
 
-.dark #nd-sidebar {
-  --color-fd-muted: var(--ondai-surface);
-  --color-fd-secondary: var(--ondai-elevated);
-  --color-fd-muted-foreground: var(--ondai-text-secondary);
-  background: var(--ondai-bg);
+/* The docs sidebar is glass over the moving gradient; docs.css holds the rest of its styling. */
+#nd-sidebar {
+  background: transparent;
 }
 
-html,
+html {
+  background: var(--bg);
+}
 body {
-  background: var(--ondai-bg);
+  background: transparent;
   color: var(--ondai-text);
   font-family: var(--font-sans);
 }
@@ -226,7 +290,7 @@ a.card:hover,
   gap: 8px;
   height: 40px;
   padding-inline: 18px;
-  border-radius: 999px;
+  border-radius: var(--r-btn);
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
@@ -240,12 +304,12 @@ a.card:hover,
   scale: 0.97;
 }
 .btn-primary {
-  background: var(--ondai-text);
-  color: var(--ondai-bg);
+  background: var(--ink);
+  color: var(--ink-fg);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 .btn-primary:hover {
-  background: #fff;
+  background: color-mix(in oklab, var(--ink) 88%, var(--ink-fg));
 }
 .btn-secondary {
   background: var(--hover);
@@ -278,7 +342,7 @@ a.card:hover,
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: 999px;
+  border-radius: var(--r-btn);
   color: var(--ondai-text-secondary);
   transition:
     color 0.15s,
@@ -315,14 +379,14 @@ kbd.key {
   flex-wrap: wrap;
   gap: 2px;
   padding: 3px;
-  border-radius: 999px;
+  border-radius: var(--r-btn);
   background: rgba(255, 255, 255, 0.05);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 .pill {
   height: 28px;
   padding-inline: 11px;
-  border-radius: 999px;
+  border-radius: var(--r-btn);
   font-size: 13px;
   font-weight: 500;
   color: var(--ondai-text-secondary);
@@ -368,7 +432,7 @@ kbd.key {
   position: relative;
   width: 40px;
   height: 24px;
-  border-radius: 999px;
+  border-radius: var(--r-btn);
   background: var(--elevated);
   box-shadow: inset 0 0 0 1px var(--line-strong);
   transition: background-color 0.15s;
@@ -384,7 +448,7 @@ kbd.key {
   left: 2px;
   width: 20px;
   height: 20px;
-  border-radius: 999px;
+  border-radius: var(--r-btn);
   background: #fff;
   transition: transform 0.15s;
 }

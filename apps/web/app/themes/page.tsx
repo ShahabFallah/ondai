@@ -9,9 +9,9 @@ export default function ThemesPage() {
     <>
       <SiteHeader />
       <main className="wrap pt-24 pb-24">
-        <header className="mb-8 max-w-[64ch]">
-          <h1 className="h2">Themes</h1>
-          <p className="lead mt-3">Pick a theme and an accent, or set your own three stops. The screens are the real components on a scripted model; export the tokens as JSON or CSS variables when they look right.</p>
+        <header className="mb-10 max-w-[40rem] pt-6 sm:pt-10">
+          <h1 className="ui-title">Tune the light.</h1>
+          <p className="ui-sub mt-3">Three themes, any accent. Real components, live. Take the tokens when it feels right.</p>
         </header>
         <ThemesClient />
       </main>

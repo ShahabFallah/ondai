@@ -94,10 +94,10 @@ const summarize: ScriptSource = (call: MockCallInfo) => {
 }
 
 const rewrites = {
-  shorter: 'Hi Priya, thanks for the budget. Marketing looks low — can we talk tomorrow before the review? Venue confirmed for Friday noon.',
+  shorter: 'Hi Priya, thanks for the budget. Marketing looks low. Can we talk tomorrow before the review? Venue confirmed for Friday noon.',
   longer:
     "Hey Priya, thank you for sending over the budget. Overall it looks good to me, though the marketing line seems a little low for what we have planned. Could we find fifteen minutes tomorrow, before the review, to go through it together? Also, good news: the venue is confirmed for Friday at noon.",
-  friendlier: 'Hey Priya! Thanks so much for the budget, it looks great overall. Marketing feels a bit low though — could we chat tomorrow before the review? Also, the venue is confirmed for Friday at noon. 🎉',
+  friendlier: 'Hey Priya! Thanks so much for the budget, it looks great overall. Marketing feels a bit low though. Could we chat tomorrow before the review? Also, the venue is confirmed for Friday at noon. 🎉',
   formal: 'Hi Priya, thank you for sending the budget. It looks good overall, though the marketing line seems low. Could we discuss it tomorrow before the review? The venue is confirmed for Friday at noon.',
   fixed: 'Hey Priya, got your budget. It looks good mostly, but marketing seems low. Can we talk tomorrow before the review? Also, the venue is confirmed for Friday at noon.',
 }

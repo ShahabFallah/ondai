@@ -1,81 +1,68 @@
 import Link from 'next/link'
-import type { ComponentType } from 'react'
-import { AlignLeft, Command, MessageSquareReply, PenLine, SlidersHorizontal, Tags, TextCursorInput } from 'lucide-react'
+import { AlignLeft, ArrowRight, Command, MessageSquareReply, PenLine, SlidersHorizontal, Tags, TextCursorInput } from 'lucide-react'
 import { LiveDemo } from '@/components/site/LiveDemo'
 import type { DemoName } from '@/components/site/demos'
+import { BentoCard, CardMeta, Screen, type Icon } from './Bento'
+import { AutoType } from './AutoType'
 import { CommandBarStage } from './CommandBarStage'
-import { SpotCard } from './SpotCard'
+import { Reveal } from './Reveal'
 
 interface Item {
   name: DemoName
+  area: string
   title: string
-  tagline: string
-  icon: ComponentType<{ size?: number; strokeWidth?: number }>
-  /** Centre small components in the well; lists that grow stay at the top. */
-  align?: 'start' | 'center'
-  /** Let a wide toolbar use the whole well. */
+  line: string
+  screen: string
+  icon: Icon
+  /** Typed into the demo once when the card comes into view. */
+  auto?: string
+  /** Chat-like demos sit at the bottom of their screen. */
+  bottom?: boolean
   wide?: boolean
+  props?: Record<string, unknown>
 }
 
 const items: Item[] = [
-  { name: 'smart-input', title: 'SmartInput', tagline: 'Describe an expense; the form fills itself, with a confidence mark on every field.', icon: TextCursorInput, align: 'center' },
-  { name: 'natural-filter', title: 'NaturalFilter', tagline: 'Search the way you talk: “cheap italian open now within 2 km”.', icon: SlidersHorizontal },
-  { name: 'summarize', title: 'Summarize', tagline: 'A long thread, one tap, a streamed TL;DR.', icon: AlignLeft, align: 'center' },
-  { name: 'rewrite', title: 'Rewrite', tagline: 'Shorten, expand, warm up or fix a draft, then accept the diff.', icon: PenLine, align: 'center', wide: true },
-  { name: 'smart-reply', title: 'SmartReply', tagline: 'Three replies for the last message in a thread. Tap one to use it.', icon: MessageSquareReply, align: 'center' },
-  { name: 'auto-tag', title: 'AutoTag', tagline: 'Tags picked from the app’s own list and fuzzy-matched after the model answers.', icon: Tags, align: 'center' },
+  { name: 'smart-input', area: 'si', title: 'SmartInput', line: 'Forms that fill themselves.', screen: 'New expense', icon: TextCursorInput, auto: 'Lunch at Nopa, 24 dollars yesterday', props: { presentation: 'card' } },
+  { name: 'summarize', area: 'sum', title: 'Summarize', line: 'Forty messages, four lines.', screen: '#launch-week', icon: AlignLeft },
+  { name: 'natural-filter', area: 'nf', title: 'NaturalFilter', line: 'Search the way you talk.', screen: 'Dinner nearby', icon: SlidersHorizontal, auto: 'cheap italian open now within 2 km', props: { presentation: 'bar' } },
+  { name: 'smart-reply', area: 'sr', title: 'SmartReply', line: 'The reply, already written.', screen: 'Sam', icon: MessageSquareReply, bottom: true },
+  { name: 'rewrite', area: 'rw', title: 'Rewrite', line: 'Your draft, but better.', screen: 'Draft to Priya', icon: PenLine, wide: true },
+  { name: 'auto-tag', area: 'at', title: 'AutoTag', line: 'Tags that pick themselves.', screen: 'Notes', icon: Tags, wide: true },
 ]
-
-function Meta({ name, title, tagline, icon: Icon }: Omit<Item, 'align'>) {
-  return (
-    <div className="show-meta">
-      <span className="show-icon" aria-hidden>
-        <Icon size={18} strokeWidth={1.5} />
-      </span>
-      <div className="show-text">
-        <h3 className="show-title">{title}</h3>
-        <p className="show-tagline">{tagline}</p>
-      </div>
-      <Link href={`/docs/components/${name}`} className="show-docs">
-        Docs
-      </Link>
-    </div>
-  )
-}
 
 export function Showcase() {
   return (
-    <section className="section" aria-labelledby="try">
+    <section className="section home-section" aria-labelledby="try">
       <div className="wrap">
-        <div className="section-head">
-          <h2 id="try" className="h2">
-            Try them here.
-          </h2>
-          <p className="lead">Every demo is the real component on a scripted mock in your browser; in an app, the same code runs on the phone&apos;s model.</p>
-        </div>
-        <div className="show-grid">
-          <SpotCard className="show-card show-wide">
-            <Meta name="command-bar" title="CommandBar" tagline="Type what you want done. Natural language becomes one of your app’s actions, chosen on device." icon={Command} />
-            <div className="stage show-stage">
-              <CommandBarStage />
-            </div>
-          </SpotCard>
-          {items.map(({ align = 'start', wide, ...item }) => (
-            <SpotCard key={item.name} className="show-card">
-              <Meta {...item} />
-              <div className="stage show-stage" data-align={align}>
-                <div className="show-demo" data-wide={wide ? 'true' : undefined}>
-                  <LiveDemo name={item.name} title={item.title} />
-                </div>
-              </div>
-            </SpotCard>
-          ))}
-        </div>
-        <div className="mt-8">
-          <Link href="/playground" className="btn btn-secondary">
-            All components in the playground
+        <header className="home-head home-head-row">
+          <div>
+            <h2 id="try" className="home-h2">
+              Go on, poke them.
+            </h2>
+            <p className="home-sub">Real components on a scripted model. Type anything.</p>
+          </div>
+          <Link href="/playground" className="btn btn-secondary btn-sm home-head-link">
+            All 26 components
+            <ArrowRight size={14} strokeWidth={1.75} />
           </Link>
-        </div>
+        </header>
+        <Reveal className="bento reveal">
+          <BentoCard area="cb" className="bento-wide">
+            <CommandBarStage />
+            <CardMeta name="command-bar" title="CommandBar" line="Say it. The app does it." icon={Command} />
+          </BentoCard>
+          {items.map((item) => (
+            <BentoCard key={item.name} area={item.area}>
+              <AutoType prompt={item.auto ?? ''} className="bento-stage" disabled={!item.auto}>
+                <Screen label={item.screen} className={`${item.bottom ? 'bento-screen-bottom' : ''} ${item.wide ? 'bento-screen-wide' : ''}`}>
+                  <LiveDemo name={item.name} title={item.title} props={item.props} />
+                </Screen>
+              </AutoType>
+              <CardMeta name={item.name} title={item.title} line={item.line} icon={item.icon} />
+            </BentoCard>
+          ))}
+        </Reveal>
       </div>
     </section>
   )
