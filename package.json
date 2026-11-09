@@ -26,6 +26,7 @@
   "devDependencies": {
     "@changesets/cli": "^3.0.3",
     "@ondai/config": "workspace:*",
+    "@ondai/core": "workspace:*",
     "@types/node": "^22.19.0",
     "eslint": "^10.13.0",
     "gifenc": "1.0.3",
