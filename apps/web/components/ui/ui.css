@@ -307,3 +307,16 @@
     font-size: 17px;
   }
 }
+
+/* Touch screens: every control reaches a comfortable finger size (36 px; desktop keeps the compact sizes). */
+@media (pointer: coarse) {
+  .seg-item,
+  .seg[data-size='sm'] .seg-item {
+    height: 36px;
+  }
+  .prose figure button,
+  .prose :is(h2, h3, h4) > button {
+    min-width: 36px;
+    min-height: 36px;
+  }
+}

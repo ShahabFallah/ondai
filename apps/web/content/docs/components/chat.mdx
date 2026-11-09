@@ -1,0 +1,69 @@
+---
+title: "Chat"
+description: "A complete on-device conversation: streamed turns with their trace, stop mid-reply, retry, and history trimmed to the model's context."
+---
+
+<ComponentPreview name="chat" state="done" height={560} />
+
+## Install
+
+```npm
+npx ondai add chat
+```
+
+## Usage
+
+```tsx
+import { Chat } from '@/components/ondai/chat'
+
+<Chat system="You are a helpful assistant inside a notes app. Be brief." suggestions={['Plan a slow Saturday in Lyon', 'What did I note about the budget?']} />
+```
+
+- Built on `useChat()` from `@ondai/core`: history is trimmed to the model context, oldest turns first.
+- Compose your own screen from PromptComposer and AssistantMessage when you need a different layout.
+
+## Customize
+
+Every AI component takes the same look and customization props, so it fits your app rather than ours.
+
+```tsx
+<Chat
+  variant="pop"
+  tint="#FF5A5F"
+  size="lg"
+  radius={12}
+  labels={{ emptyTitle: '…', emptyHint: '…' }}
+/>
+```
+
+| Prop | What it does |
+| --- | --- |
+| `variant` | The look of the whole component: `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `size` | `sm`, `md`, `lg`; type, rows, icons and keys scale together |
+| `tint` | Any colour; the variant paints its keys, tiles and glow in it |
+| `radius` | Corner radius of the container |
+| `labels` | Every visible and spoken string; defaults are exported as `chatLabels`: `emptyTitle`, `emptyHint` |
+| Slots | Draw a part yourself: `renderMessage`, `renderEmpty`, `renderSuggestion` |
+| `styles` | Style any named part |
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `variant` | `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `replies` | `plain`, `card` |
+| `size` | `sm`, `md`, `lg` |
+
+## Fallback
+
+When no provider is ready the component renders the unavailable state (`AvailabilityGate` copy) and, where a deterministic path exists, keeps working without the model.
+
+## Eval score
+
+No model-driven fixtures for this component.
+
+## Files
+
+Registry dependencies: [assistant-message](/docs/components/assistant-message), [prompt-composer](/docs/components/prompt-composer), [surface](/docs/components/surface)
+
+npm dependencies: `@ondai/core`, `@ondai/tokens`, `lucide-react-native`

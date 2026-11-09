@@ -4,11 +4,22 @@
   "description": "Camera or photo becomes structured data (receipt, business card, event, or your own schema) via on-device OCR and the local model.",
   "category": "vision",
   "priority": "P0",
-  "capabilities": ["structured", "vision"],
-  "variants": { "presentation": ["camera", "picker", "card"], "preset": ["receipt", "businessCard", "event", "custom"] },
-  "registryDependencies": ["button", "field", "image-reveal", "ion-border", "on-device-badge", "skeleton"],
+  "capabilities": ["structured"],
+  "variants": {
+    "variant": ["clean", "minimal", "glass", "pop", "candy", "metal", "shine", "bevel"],
+    "presentation": ["camera", "picker", "card"],
+    "size": ["sm", "md", "lg"],
+    "preset": ["receipt", "businessCard", "event", "custom"]
+  },
+  "registryDependencies": ["button", "on-device-badge", "shimmer-text", "surface"],
   "files": ["scan-to-data.tsx", "use-scan-to-data.ts", "schema.ts", "prompts.ts", "index.ts"],
-  "budget": { "input": 1500, "strategy": "OCR text (not the image) goes to the model; fields refined deterministically." },
-  "runsOn": ["apple", "nano", "llama", "cloud"],
-  "docs": "Pass `ocr` (e.g. @react-native-ml-kit/text-recognition or Apple Vision) to read photos; without it the component explains that OCR is not configured."
+  "budget": {
+    "input": 1500,
+    "strategy": "OCR text (not the image) goes to the model; fields refined deterministically."
+  },
+  "runsOn": ["apple", "nano", "cloud"],
+  "docs": "Pass `ocr` (e.g. @react-native-ml-kit/text-recognition or Apple Vision) to read photos; without it the component explains that OCR is not configured.",
+  "limits": [
+    "The text in the photo comes from an OCR you pass in as `ocr` (Apple Vision or ML Kit Text Recognition). The model only turns that text into fields."
+  ]
 }

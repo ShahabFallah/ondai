@@ -1,6 +1,6 @@
 # Button
 
-Minimal button with solid, soft, outline, ghost, accent and danger variants.
+Minimal button: ink solid, a soft raised key, and secondary variants that take the theme material (glass, Liquid Glass).
 
 ```bash
 npx ondai add button

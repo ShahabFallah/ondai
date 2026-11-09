@@ -3,6 +3,24 @@
   "version": "0.1.0",
   "description": "Design tokens for Ondai: themes, accents, type, spacing, motion. Works on iOS, Android and web.",
   "license": "MIT",
+  "author": "Shahab Fallah",
+  "homepage": "https://ondai.dev",
+  "bugs": {
+    "url": "https://github.com/ShahabFallah/ondai/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShahabFallah/ondai.git",
+    "directory": "packages/tokens"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "design-tokens",
+    "theme",
+    "nativewind",
+    "tailwind"
+  ],
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -13,23 +31,56 @@
   },
   "publishConfig": {
     "exports": {
-      ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js", "default": "./dist/index.js" },
-      "./react": { "types": "./dist/react.d.ts", "import": "./dist/react.js", "default": "./dist/react.js" },
-      "./tailwind-preset": { "types": "./dist/tailwind-preset.d.ts", "import": "./dist/tailwind-preset.js", "require": "./dist/tailwind-preset.cjs", "default": "./dist/tailwind-preset.js" },
-      "./css": { "types": "./dist/css.d.ts", "import": "./dist/css.js", "default": "./dist/css.js" }
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "default": "./dist/index.js"
+      },
+      "./react": {
+        "types": "./dist/react.d.ts",
+        "import": "./dist/react.js",
+        "default": "./dist/react.js"
+      },
+      "./tailwind-preset": {
+        "import": {
+          "types": "./dist/tailwind-preset.d.ts",
+          "default": "./dist/tailwind-preset.js"
+        },
+        "require": {
+          "types": "./dist/tailwind-preset.d.cts",
+          "default": "./dist/tailwind-preset.cjs"
+        },
+        "default": "./dist/tailwind-preset.js"
+      },
+      "./css": {
+        "types": "./dist/css.d.ts",
+        "import": "./dist/css.js",
+        "default": "./dist/css.js"
+      }
     },
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts"
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsdown",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "lint": "eslint src"
   },
-  "peerDependencies": { "react": ">=19", "react-native": ">=0.76" },
-  "peerDependenciesMeta": { "react-native": { "optional": true } },
+  "peerDependencies": {
+    "react": ">=19",
+    "react-native": ">=0.76"
+  },
+  "peerDependenciesMeta": {
+    "react-native": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@ondai/config": "workspace:*",
     "@types/react": "catalog:",

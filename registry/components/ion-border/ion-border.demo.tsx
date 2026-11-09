@@ -1,20 +1,25 @@
 import { Text, View } from 'react-native'
+import { Sparkles } from 'lucide-react-native'
 import { typeStyle, useTheme } from '@ondai/tokens/react'
 import type { RadiusKey } from '@ondai/tokens'
+import { ShimmerText } from '../shimmer-text/shimmer-text'
 import { IonBorder, type IonBorderVariant } from './ion-border'
 
 /** Demo wrapper used by the playground and stories; not part of the installed component. */
 export function IonBorderDemo({ active, focused, variant, radius, width, glow, label }: { active?: boolean; focused?: boolean; variant?: IonBorderVariant; radius?: RadiusKey; width?: number; glow?: boolean; label?: 'short' | 'long' }) {
   const t = useTheme()
   return (
-    <IonBorder active={active} focused={focused} variant={variant} radius={radius} width={width} glow={glow}>
-      <View style={{ padding: t.spacing[4], gap: 6 }}>
-        <Text style={[typeStyle(t, 'md', { weight: 'medium' }), { color: t.colors.text }]}>Summarizing 3 messages</Text>
-        {label === 'long' ? (
-          <Text style={[typeStyle(t, 'sm'), { color: t.colors.textSecondary }]}>The on-device model is reading the thread and will return a two-line TL;DR. Nothing leaves the phone.</Text>
-        ) : (
-          <Text style={[typeStyle(t, 'sm', { mono: true }), { color: t.colors.textTertiary }]}>on device · apple</Text>
-        )}
+    <IonBorder active={active} focused={focused} variant={variant} radius={radius} width={width} glow={glow} shadow="sm">
+      <View style={{ paddingHorizontal: 16, paddingVertical: 14, gap: 4 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Sparkles size={15} strokeWidth={1.75} color={active ? t.colors.accent.solid : t.colors.textTertiary} />
+          <ShimmerText active={!!active} size="md" weight="medium" color={active ? undefined : t.colors.text}>
+            {active ? 'Summarizing 3 messages' : 'Summary ready'}
+          </ShimmerText>
+        </View>
+        <Text style={[typeStyle(t, 'sm'), { color: t.colors.textSecondary, paddingLeft: 23 }]}>
+          {label === 'long' ? 'Reading the thread on this phone. Nothing leaves it.' : 'Sam, Priya and the venue'}
+        </Text>
       </View>
     </IonBorder>
   )

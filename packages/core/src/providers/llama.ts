@@ -43,6 +43,8 @@ export function llamaAdapter(mod: LlamaModule, options: LlamaAdapterOptions): Ll
     label: 'Llama',
     locality: 'local',
     capabilities: caps,
+    // The llama provider ignores the AI SDK response schema; ask for JSON in the prompt and validate it here.
+    structuredOutput: 'prompt',
     contextWindow: options.contextWindow ?? 4096,
     progress: 0,
     async availability(): Promise<Availability> {

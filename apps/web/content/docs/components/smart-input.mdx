@@ -1,5 +1,5 @@
 ---
-title: "SmartInput"
+title: "Smart input"
 description: "Text, voice or photo fills your zod form on device, with per-field confidence, deterministic refinement and confirm/undo."
 ---
 
@@ -7,7 +7,7 @@ description: "Text, voice or photo fills your zod form on device, with per-field
 
 ## Install
 
-```bash
+```npm
 npx ondai add smart-input
 ```
 
@@ -31,20 +31,40 @@ const expense = z.object({
 - Per-field confidence drives highlight / badge / underline styles and confirm/undo.
 - For react-hook-form: `form.apply((name, value) => setValue(name, value))`.
 
+## Customize
+
+Every AI component takes the same look and customization props, so it fits your app rather than ours.
+
+```tsx
+<SmartInput
+  variant="pop"
+  tint="#FF5A5F"
+  size="lg"
+  radius={12}
+  icons={{ input: Search, voice: null }}
+  labels={{ placeholder: '…', thinking: '…' }}
+/>
+```
+
+| Prop | What it does |
+| --- | --- |
+| `variant` | The look of the whole component: `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `size` | `sm`, `md`, `lg`; type, rows, icons and keys scale together |
+| `tint` | Any colour; the variant paints its keys, tiles and glow in it |
+| `radius` | Corner radius of the container |
+| `icons` | Replace any icon (a lucide component, an element, or `null` to hide it): `input`, `voice`, `camera`, `submit`, `filled`, `confirm`, `undo`, `error` |
+| `labels` | Every visible and spoken string; defaults are exported as `smartInputLabels`: `placeholder`, `thinking`, `fill`, `submit`, `voice`, `camera`, `filledCount`, `undo`, `undoAll`, `use`, `confirm`, `add`, `filledMark`, `retry` |
+| Slots | Draw a part yourself: `renderField`, `renderSubmit`, `renderEmpty`, `renderFooter` |
+| `styles` | Style any named part |
+
 ## Variants
 
 | Prop | Options |
 | --- | --- |
+| `variant` | `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
 | `presentation` | `field`, `composer`, `overlay`, `card` |
+| `size` | `sm`, `md`, `lg` |
 | `confidenceStyle` | `highlight`, `badge`, `underline` |
-
-Every variant is live in the [playground](/playground/smart-input).
-
-## Runs on
-
-| Capability | Apple FM | Gemini Nano | Llama | Cloud |
-| --- | --- | --- | --- | --- |
-| structured | ✅ | ✅ | ✅ | ✅ |
 
 ## Token budget
 
@@ -60,6 +80,6 @@ Fixtures: `evals/smart-input/fixtures.json`.
 
 ## Files
 
-Registry dependencies: [button](/docs/components/button), [chip](/docs/components/chip), [field](/docs/components/field), [ion-border](/docs/components/ion-border), [on-device-badge](/docs/components/on-device-badge)
+Registry dependencies: [button](/docs/components/button), [chip](/docs/components/chip), [ion-border](/docs/components/ion-border), [on-device-badge](/docs/components/on-device-badge), [shimmer-text](/docs/components/shimmer-text), [skeleton](/docs/components/skeleton), [surface](/docs/components/surface)
 
 npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-haptics`, `lucide-react-native`, `react-native-reanimated`, `zod`

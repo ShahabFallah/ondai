@@ -1,0 +1,15 @@
+{
+  "name": "assistant-message",
+  "title": "AssistantMessage",
+  "description": "One reply from the on-device model: a trace of what it did, the answer streaming in, its sources, and copy or retry. Includes UserMessage for the person's turns.",
+  "category": "chat",
+  "priority": "P0",
+  "capabilities": [],
+  "variants": {
+    "variant": ["clean", "minimal", "glass", "pop", "candy", "metal", "shine", "bevel"],
+    "presentation": ["plain", "card"],
+    "size": ["sm", "md", "lg"]
+  },
+  "registryDependencies": ["button", "shimmer-text", "streaming-text", "surface"],
+  "files": ["assistant-message.tsx", "index.ts"]
+}

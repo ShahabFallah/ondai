@@ -38,6 +38,12 @@ export interface TaskContext {
   setStatus(status: AiState): void
 }
 
+/**
+ * Failures worth trying the next ready provider for: the provider itself could not serve the call. A refusal,
+ * an overflow or a bad reply would most likely repeat, and a cancel is the user's.
+ */
+const FALLBACK_KINDS = new Set(['unavailable', 'unknown', 'quota', 'network', 'unsupported-language'])
+
 const errorStatus = (e: OndaiError): AiState => (e.kind === 'refusal' ? 'refusal' : e.kind === 'unavailable' ? 'unavailable' : 'error')
 
 /** Shared machinery for every AI hook: status machine, cancellation, error mapping, local metrics. */
@@ -72,23 +78,37 @@ export function useTask(component?: string): TaskController {
       let tokens = 0
       let resolved: Resolved | undefined
       try {
-        resolved = await ondai.resolve(capability, options)
-        update({ provider: resolved.provider, locality: resolved.locality, label: resolved.adapter.label })
-        const out = await fn({
-          resolved,
-          signal: ac.signal,
-          firstToken: () => {
-            if (ttft === undefined) ttft = Date.now() - t0
-          },
-          tokens: (n) => (tokens = n),
-          setStatus: (s) => update({ status: s }),
-        })
+        const ready = await ondai.resolveAll(capability, options)
+        let out!: T
+        for (let i = 0; i < ready.length; i++) {
+          resolved = ready[i]!
+          update({ provider: resolved.provider, locality: resolved.locality, label: resolved.adapter.label })
+          try {
+            out = await fn({
+              resolved,
+              signal: ac.signal,
+              firstToken: () => {
+                if (ttft === undefined) ttft = Date.now() - t0
+              },
+              tokens: (n) => (tokens = n),
+              setStatus: (s) => update({ status: s }),
+            })
+            break
+          } catch (e) {
+            // Fall back only while nothing has been shown: once tokens are on screen, a second answer would replace them.
+            const kind = ondai.classify(e, resolved.provider)
+            const last = i === ready.length - 1
+            if (last || ac.signal.aborted || ttft !== undefined || !FALLBACK_KINDS.has(kind)) throw e
+            ondai.track({ component, capability, provider: resolved.provider, latencyMs: Date.now() - t0, ok: false, errorKind: kind })
+            update({ status: 'thinking' })
+          }
+        }
         if (ac.signal.aborted) throw new OndaiError('cancelled', 'Stopped.')
         const latencyMs = Date.now() - t0
         const streamMs = ttft !== undefined ? Math.max(1, latencyMs - ttft) : latencyMs
         const metrics: TaskMetrics = { latencyMs, ttftMs: ttft, tokensPerSecond: tokens ? Math.round((tokens / streamMs) * 1000) : undefined }
         update({ status: 'done', metrics })
-        ondai.track({ component, capability, provider: resolved.provider, latencyMs, ttftMs: ttft, outputTokens: tokens || undefined, tokensPerSecond: metrics.tokensPerSecond, ok: true })
+        ondai.track({ component, capability, provider: resolved!.provider, latencyMs, ttftMs: ttft, outputTokens: tokens || undefined, tokensPerSecond: metrics.tokensPerSecond, ok: true })
         return out
       } catch (e) {
         const err = ondai.wrapError(e, resolved?.provider)

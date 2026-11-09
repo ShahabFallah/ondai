@@ -27,4 +27,18 @@ describe('schema helpers', () => {
     expect(bad.object.category).toBeUndefined()
     expect(bad.fields.amount!.confidence).toBe(0)
   })
+
+  it('refines a day-first receipt date and keeps it stable when refined again', () => {
+    const receipt = z.object({ merchant: z.string(), date: z.string().describe('date').optional(), method: z.enum(['card', 'cash', 'other']).optional() })
+    const fields = describeSchema(receipt)
+    const aliases = { method: { card: ['visa', 'mastercard'] } }
+    const once = refineObject(fields, { merchant: "Luigi's", date: '25/10/2026', method: 'VISA' }, { aliases })
+    const d = new Date(String(once.object.date))
+    expect([d.getFullYear(), d.getMonth() + 1, d.getDate()]).toEqual([2026, 10, 25])
+    expect(once.object.method).toBe('card')
+    // The hooks refine the structured result and then refine it again: the date must not drift.
+    const twice = refineObject(fields, once.object, { aliases })
+    expect(twice.object.date).toBe(once.object.date)
+    expect(twice.fields.date!.corrected).toBe(false)
+  })
 })

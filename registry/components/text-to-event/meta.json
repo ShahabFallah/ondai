@@ -1,0 +1,30 @@
+{
+  "name": "text-to-event",
+  "title": "TextToEvent",
+  "description": "A pasted or selected message becomes a calendar event: title, date, time, place and people fill in one by one with per-field confidence, stay editable, then go to the calendar.",
+  "category": "organize",
+  "priority": "P1",
+  "capabilities": ["structured"],
+  "variants": {
+    "variant": ["clean", "minimal", "glass", "pop", "candy", "metal", "shine", "bevel"],
+    "presentation": ["card", "message"],
+    "size": ["sm", "md", "lg"]
+  },
+  "registryDependencies": [
+    "button",
+    "chip",
+    "field",
+    "model-download",
+    "on-device-badge",
+    "shimmer-text",
+    "skeleton",
+    "surface"
+  ],
+  "files": ["text-to-event.tsx", "use-text-to-event.ts", "prompts.ts", "index.ts"],
+  "budget": {
+    "input": 800,
+    "strategy": "One structured call on the message; the model copies words, then dates, times and names are resolved and checked against the message on device."
+  },
+  "runsOn": ["apple", "nano", "cloud"],
+  "docs": "Pass `onAdd` and write the event with expo-calendar (or your API). An unclear date (\"next Friday\" said on a Monday, \"Thursday or Friday\", 05/06) is highlighted with the days it could mean, and the add key waits until one is chosen."
+}

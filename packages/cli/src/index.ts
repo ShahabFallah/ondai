@@ -5,9 +5,11 @@ import { doctor } from './commands/doctor'
 import { init } from './commands/init'
 import { list } from './commands/list'
 import { fail } from './ui'
+// Inlined at build time, so `ondai --version` follows the version changesets writes.
+import pkg from '../package.json' with { type: 'json' }
 
 const program = new Command()
-program.name('ondai').description('Beautiful on-device AI components for React Native. Copy. Paste. Private AI.').version('0.1.0')
+program.name('ondai').description('Beautiful on-device AI components for React Native. Copy. Paste. Private AI.').version(pkg.version)
 program.option('-C, --cwd <dir>', 'project directory', process.cwd()).option('-r, --registry <url>', 'registry URL (or ONDAI_REGISTRY)')
 
 program

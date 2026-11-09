@@ -5,15 +5,16 @@ import {
   DocsPage,
   DocsTitle,
   MarkdownCopyButton,
-  ViewOptionsPopover,
 } from 'fumadocs-ui/layouts/docs/page';
 import { notFound } from 'next/navigation';
 import { SidebarTrigger } from 'fumadocs-ui/layouts/docs/slots/sidebar';
 import { Menu } from 'lucide-react';
 import { getMDXComponents } from '@/components/mdx';
+import { RunsOn } from '@/components/docs/RunsOn';
+import { ComponentIndex } from '@/components/docs/ComponentIndex';
 import type { Metadata } from 'next';
 import { createRelativeLink } from 'fumadocs-ui/mdx';
-import { getPageImageUrl, getPageMarkdownUrl, gitConfig } from '@/lib/shared';
+import { getPageImageUrl, getPageMarkdownUrl } from '@/lib/shared';
 
 export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
   const params = await props.params;
@@ -35,16 +36,14 @@ export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
       <DocsDescription className="docs-lead mb-0">{page.data.description}</DocsDescription>
       <div className="docs-actions flex flex-row items-center gap-2 pb-4">
         <MarkdownCopyButton markdownUrl={markdownUrl} />
-        <ViewOptionsPopover
-          markdownUrl={markdownUrl}
-          githubUrl={`https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/content/docs/${page.path}`}
-        />
       </div>
       <DocsBody>
         <MDX
           components={getMDXComponents({
             // this allows you to link to other pages with relative file paths
             a: createRelativeLink(source, page),
+            RunsOn,
+            ComponentIndex,
           })}
         />
       </DocsBody>

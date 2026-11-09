@@ -1,13 +1,13 @@
 ---
-title: "ToolConfirmCard"
-description: "Approval for any tool call: action, parameters and risk level, with approve / edit / cancel."
+title: "Tool confirm card"
+description: "Approval for any tool call: the call as a trace line, then a card with its parameters and deny or confirm."
 ---
 
 <ComponentPreview name="tool-confirm-card" state="confirm" height={360} />
 
 ## Install
 
-```bash
+```npm
 npx ondai add tool-confirm-card
 ```
 
@@ -23,19 +23,39 @@ const agent = useToolAgent({ tools, meta: { sendEmail: { policy: 'ask', risk: 'h
 
 - Works with provider-executed tool loops (Apple, Nano) because approval happens inside the tool's execute.
 
+## Customize
+
+Every AI component takes the same look and customization props, so it fits your app rather than ours.
+
+```tsx
+<ToolConfirmCard
+  variant="pop"
+  tint="#FF5A5F"
+  size="lg"
+  radius={12}
+  icons={{ tool: Search, riskLow: null }}
+  labels={{ wantsToRun: '…', riskLow: '…' }}
+/>
+```
+
+| Prop | What it does |
+| --- | --- |
+| `variant` | The look of the whole component: `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `size` | `sm`, `md`, `lg`; type, rows, icons and keys scale together |
+| `tint` | Any colour; the variant paints its keys, tiles and glow in it |
+| `radius` | Corner radius of the container |
+| `icons` | Replace any icon (a lucide component, an element, or `null` to hide it): `tool`, `riskLow`, `riskMedium`, `riskHigh`, `edit`, `editDone`, `deny`, `confirm`, `done`, `error`, `denied` |
+| `labels` | Every visible and spoken string; defaults are exported as `toolConfirmCardLabels`: `wantsToRun`, `riskLow`, `riskMedium`, `riskHigh`, `edit`, `editDone`, `deny`, `confirm`, `failed`, `skipped`, `denied` |
+| Slots | Draw a part yourself: `renderField`, `renderActions`, `renderStatus`, `renderEmpty` |
+| `styles` | Style any named part |
+
 ## Variants
 
 | Prop | Options |
 | --- | --- |
-| `presentation` | `card`, `sheet`, `banner` |
-
-Every variant is live in the [playground](/playground/tool-confirm-card).
-
-## Runs on
-
-| Capability | Apple FM | Gemini Nano | Llama | Cloud |
-| --- | --- | --- | --- | --- |
-| tools | ✅ | ✅ | ✅ | ✅ |
+| `variant` | `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `presentation` | `card`, `sheet`, `banner`, `inline` |
+| `size` | `sm`, `md`, `lg` |
 
 ## Fallback
 
@@ -47,6 +67,6 @@ No model-driven fixtures for this component.
 
 ## Files
 
-Registry dependencies: [button](/docs/components/button), [sheet](/docs/components/sheet)
+Registry dependencies: [button](/docs/components/button), [sheet](/docs/components/sheet), [shimmer-text](/docs/components/shimmer-text), [surface](/docs/components/surface)
 
 npm dependencies: `@ondai/core`, `@ondai/tokens`, `lucide-react-native`, `react-native-reanimated`

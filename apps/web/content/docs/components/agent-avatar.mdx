@@ -1,13 +1,13 @@
 ---
 title: "AgentAvatar"
-description: "A living face for the on-device assistant: a soft, lit body whose eyes glance and blink. Idle, thinking, speaking and sleeping; blob, square, pill or drop."
+description: "The assistant's face in your app's AI states (idle, thinking, speaking, sleeping), drawn by BotAvatar from libraries.dev."
 ---
 
 <ComponentPreview name="agent-avatar" state="idle" height={260} />
 
 ## Install
 
-```bash
+```npm
 npx ondai add agent-avatar
 ```
 
@@ -26,17 +26,8 @@ import { AgentAvatar } from '@/components/ondai/agent-avatar'
 
 | Prop | Options |
 | --- | --- |
-| `shape` | `blob`, `square`, `pill`, `drop` |
+| `shape` | `chip`, `blob`, `square`, `pill`, `drop` |
 | `state` | `idle`, `thinking`, `speaking`, `sleeping` |
-| `eyes` | `dots`, `ovals` |
-
-Every variant is live in the [playground](/playground/agent-avatar).
-
-## Runs on
-
-| Capability | Apple FM | Gemini Nano | Llama | Cloud |
-| --- | --- | --- | --- | --- |
-| none (pure UI) | ✅ | ✅ | ✅ | ✅ |
 
 ## Fallback
 
@@ -48,4 +39,6 @@ No model-driven fixtures for this component.
 
 ## Files
 
-npm dependencies: `@ondai/tokens`, `react-native-reanimated`, `react-native-svg`
+Registry dependencies: [bot-avatar](/docs/components/bot-avatar)
+
+npm dependencies: none

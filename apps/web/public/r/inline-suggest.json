@@ -1,0 +1,69 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "inline-suggest",
+  "type": "registry:component",
+  "title": "InlineSuggest",
+  "description": "A text field that offers the rest of the sentence as ghost text while the person types, from the on-device model. Tab or the Add key takes it.",
+  "dependencies": [
+    "@ondai/core",
+    "@ondai/tokens",
+    "lucide-react-native",
+    "react-native-reanimated"
+  ],
+  "registryDependencies": [
+    "button",
+    "key-hint",
+    "on-device-badge",
+    "shimmer-text",
+    "surface"
+  ],
+  "files": [
+    {
+      "path": "registry/components/inline-suggest/inline-suggest.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/inline-suggest/inline-suggest.tsx",
+      "content": "import { useEffect, useRef, useState, type ReactNode } from 'react'\nimport { Platform, Text, TextInput, View, type StyleProp, type TextInputKeyPressEvent, type TextStyle, type ViewStyle } from 'react-native'\nimport Animated, { FadeIn } from 'react-native-reanimated'\nimport { ArrowRightToLine } from 'lucide-react-native'\nimport { useStreamText } from '@ondai/core'\nimport { alpha, type FontSizeKey, type SkinInput } from '@ondai/tokens'\nimport { SkinProvider, typeStyle, useMotion, useSkin, useTheme, type IconInput } from '@ondai/tokens/react'\nimport { Button } from '../button/button'\nimport { KeyHint } from '../key-hint/key-hint'\nimport { OnDeviceBadge } from '../on-device-badge/on-device-badge'\nimport { ShimmerText } from '../shimmer-text/shimmer-text'\nimport { SkinWell, skinHasWells, Surface } from '../surface/surface'\n\n/** Every icon InlineSuggest draws. Pass a lucide icon (sized and coloured for you), an element, or `null` to hide it. */\nexport interface InlineSuggestIcons {\n  /** On the key that takes the suggestion. */\n  accept: IconInput\n}\n\n/** Every string InlineSuggest shows or announces. */\nexport interface InlineSuggestLabels {\n  placeholder: string\n  /** The key that takes the suggestion. */\n  accept: string\n  /** Beside the Tab key hint on a hardware keyboard. */\n  hintKeyboard: string\n  /** On touch screens, while a suggestion waits. */\n  hintTouch: string\n  /** While the model guesses. */\n  thinking: string\n  /** Screen reader prefix for the waiting suggestion. */\n  suggestion: string\n}\n\nexport interface InlineSuggestStyles {\n  /** The panel. */\n  container: StyleProp<ViewStyle>\n  input: StyleProp<TextStyle>\n  /** The ghost text after the caret. */\n  ghost: StyleProp<TextStyle>\n  footer: StyleProp<ViewStyle>\n  hint: StyleProp<TextStyle>\n}\n\nexport const inlineSuggestLabels: InlineSuggestLabels = {\n  placeholder: 'Write a message',\n  accept: 'Add',\n  hintKeyboard: 'to take the rest',\n  hintTouch: 'Suggestion ready',\n  thinking: 'Thinking ahead',\n  suggestion: 'Suggestion',\n}\n\n/** What a custom accept key or hint gets. */\nexport interface SuggestSlotProps {\n  /** The text the suggestion would add, with its leading space. Empty when there is none. */\n  suggestion: string\n  /** The model is guessing. */\n  thinking: boolean\n  accept: () => void\n}\n\nexport interface InlineSuggestProps {\n  /** Controlled text. Leave out to let the field keep its own. */\n  value?: string\n  defaultValue?: string\n  onChangeText?: (text: string) => void\n  /** Shortcut for `labels.placeholder`. */\n  placeholder?: string\n  /** What the person is writing, for better guesses: \"A message to Priya about Friday's dinner\". */\n  context?: string\n  /** Characters before the first suggestion. */\n  minChars?: number\n  /** Quiet time after the last keystroke before asking the model. */\n  debounceMs?: number\n  /** Called when a suggestion is taken, with the text it added. */\n  onAccept?: (added: string) => void\n  /** Lines before the field scrolls. */\n  maxLines?: number\n  /**\n   * The look: `clean` (default), `minimal`, `glass`, `pop`, `candy`, `metal` or `shine`. Changes the panel,\n   * the well the text sits in and the accept key together.\n   */\n  variant?: SkinInput\n  size?: 'sm' | 'md' | 'lg'\n  /** Primary colour (hex) for the accept key, the caret and the ghost text. Defaults to the accent. */\n  tint?: string\n  /** Panel corner radius. Defaults to the variant's. */\n  radius?: number\n  icons?: Partial<InlineSuggestIcons>\n  labels?: Partial<InlineSuggestLabels>\n  styles?: Partial<InlineSuggestStyles>\n  /** The \"On device\" badge in the footer while nothing is suggested. */\n  showBadge?: boolean\n  /** Draw the accept key yourself. */\n  renderAccept?: (props: SuggestSlotProps) => ReactNode\n  /** Replace the hint at the left of the footer. */\n  renderHint?: (props: SuggestSlotProps) => ReactNode\n  style?: StyleProp<ViewStyle>\n  testID?: string\n}\n\nconst SYSTEM =\n  'You complete the text a person is typing. Reply with only the next few words that continue it naturally (at most 10 words). No quotes, no explanation, do not repeat their text.'\n\n/** Join the typed text and the model's continuation with exactly the right space. */\nexport function joinSuggestion(typed: string, suggestion: string): string {\n  const s = suggestion.replace(/^[\"“]|[\"”]$/g, '').replace(/\\s+/g, ' ')\n  if (!s.trim()) return ''\n  const needsSpace = !/\\s$/.test(typed) && !/^[\\s.,;:!?)]/.test(s)\n  const trimmed = /\\s$/.test(typed) ? s.trimStart() : s\n  return (needsSpace ? ' ' : '') + trimmed.trimEnd()\n}\n\ntype Size = NonNullable<InlineSuggestProps['size']>\nconst sizes: Record<Size, { font: FontSizeKey; hint: FontSizeKey; padX: number; padY: number; key: 'sm' | 'md'; gap: number }> = {\n  sm: { font: 'md', hint: 'xs', padX: 12, padY: 10, key: 'sm', gap: 6 },\n  md: { font: 'lg', hint: 'sm', padX: 14, padY: 12, key: 'sm', gap: 8 },\n  lg: { font: 'xl', hint: 'md', padX: 16, padY: 14, key: 'md', gap: 10 },\n}\n\n/**\n * A text field that offers the rest of the sentence as quiet ghost text while the person types.\n * Press Tab on a keyboard, or the Add key, to take it; keep typing to ignore it.\n * The model only runs after a pause, and a stale guess is never shown against newer text.\n */\nexport function InlineSuggest({ variant, tint, ...props }: InlineSuggestProps) {\n  return (\n    <SkinProvider skin={variant} tint={tint}>\n      <Suggest {...props} tinted={!!tint} />\n    </SkinProvider>\n  )\n}\n\nfunction Suggest({\n  value,\n  defaultValue = '',\n  onChangeText,\n  placeholder,\n  context,\n  minChars = 8,\n  debounceMs = 450,\n  onAccept,\n  maxLines = 6,\n  size = 'md',\n  radius,\n  icons = {},\n  labels: labelsProp,\n  styles = {},\n  showBadge = true,\n  renderAccept,\n  renderHint,\n  style,\n  testID,\n  tinted,\n}: Omit<InlineSuggestProps, 'variant' | 'tint'> & { tinted: boolean }) {\n  const t = useTheme()\n  const s = useSkin()\n  const motion = useMotion()\n  const z = sizes[size]\n  const labels: InlineSuggestLabels = { ...inlineSuggestLabels, ...labelsProp, ...(placeholder !== undefined ? { placeholder } : null) }\n  const [own, setOwn] = useState(defaultValue)\n  const text = value ?? own\n  const stream = useStreamText({ component: 'inline-suggest', maxOutputTokens: 24, temperature: 0.2 })\n  const askedFor = useRef<string | null>(null)\n  const [ghost, setGhost] = useState('')\n  const body = typeStyle(t, z.font)\n  const line = body.lineHeight ?? 22\n  const wells = skinHasWells(s.skin)\n\n  const change = (next: string) => {\n    if (value === undefined) setOwn(next)\n    onChangeText?.(next)\n  }\n\n  // Ask after a pause; a newer keystroke cancels the wait and hides the old guess.\n  useEffect(() => {\n    setGhost('')\n    askedFor.current = null\n    if (text.trim().length < minChars) return\n    const h = setTimeout(() => {\n      askedFor.current = text\n      const prompt = context ? `${context}\\n\\nText so far:\\n${text}` : text\n      void stream.run(prompt, { system: SYSTEM }).catch(() => {})\n    }, debounceMs)\n    return () => clearTimeout(h)\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, [text, minChars, debounceMs, context])\n\n  useEffect(() => {\n    if (askedFor.current === text) setGhost(joinSuggestion(text, stream.text))\n  }, [stream.text, text])\n\n  const accept = () => {\n    if (!ghost) return\n    change(text + ghost)\n    onAccept?.(ghost)\n    setGhost('')\n  }\n  const onKeyPress = (e: TextInputKeyPressEvent) => {\n    if (Platform.OS === 'web' && e.nativeEvent.key === 'Tab' && ghost) {\n      e.preventDefault()\n      accept()\n    }\n  }\n  const thinking = !ghost && stream.isBusy && askedFor.current === text\n  const slot: SuggestSlotProps = { suggestion: ghost, thinking, accept }\n\n  const pad = { paddingHorizontal: wells ? z.padX - 2 : z.padX, paddingTop: z.padY, paddingBottom: z.padY }\n  const textBox = [body, pad, { minHeight: line * 2 + z.padY * 2, maxHeight: line * maxLines + z.padY * 2 }]\n  // With a tint the guess takes a soft wash of it; otherwise it stays a quiet grey.\n  const ghostColor = tinted && s.tint.startsWith('#') ? alpha(s.tint, s.dark ? 0.75 : 0.62) : t.colors.textTertiary\n\n  // The ghost layer sits in the flow and sizes the field: the typed text drawn invisibly, then the suggestion, so the\n  // guess lands right after the caret and a long one grows the field instead of spilling out of it. The real input\n  // lies over it.\n  const field = (\n    <View>\n      <Text pointerEvents=\"none\" accessible={false} style={[textBox, { color: 'transparent' }, styles.input]}>\n        {text || ' '}\n        <Text style={[{ color: ghostColor }, styles.ghost]}>{ghost}</Text>\n      </Text>\n      <TextInput\n        value={text}\n        onChangeText={change}\n        onKeyPress={onKeyPress}\n        placeholder={labels.placeholder}\n        placeholderTextColor={t.colors.textTertiary}\n        multiline\n        accessibilityLabel={labels.placeholder}\n        accessibilityHint={ghost ? `${labels.suggestion}: ${ghost.trim()}` : undefined}\n        selectionColor={s.tint}\n        testID={testID ? `${testID}-input` : undefined}\n        style={[textBox, { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, minHeight: undefined, color: t.colors.text, textAlignVertical: 'top' }, Platform.OS === 'web' ? ({ outlineStyle: 'none' } as object) : null, styles.input]}\n      />\n    </View>\n  )\n\n  const hintText = [typeStyle(t, z.hint), { color: t.colors.textSecondary }, styles.hint]\n  const hint = renderHint ? (\n    renderHint(slot)\n  ) : ghost ? (\n    <Animated.View entering={motion.enabled ? FadeIn.duration(150) : undefined} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 1 }}>\n      {Platform.OS === 'web' ? <KeyHint keys={['tab']} size=\"sm\" /> : null}\n      <Text numberOfLines={1} style={[hintText, { flexShrink: 1 }]}>\n        {Platform.OS === 'web' ? labels.hintKeyboard : labels.hintTouch}\n      </Text>\n    </Animated.View>\n  ) : thinking ? (\n    <ShimmerText size={z.hint === 'xs' ? 'xs' : 'sm'} active>\n      {labels.thinking}\n    </ShimmerText>\n  ) : showBadge ? (\n    <OnDeviceBadge size=\"sm\" state={stream.isBusy ? 'thinking' : 'idle'} />\n  ) : null\n\n  const key = renderAccept ? (\n    renderAccept(slot)\n  ) : (\n    <Button\n      variant=\"solid\"\n      size={z.key}\n      title={labels.accept}\n      iconRight={icons.accept === null ? undefined : (icons.accept ?? ArrowRightToLine)}\n      disabled={!ghost}\n      onPress={accept}\n      accessibilityLabel={ghost ? `${labels.accept}: ${ghost.trim()}` : labels.accept}\n      testID={testID ? `${testID}-accept` : undefined}\n    />\n  )\n\n  return (\n    <Surface\n      elevation=\"floating\"\n      radius={radius ?? (s.skin === 'clean' ? t.radii.xl : s.radius.container)}\n      style={[{ padding: wells ? 7 : 0, gap: wells ? 2 : 0 }, style, styles.container]}\n      testID={testID}\n    >\n      {wells ? <SkinWell radius={Math.max(8, (radius ?? s.radius.container) - 7)}>{field}</SkinWell> : field}\n      <View style={[{ flexDirection: 'row', alignItems: 'center', gap: z.gap, minHeight: 44, paddingLeft: wells ? 6 : z.padX, paddingRight: wells ? 0 : z.padX - 4, paddingTop: wells ? 6 : 0, paddingBottom: wells ? 0 : z.padY - 2 }, styles.footer]}>\n        {/* Lined up with the key's face, not with its pop side. */}\n        <View style={{ flex: 1, minWidth: 0, flexDirection: 'row', alignItems: 'center', paddingBottom: renderAccept ? 0 : s.depth[z.key] + (s.depth[z.key] ? 3 : 0) }}>{hint}</View>\n        {key}\n      </View>\n    </Surface>\n  )\n}\n\nexport default InlineSuggest\n"
+    },
+    {
+      "path": "registry/components/inline-suggest/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/inline-suggest/index.ts",
+      "content": "export { InlineSuggest, inlineSuggestLabels, joinSuggestion, type InlineSuggestIcons, type InlineSuggestLabels, type InlineSuggestProps, type InlineSuggestStyles, type SuggestSlotProps } from './inline-suggest'\n"
+    }
+  ],
+  "categories": [
+    "input"
+  ],
+  "meta": {
+    "ondai": {
+      "registryVersion": 1,
+      "hash": "34d14c8e5d45e8e2",
+      "priority": "P0",
+      "capabilities": [
+        "text"
+      ],
+      "variants": {
+        "variant": [
+          "clean",
+          "minimal",
+          "glass",
+          "pop",
+          "candy",
+          "metal",
+          "shine",
+          "bevel"
+        ],
+        "size": [
+          "sm",
+          "md",
+          "lg"
+        ]
+      },
+      "runsOn": [
+        "apple",
+        "nano",
+        "cloud"
+      ]
+    }
+  }
+}

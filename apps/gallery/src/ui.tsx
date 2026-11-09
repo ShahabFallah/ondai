@@ -92,7 +92,7 @@ export function Button({ title, onPress, tone = 'solid', disabled }: { title: st
   )
 }
 
-export function Segmented<T extends string>({ options, value, onChange }: { options: readonly T[]; value: T; onChange: (v: T) => void }) {
+export function Segmented<T extends string>({ options, value, onChange, format }: { options: readonly T[]; value: T; onChange: (v: T) => void; format?: (v: T) => string }) {
   const t = useTheme()
   return (
     <View style={{ flexDirection: 'row', backgroundColor: t.colors.input, borderRadius: t.radii.md, padding: 2 }}>
@@ -100,7 +100,7 @@ export function Segmented<T extends string>({ options, value, onChange }: { opti
         const on = o === value
         return (
           <Pressable key={o} onPress={() => onChange(o)} style={{ flex: 1, minHeight: 36, alignItems: 'center', justifyContent: 'center', borderRadius: t.radii.sm, backgroundColor: on ? t.colors.elevated : 'transparent' }}>
-            <Text style={[typeStyle(t, 'xs', { mono: true, tag: true, weight: 'medium' }), { color: on ? t.colors.text : t.colors.textTertiary }]}>{o}</Text>
+            <Text style={[typeStyle(t, 'sm', { weight: 'medium' }), { color: on ? t.colors.text : t.colors.textTertiary }]}>{format ? format(o) : o}</Text>
           </Pressable>
         )
       })}

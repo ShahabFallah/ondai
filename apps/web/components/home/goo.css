@@ -1,0 +1,82 @@
+/* ------------------------------------------------------------------ */
+/* The goo link (GooLink.tsx): a label and an arrow tile joined by a     */
+/* goo filter. Used by "Every part" and "All components".               */
+/* ------------------------------------------------------------------ */
+.goo {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 64px 0 18px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-fg);
+  isolation: isolate;
+}
+.goo-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+.goo-shapes {
+  position: absolute;
+  inset: -12px -24px -12px -12px;
+  padding: 12px 24px 12px 12px;
+  filter: url(#goo-filter);
+  z-index: -1;
+}
+.goo-body,
+.goo-tile {
+  position: absolute;
+  top: 12px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--ink);
+}
+.goo-body {
+  left: 12px;
+  right: 72px;
+}
+.goo-tile {
+  right: 24px;
+  width: 44px;
+  transform: translateX(-6px);
+  transition: transform 0.7s var(--ease-lux);
+}
+.goo-arrow {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  transform: translateX(-6px);
+  transition: transform 0.7s var(--ease-lux);
+}
+.goo-arrow svg {
+  transition: transform 0.7s var(--ease-lux);
+}
+@media (hover: hover) and (pointer: fine) {
+  .goo:hover .goo-tile,
+  .goo:hover .goo-arrow {
+    transform: translateX(14px);
+  }
+  .goo:hover .goo-arrow svg {
+    transform: rotate(45deg);
+  }
+}
+.goo:focus-visible .goo-tile,
+.goo:focus-visible .goo-arrow {
+  transform: translateX(14px);
+}
+.goo:active {
+  scale: 0.98;
+}
+@media (prefers-reduced-motion: reduce) {
+  .goo-tile,
+  .goo-arrow,
+  .goo-arrow svg {
+    transition: none;
+  }
+}

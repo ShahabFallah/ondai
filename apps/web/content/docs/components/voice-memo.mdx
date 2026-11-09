@@ -1,0 +1,69 @@
+---
+title: "Voice memo"
+description: "Talk, and get the memo back as something to act on: a title, a two-line summary and the to-dos you mentioned, ticked and ready to add. All on device."
+---
+
+<ComponentPreview name="voice-memo" state="done" height={480} />
+
+## Install
+
+```npm
+npx ondai add voice-memo
+```
+
+## Usage
+
+```tsx
+import { VoiceMemo } from '@/components/ondai/voice-memo'
+
+<VoiceMemo onAdd={(todos) => reminders.add(todos)} addLabel="Add to Reminders" />
+```
+
+- Recording, transcription and reading all run on the device; the schema is exported as `memoSchema`.
+
+## Customize
+
+Every AI component takes the same look and customization props, so it fits your app rather than ours.
+
+```tsx
+<VoiceMemo
+  variant="pop"
+  tint="#FF5A5F"
+  size="lg"
+  radius={12}
+  icons={{ check: Search, added: null }}
+  labels={{ record: '…', reading: '…' }}
+/>
+```
+
+| Prop | What it does |
+| --- | --- |
+| `variant` | The look of the whole component: `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `size` | `sm`, `md`, `lg`; type, rows, icons and keys scale together |
+| `tint` | Any colour; the variant paints its keys, tiles and glow in it |
+| `radius` | Corner radius of the container |
+| `icons` | Replace any icon (a lucide component, an element, or `null` to hide it): `check`, `added`, `retry` |
+| `labels` | Every visible and spoken string; defaults are exported as `voiceMemoLabels`: `record`, `reading`, `todos`, `add`, `addSome`, `added`, `none`, `error`, `refusal`, `retry`, `showAll`, `showLess` |
+| Slots | Draw a part yourself: `renderAction`, `renderSummary`, `renderAdd`, `renderEmpty` |
+| `styles` | Style any named part |
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `variant` | `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `size` | `sm`, `md`, `lg` |
+
+## Fallback
+
+When no provider is ready the component renders the unavailable state (`AvailabilityGate` copy) and, where a deterministic path exists, keeps working without the model.
+
+## Eval score
+
+No model-driven fixtures for this component.
+
+## Files
+
+Registry dependencies: [button](/docs/components/button), [on-device-badge](/docs/components/on-device-badge), [shimmer-text](/docs/components/shimmer-text), [surface](/docs/components/surface), [voice-input](/docs/components/voice-input)
+
+npm dependencies: `@ondai/core`, `@ondai/tokens`, `lucide-react-native`, `react-native-reanimated`, `zod`

@@ -7,7 +7,7 @@ description: "Shorten, expand, friendlier, formal or fix grammar, streamed on de
 
 ## Install
 
-```bash
+```npm
 npx ondai add rewrite
 ```
 
@@ -22,20 +22,40 @@ import { Rewrite } from '@/components/ondai/rewrite'
 - Modes: shorten, expand, friendlier, formal, fix grammar, or `custom` with your own instruction.
 - Result views: replace, word-level diff, or side by side.
 
+## Customize
+
+Every AI component takes the same look and customization props, so it fits your app rather than ours.
+
+```tsx
+<Rewrite
+  variant="pop"
+  tint="#FF5A5F"
+  size="lg"
+  radius={12}
+  icons={{ shorten: Search, expand: null }}
+  labels={{ shorten: '…', expand: '…' }}
+/>
+```
+
+| Prop | What it does |
+| --- | --- |
+| `variant` | The look of the whole component: `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `size` | `sm`, `md`, `lg`; type, rows, icons and keys scale together |
+| `tint` | Any colour; the variant paints its keys, tiles and glow in it |
+| `radius` | Corner radius of the container |
+| `icons` | Replace any icon (a lucide component, an element, or `null` to hide it): `shorten`, `expand`, `friendlier`, `formal`, `fix`, `custom`, `menu`, `accept`, `reject`, `retry` |
+| `labels` | Every visible and spoken string; defaults are exported as `rewriteLabels`: `shorten`, `expand`, `friendlier`, `formal`, `fix`, `custom`, `workingShorten`, `workingExpand`, `workingFriendlier`, `workingFormal`, `workingFix`, `workingCustom`, `menu`, `accept`, `reject`, `retry`, `before`, `after`, `words`, `word`, `sameLength`, `empty`, `modes` |
+| Slots | Draw a part yourself: `renderMode`, `renderResult`, `renderActions`, `renderEmpty` |
+| `styles` | Style any named part |
+
 ## Variants
 
 | Prop | Options |
 | --- | --- |
+| `variant` | `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
 | `presentation` | `toolbar`, `menu`, `chips` |
 | `resultView` | `replace`, `diff`, `sideBySide` |
-
-Every variant is live in the [playground](/playground/rewrite).
-
-## Runs on
-
-| Capability | Apple FM | Gemini Nano | Llama | Cloud |
-| --- | --- | --- | --- | --- |
-| text | ✅ | ✅ | ✅ | ✅ |
+| `size` | `sm`, `md`, `lg` |
 
 ## Token budget
 
@@ -51,6 +71,6 @@ Fixtures: `evals/rewrite/fixtures.json`.
 
 ## Files
 
-Registry dependencies: [button](/docs/components/button), [chip](/docs/components/chip), [ion-border](/docs/components/ion-border), [on-device-badge](/docs/components/on-device-badge), [sheet](/docs/components/sheet), [streaming-text](/docs/components/streaming-text)
+Registry dependencies: [button](/docs/components/button), [chip](/docs/components/chip), [on-device-badge](/docs/components/on-device-badge), [sheet](/docs/components/sheet), [shimmer-text](/docs/components/shimmer-text), [skeleton](/docs/components/skeleton), [streaming-text](/docs/components/streaming-text), [surface](/docs/components/surface)
 
-npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-haptics`, `lucide-react-native`, `react-native-reanimated`
+npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-haptics`, `lucide-react-native`, `react-native-reanimated`, `react-native-svg`

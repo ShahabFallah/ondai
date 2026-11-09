@@ -5,9 +5,25 @@
   "category": "search",
   "priority": "P0",
   "capabilities": ["structured"],
-  "variants": { "presentation": ["bar", "sheet", "inline"], "chipStyle": ["soft", "outline"] },
-  "registryDependencies": ["button", "chip", "field", "on-device-badge", "sheet", "skeleton"],
+  "variants": {
+    "presentation": ["bar", "sheet", "inline"],
+    "variant": ["clean", "minimal", "glass", "pop", "candy", "metal", "shine", "bevel"],
+    "size": ["sm", "md", "lg"],
+    "chipStyle": ["soft", "outline"]
+  },
+  "registryDependencies": [
+    "button",
+    "chip",
+    "on-device-badge",
+    "sheet",
+    "shimmer-text",
+    "surface",
+    "skeleton"
+  ],
   "files": ["natural-filter.tsx", "use-natural-filter.ts", "prompts.ts", "index.ts"],
-  "budget": { "input": 600, "strategy": "One structured call; enums, numbers and booleans refined deterministically." },
-  "runsOn": ["apple", "nano", "llama", "cloud"]
+  "budget": {
+    "input": 600,
+    "strategy": "One structured call; enums, numbers and booleans refined deterministically."
+  },
+  "runsOn": ["apple", "nano", "cloud"]
 }

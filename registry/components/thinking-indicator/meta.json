@@ -1,11 +1,34 @@
 {
   "name": "thinking-indicator",
   "title": "ThinkingIndicator",
-  "description": "Dots, a metallic orb, line or sweep: calm indicators that the on-device model is working.",
+  "description": "A shimmering sentence, a chrome orb, dots, line or sweep: calm signs that the on-device model is working.",
   "category": "primitive",
   "priority": "P0",
   "capabilities": [],
-  "variants": { "variant": ["dots", "orb", "line", "sweep"], "size": ["sm", "md", "lg"], "state": ["thinking", "listening", "speaking"] },
-  "registryDependencies": [],
-  "files": ["thinking-indicator.tsx", "index.ts"]
+  "variants": {
+    "variant": [
+      "shimmer",
+      "dots",
+      "orb",
+      "line",
+      "sweep"
+    ],
+    "size": [
+      "sm",
+      "md",
+      "lg"
+    ],
+    "state": [
+      "thinking",
+      "listening",
+      "speaking"
+    ]
+  },
+  "registryDependencies": [
+    "shimmer-text"
+  ],
+  "files": [
+    "thinking-indicator.tsx",
+    "index.ts"
+  ]
 }

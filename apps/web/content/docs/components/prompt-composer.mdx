@@ -1,0 +1,70 @@
+---
+title: "Prompt composer"
+description: "Where a person writes to the on-device model: a growing field, attachments, the model badge and a send key that becomes stop while it answers."
+---
+
+<ComponentPreview name="prompt-composer" state="attachments" height={260} />
+
+## Install
+
+```npm
+npx ondai add prompt-composer
+```
+
+## Usage
+
+```tsx
+import { PromptComposer } from '@/components/ondai/prompt-composer'
+
+<PromptComposer onSubmit={chat.send} busy={chat.isBusy} onStop={chat.stop} onAttach={pickPhoto} attachments={files} onRemoveAttachment={removeFile} />
+```
+
+- Enter sends on web and hardware keyboards; Shift+Enter adds a line.
+- While `busy`, the raised send key becomes a stop key.
+
+## Customize
+
+Every AI component takes the same look and customization props, so it fits your app rather than ours.
+
+```tsx
+<PromptComposer
+  variant="pop"
+  tint="#FF5A5F"
+  size="lg"
+  radius={12}
+  icons={{ attach: Search, send: null }}
+  labels={{ placeholder: '…', canSend: '…' }}
+/>
+```
+
+| Prop | What it does |
+| --- | --- |
+| `variant` | The look of the whole component: `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `size` | `sm`, `md`, `lg`; type, rows, icons and keys scale together |
+| `tint` | Any colour; the variant paints its keys, tiles and glow in it |
+| `radius` | Corner radius of the container |
+| `icons` | Replace any icon (a lucide component, an element, or `null` to hide it): `attach`, `send`, `stop`, `image`, `file`, `remove` |
+| `labels` | Every visible and spoken string; defaults are exported as `promptComposerLabels`: `placeholder`, `canSend`, `busy`, `submit`, `stop` |
+| Slots | Draw a part yourself: `renderAttachment`, `renderSend` |
+| `styles` | Style any named part |
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `variant` | `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `size` | `sm`, `md`, `lg` |
+
+## Fallback
+
+When no provider is ready the component renders the unavailable state (`AvailabilityGate` copy) and, where a deterministic path exists, keeps working without the model.
+
+## Eval score
+
+No model-driven fixtures for this component.
+
+## Files
+
+Registry dependencies: [button](/docs/components/button), [on-device-badge](/docs/components/on-device-badge), [surface](/docs/components/surface)
+
+npm dependencies: `@ondai/tokens`, `lucide-react-native`

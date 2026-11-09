@@ -1,6 +1,6 @@
 # AgentAvatar
 
-A living face for the on-device assistant: a soft, lit body whose eyes glance and blink. Idle, thinking, speaking and sleeping; blob, square, pill or drop.
+The assistant's face in your app's AI states (idle, thinking, speaking, sleeping), drawn by BotAvatar from libraries.dev.
 
 ```bash
 npx ondai add agent-avatar

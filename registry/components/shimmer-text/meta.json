@@ -1,0 +1,1 @@
+{ "name": "shimmer-text", "title": "ShimmerText", "description": "Text with a soft light running across it while the model works.", "category": "primitive", "priority": "P0", "capabilities": [], "variants": { "size": ["xs", "sm", "md", "lg"] }, "registryDependencies": [], "files": ["shimmer-text.tsx", "index.ts"] }

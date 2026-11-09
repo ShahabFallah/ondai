@@ -1,0 +1,45 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "shimmer-text",
+  "type": "registry:component",
+  "title": "ShimmerText",
+  "description": "Text with a soft light running across it while the model works.",
+  "dependencies": [
+    "@ondai/tokens",
+    "react-native-reanimated"
+  ],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "registry/components/shimmer-text/shimmer-text.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/shimmer-text/shimmer-text.tsx",
+      "content": "import { useEffect, useState } from 'react'\nimport { StyleSheet, Text, View, type LayoutChangeEvent, type StyleProp, type TextStyle, type ViewStyle } from 'react-native'\nimport Animated, { Easing, cancelAnimation, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated'\nimport type { FontSizeKey, FontWeightKey } from '@ondai/tokens'\nimport { typeStyle, useMotion, useTheme } from '@ondai/tokens/react'\n\nexport interface ShimmerTextProps {\n  children: string\n  /** Sweep a highlight across the text. Off renders plain text in `color`. */\n  active?: boolean\n  size?: FontSizeKey\n  weight?: FontWeightKey\n  /** Resting color (and the color when inactive). Defaults to tertiary text while active, secondary otherwise. */\n  color?: string\n  /** Color at the center of the moving band. Defaults to primary text. */\n  highlight?: string\n  /** One pass, in ms. */\n  duration?: number\n  numberOfLines?: number\n  style?: StyleProp<ViewStyle>\n  textStyle?: StyleProp<TextStyle>\n  /** `progressbar` when the text is the only sign of work (ThinkingIndicator uses it). */\n  accessibilityRole?: 'text' | 'progressbar'\n  testID?: string\n}\n\n/** Slices that build the soft band. Each is a clipped copy of the text, so kerning and wrapping stay exact. */\nconst SLICES = 9\nconst profile = Array.from({ length: SLICES }, (_, i) => Math.pow(Math.sin((Math.PI * (i + 0.5)) / SLICES), 2))\n\n/** Text with a light that runs across it while the model works. Calm, legible, never a spinner. */\nexport function ShimmerText({ children, active = true, size = 'sm', weight = 'medium', color, highlight, duration = 2200, numberOfLines, style, textStyle, accessibilityRole = 'text', testID }: ShimmerTextProps) {\n  const t = useTheme()\n  const motion = useMotion()\n  const [box, setBox] = useState({ w: 0, h: 0 })\n  const p = useSharedValue(0.45)\n  const running = active && motion.enabled && box.w > 0\n  const band = Math.max(56, Math.min(box.w * 0.45, 160))\n  const slice = band / SLICES\n\n  useEffect(() => {\n    if (running) {\n      p.value = 0\n      p.value = withRepeat(withTiming(1, { duration, easing: Easing.linear }), -1, false)\n    } else {\n      cancelAnimation(p)\n      p.value = 0.45\n    }\n    return () => cancelAnimation(p)\n  }, [running, duration, p])\n\n  // The band travels from fully left of the text to fully right of it.\n  const move = useAnimatedStyle(() => ({ transform: [{ translateX: -band + p.value * (box.w + band) }] }), [p, band, box.w])\n  const counter = useAnimatedStyle(() => ({ transform: [{ translateX: band - p.value * (box.w + band) }] }), [p, band, box.w])\n\n  const base = typeStyle(t, size, { weight })\n  const rest = color ?? (active ? t.colors.textTertiary : t.colors.textSecondary)\n  const lit = highlight ?? t.colors.text\n  const onLayout = (e: LayoutChangeEvent) => {\n    const { width, height } = e.nativeEvent.layout\n    if (Math.abs(width - box.w) > 0.5 || Math.abs(height - box.h) > 0.5) setBox({ w: width, h: height })\n  }\n\n  return (\n    <View testID={testID} style={[{ flexDirection: 'row', maxWidth: '100%' }, style]} accessibilityRole={accessibilityRole} accessibilityLabel={children}>\n      <Text onLayout={onLayout} numberOfLines={numberOfLines} style={[base, { color: rest, flexShrink: 1 }, textStyle]}>\n        {children}\n      </Text>\n      {active && box.w > 0 ? (\n        <Animated.View pointerEvents=\"none\" importantForAccessibility=\"no-hide-descendants\" accessibilityElementsHidden style={[{ position: 'absolute', top: 0, left: 0, width: band, height: box.h }, move]}>\n          {profile.map((o, i) => (\n            <View key={i} style={{ position: 'absolute', top: 0, left: i * slice, width: slice + 0.5, height: box.h, overflow: 'hidden', opacity: o }}>\n              <Animated.View style={[{ position: 'absolute', top: 0, left: -i * slice, width: box.w }, counter]}>\n                <Text numberOfLines={numberOfLines} style={[base, { color: lit }, textStyle, styles.copy, { width: box.w }]}>\n                  {children}\n                </Text>\n              </Animated.View>\n            </View>\n          ))}\n        </Animated.View>\n      ) : null}\n    </View>\n  )\n}\n\nconst styles = StyleSheet.create({ copy: { margin: 0 } })\n\nexport default ShimmerText\n"
+    },
+    {
+      "path": "registry/components/shimmer-text/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/shimmer-text/index.ts",
+      "content": "export { ShimmerText, type ShimmerTextProps } from './shimmer-text'\n"
+    }
+  ],
+  "categories": [
+    "primitive"
+  ],
+  "meta": {
+    "ondai": {
+      "registryVersion": 1,
+      "hash": "d14a2c3f647bf271",
+      "priority": "P0",
+      "capabilities": [],
+      "variants": {
+        "size": [
+          "xs",
+          "sm",
+          "md",
+          "lg"
+        ]
+      }
+    }
+  }
+}

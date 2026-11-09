@@ -1,0 +1,70 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "chat",
+  "type": "registry:component",
+  "title": "Chat",
+  "description": "A complete on-device conversation: streamed turns with their trace, stop mid-reply, retry, and history trimmed to the model's context.",
+  "dependencies": [
+    "@ondai/core",
+    "@ondai/tokens",
+    "lucide-react-native"
+  ],
+  "registryDependencies": [
+    "assistant-message",
+    "prompt-composer",
+    "surface"
+  ],
+  "files": [
+    {
+      "path": "registry/components/chat/chat.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/chat/chat.tsx",
+      "content": "import { useEffect, useRef, type ComponentRef, type ReactNode } from 'react'\nimport { Pressable, ScrollView, Text, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native'\nimport { ArrowUpRight, MessageSquare } from 'lucide-react-native'\nimport { useChat, type ChatMessage, type UseChatOptions } from '@ondai/core'\nimport type { FontSizeKey, SkinInput } from '@ondai/tokens'\nimport { hairlineWidth, renderIcon, SkinProvider, typeStyle, useSkin, useTheme, type IconInput } from '@ondai/tokens/react'\nimport { AssistantMessage, assistantMessageLabels, UserMessage, type AssistantMessageIcons, type AssistantMessageLabels } from '../assistant-message/assistant-message'\nimport { PromptComposer, promptComposerLabels, type PromptComposerIcons, type PromptComposerLabels, type PromptComposerProps } from '../prompt-composer/prompt-composer'\nimport { SkinRowFace, SkinTile, skinHasWells, Surface } from '../surface/surface'\n\n/** Every icon Chat draws: the composer's, the replies' and the suggestions'. `null` hides one. */\nexport interface ChatIcons extends PromptComposerIcons, AssistantMessageIcons {\n  /** Leading mark on a suggestion row. */\n  suggestion: IconInput\n  /** Trailing arrow on a suggestion row. */\n  suggestionGo: IconInput\n}\n\n/** Every string Chat shows or announces: the composer's, the replies' and the empty state's. */\nexport interface ChatLabels extends PromptComposerLabels, AssistantMessageLabels {\n  emptyTitle: string\n  /** One line under the title while the conversation is empty. */\n  emptyHint: string\n}\n\n/** Styles for each part, applied after the component's own. */\nexport interface ChatStyles {\n  container: StyleProp<ViewStyle>\n  /** The scrolling list of turns. */\n  list: StyleProp<ViewStyle>\n  empty: StyleProp<ViewStyle>\n  emptyTitle: StyleProp<TextStyle>\n  suggestions: StyleProp<ViewStyle>\n  suggestion: StyleProp<ViewStyle>\n  /** The person's bubbles. */\n  bubble: StyleProp<ViewStyle>\n  /** The model's replies. */\n  reply: StyleProp<ViewStyle>\n  composer: StyleProp<ViewStyle>\n}\n\nexport const chatLabels: ChatLabels = {\n  ...promptComposerLabels,\n  ...assistantMessageLabels,\n  emptyTitle: 'What can I help with?',\n  emptyHint: 'Runs on this phone. Nothing you type leaves it.',\n}\n\nexport interface ChatEmptyProps {\n  suggestions: string[]\n  send: (text: string) => void\n}\n\nexport interface ChatProps extends UseChatOptions {\n  /**\n   * The look: `clean` (default), `minimal`, `glass`, `pop`, `candy`, `metal` or `shine`. Reaches the\n   * bubbles, the replies, the suggestions and the composer together.\n   */\n  variant?: SkinInput\n  size?: 'sm' | 'md' | 'lg'\n  /** Primary colour (hex) for the bubbles, the send key and the glow. Defaults to the theme accent. */\n  tint?: string\n  /** Corner radius of the composer, the reply cards and the bubbles. Defaults to the variant's. */\n  radius?: number\n  /** `plain` replies sit on the page like a document; `card` puts each on a panel. */\n  replies?: 'plain' | 'card'\n  /** Shortcut for `labels.placeholder`. */\n  placeholder?: string\n  /** Shortcut for `labels.emptyTitle`. */\n  emptyTitle?: string\n  /** Shown while the conversation is empty; tapping one sends it. */\n  suggestions?: string[]\n  /** Sent once on mount (a deep link, a \"Ask about this\" entry point). */\n  initialPrompt?: string\n  icons?: Partial<ChatIcons>\n  labels?: Partial<ChatLabels>\n  styles?: Partial<ChatStyles>\n  /** The model badge in the composer. */\n  showBadge?: boolean\n  /** Extra props for the composer (attachments, an accessory, `renderSend`). */\n  composerProps?: Partial<Omit<PromptComposerProps, 'onSubmit' | 'busy' | 'onStop'>>\n  /** Draw one turn yourself. Return undefined to keep the default for that turn. */\n  renderMessage?: (message: ChatMessage, index: number) => ReactNode\n  /** Draw the empty conversation yourself. */\n  renderEmpty?: (props: ChatEmptyProps) => ReactNode\n  /** Draw one suggestion yourself. */\n  renderSuggestion?: (text: string, send: () => void) => ReactNode\n  style?: StyleProp<ViewStyle>\n  testID?: string\n}\n\ntype Size = NonNullable<ChatProps['size']>\nconst sizes: Record<Size, { title: FontSizeKey; body: FontSizeKey; hint: FontSizeKey; row: number; tile: number; icon: number; gap: number }> = {\n  sm: { title: 'lg', body: 'sm', hint: 'xs', row: 40, tile: 24, icon: 13, gap: 16 },\n  md: { title: 'xl', body: 'md', hint: 'sm', row: 46, tile: 28, icon: 15, gap: 20 },\n  lg: { title: '2xl', body: 'lg', hint: 'md', row: 54, tile: 32, icon: 17, gap: 24 },\n}\n\n/**\n * A complete on-device conversation: turns stream in with their trace, the composer stops a reply mid-way,\n * and the history is trimmed to fit the model's context. Built from PromptComposer and AssistantMessage,\n * and `variant` reaches every part.\n */\nexport function Chat({ variant, tint, ...props }: ChatProps) {\n  return (\n    <SkinProvider skin={variant} tint={tint}>\n      <ChatInner {...props} />\n    </SkinProvider>\n  )\n}\n\nfunction ChatInner({\n  size = 'md',\n  radius,\n  replies = 'plain',\n  placeholder,\n  emptyTitle,\n  suggestions = [],\n  initialPrompt,\n  icons = {},\n  labels: labelsProp,\n  styles = {},\n  showBadge = true,\n  composerProps,\n  renderMessage,\n  renderEmpty,\n  renderSuggestion,\n  style,\n  testID,\n  ...options\n}: Omit<ChatProps, 'variant' | 'tint'>) {\n  const t = useTheme()\n  const s = useSkin()\n  const z = sizes[size]\n  const labels: ChatLabels = { ...chatLabels, ...labelsProp, ...(placeholder !== undefined ? { placeholder } : null), ...(emptyTitle !== undefined ? { emptyTitle } : null) }\n  const chat = useChat(options)\n  const scroll = useRef<ComponentRef<typeof ScrollView>>(null)\n  const last = chat.messages[chat.messages.length - 1]\n  useEffect(() => {\n    scroll.current?.scrollToEnd({ animated: false })\n  }, [chat.messages.length, last?.text])\n\n  const send = (text: string) => void chat.send(text).catch(() => {})\n  const sentInitial = useRef(false)\n  useEffect(() => {\n    if (initialPrompt && !sentInitial.current) {\n      sentInitial.current = true\n      send(initialPrompt)\n    }\n    // eslint-disable-next-line react-hooks/exhaustive-deps\n  }, [initialPrompt])\n  const empty = chat.messages.length === 0\n  const wells = skinHasWells(s.skin)\n\n  const suggestionRow = (text: string, i: number) => {\n    if (renderSuggestion) return <View key={text}>{renderSuggestion(text, () => send(text))}</View>\n    const r = Math.max(8, s.radius.control)\n    const lead = renderIcon(icons.suggestion, MessageSquare, { size: z.icon, strokeWidth: 1.75, color: wells ? s.tile.ink : t.colors.textSecondary })\n    return (\n      <Pressable key={text} onPress={() => send(text)} accessibilityRole=\"button\" accessibilityLabel={text} style={[{ flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: z.row, paddingHorizontal: 8, paddingVertical: 6, borderRadius: r, borderTopWidth: i && !wells ? hairlineWidth : 0, borderTopColor: t.colors.hairline }, styles.suggestion]}>\n        {(st) => (\n          <>\n            {st.pressed || (st as { hovered?: boolean }).hovered ? <SkinRowFace radius={r} /> : null}\n            {lead === null ? null : wells ? (\n              <SkinTile size={z.tile}>{lead}</SkinTile>\n            ) : (\n              <View style={{ width: z.tile, height: z.tile, borderRadius: Math.round(z.tile * 0.32), alignItems: 'center', justifyContent: 'center', backgroundColor: s.skin === 'minimal' ? 'transparent' : t.colors.muted, borderWidth: s.skin === 'minimal' ? hairlineWidth : 0, borderColor: t.colors.hairlineStrong }}>{lead}</View>\n            )}\n            <Text numberOfLines={1} style={[typeStyle(t, z.body, { weight: 'medium' }), { color: t.colors.text, flex: 1 }]}>\n              {text}\n            </Text>\n            {renderIcon(icons.suggestionGo, ArrowUpRight, { size: z.icon, strokeWidth: 1.75, color: t.colors.textTertiary })}\n          </>\n        )}\n      </Pressable>\n    )\n  }\n\n  const emptyState = renderEmpty ? (\n    renderEmpty({ suggestions, send })\n  ) : (\n    <View style={[{ gap: 14 }, styles.empty]}>\n      <View style={{ gap: 4, paddingHorizontal: 2 }}>\n        <Text style={[typeStyle(t, z.title, { weight: 'semibold' }), { color: t.colors.text }, styles.emptyTitle]}>{labels.emptyTitle}</Text>\n        {labels.emptyHint ? <Text style={[typeStyle(t, z.hint), { color: t.colors.textSecondary }]}>{labels.emptyHint}</Text> : null}\n      </View>\n      {suggestions.length ? (\n        <Surface elevation=\"card\" radius={radius ?? (s.skin === 'clean' ? t.radii.lg + 2 : s.radius.container - 4)} style={[{ padding: 6, gap: wells ? 4 : 0 }, styles.suggestions]}>\n          {suggestions.map(suggestionRow)}\n        </Surface>\n      ) : null}\n    </View>\n  )\n\n  return (\n    <View style={[{ flex: 1, gap: 12 }, style, styles.container]} testID={testID}>\n      <ScrollView ref={scroll} style={{ flex: 1 }} contentContainerStyle={[{ gap: z.gap, paddingVertical: 8, paddingHorizontal: 2, flexGrow: 1, justifyContent: empty ? 'flex-end' : 'flex-start' }, styles.list]} keyboardShouldPersistTaps=\"handled\">\n        {empty\n          ? emptyState\n          : chat.messages.map((m, i) => {\n              const custom = renderMessage?.(m, i)\n              if (custom !== undefined) return <View key={m.id}>{custom}</View>\n              return m.role === 'user' ? (\n                <UserMessage key={m.id} text={m.text} size={size} radius={radius !== undefined ? Math.max(radius, 12) : undefined} style={styles.bubble} />\n              ) : (\n                <AssistantMessage\n                  key={m.id}\n                  text={m.text}\n                  status={m.status}\n                  thoughtMs={m.thoughtMs}\n                  error={m.error && m.status === 'error' ? m.error.message : undefined}\n                  presentation={replies}\n                  size={size}\n                  radius={radius}\n                  icons={icons}\n                  labels={labels}\n                  style={styles.reply}\n                  onRetry={i === chat.messages.length - 1 ? () => void chat.retry().catch(() => {}) : undefined}\n                />\n              )\n            })}\n      </ScrollView>\n      <PromptComposer\n        size={size}\n        radius={radius}\n        icons={icons}\n        labels={labels}\n        showBadge={showBadge}\n        {...composerProps}\n        onSubmit={send}\n        busy={chat.isBusy}\n        onStop={chat.stop}\n        status={chat.status}\n        style={[composerProps?.style, styles.composer]}\n      />\n    </View>\n  )\n}\n\nexport default Chat\n"
+    },
+    {
+      "path": "registry/components/chat/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/chat/index.ts",
+      "content": "export { Chat, chatLabels, type ChatEmptyProps, type ChatIcons, type ChatLabels, type ChatProps, type ChatStyles } from './chat'\n"
+    }
+  ],
+  "categories": [
+    "chat"
+  ],
+  "meta": {
+    "ondai": {
+      "registryVersion": 1,
+      "hash": "c3af45fd1a7c5c34",
+      "priority": "P0",
+      "capabilities": [
+        "text"
+      ],
+      "variants": {
+        "variant": [
+          "clean",
+          "minimal",
+          "glass",
+          "pop",
+          "candy",
+          "metal",
+          "shine",
+          "bevel"
+        ],
+        "replies": [
+          "plain",
+          "card"
+        ],
+        "size": [
+          "sm",
+          "md",
+          "lg"
+        ]
+      },
+      "runsOn": [
+        "apple",
+        "nano",
+        "cloud"
+      ]
+    }
+  }
+}

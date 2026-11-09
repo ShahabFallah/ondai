@@ -9,7 +9,7 @@ export interface UseSmartFormOptions<S extends z.ZodObject<z.ZodRawShape>> {
   instructions?: string
   /** Aliases per enum field: { category: { food: ['lunch', 'dinner'] } }. */
   aliases?: Record<string, Record<string, string[]>>
-  /** Labels for fields in the UI. */
+  /** @deprecated Not read by the hook. Name fields in the UI with SmartInput `fieldLabels`. */
   labels?: Partial<Record<keyof z.infer<S> & string, string>>
   /** Called with the refined values after each successful fill. */
   onFill?: (values: Partial<z.infer<S>>, fields: Record<string, RefinedField>) => void

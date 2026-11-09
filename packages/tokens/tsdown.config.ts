@@ -7,7 +7,8 @@ export default defineConfig({
     'tailwind-preset': 'src/tailwind-preset.ts',
     css: 'src/css.ts',
   },
-  format: ['esm'],
+  // ESM everywhere, plus CommonJS so a `require`d tailwind.config.js can load the preset.
+  format: ['esm', 'cjs'],
   platform: 'neutral',
   dts: true,
   clean: true,

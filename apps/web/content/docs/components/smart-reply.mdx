@@ -1,5 +1,5 @@
 ---
-title: "SmartReply"
+title: "Smart reply"
 description: "Three reply suggestions for the last message in a thread: chips, a stack, or ghost text inside the input, with an optional tone picker."
 ---
 
@@ -7,7 +7,7 @@ description: "Three reply suggestions for the last message in a thread: chips, a
 
 ## Install
 
-```bash
+```npm
 npx ondai add smart-reply
 ```
 
@@ -22,20 +22,40 @@ import { SmartReply } from '@/components/ondai/smart-reply'
 - Only the last six messages are sent, trimmed from the start.
 - The `ghost` presentation shows the first suggestion as faded text inside the input; Tab or the arrow accepts it.
 
+## Customize
+
+Every AI component takes the same look and customization props, so it fits your app rather than ours.
+
+```tsx
+<SmartReply
+  variant="pop"
+  tint="#FF5A5F"
+  size="lg"
+  radius={12}
+  icons={{ reply: Search, insert: null }}
+  labels={{ placeholder: '…', inputLabel: '…' }}
+/>
+```
+
+| Prop | What it does |
+| --- | --- |
+| `variant` | The look of the whole component: `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `size` | `sm`, `md`, `lg`; type, rows, icons and keys scale together |
+| `tint` | Any colour; the variant paints its keys, tiles and glow in it |
+| `radius` | Corner radius of the container |
+| `icons` | Replace any icon (a lucide component, an element, or `null` to hide it): `reply`, `insert`, `accept`, `more` |
+| `labels` | Every visible and spoken string; defaults are exported as `smartReplyLabels`: `placeholder`, `inputLabel`, `thinking`, `thinkingOne`, `more`, `moreLabel`, `accept`, `empty`, `tone`, `toneNeutral`, `toneFriendly`, `toneFormal`, `toneBrief` |
+| Slots | Draw a part yourself: `renderReply`, `renderEmpty`, `renderFooter`, `renderAccept` |
+| `styles` | Style any named part |
+
 ## Variants
 
 | Prop | Options |
 | --- | --- |
+| `variant` | `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
 | `presentation` | `chips`, `stack`, `ghost` |
+| `size` | `sm`, `md`, `lg` |
 | `tone` | `neutral`, `friendly`, `formal`, `brief` |
-
-Every variant is live in the [playground](/playground/smart-reply).
-
-## Runs on
-
-| Capability | Apple FM | Gemini Nano | Llama | Cloud |
-| --- | --- | --- | --- | --- |
-| structured, text | ✅ | ✅ | ✅ | ✅ |
 
 ## Token budget
 
@@ -51,6 +71,6 @@ Fixtures: `evals/smart-reply/fixtures.json`.
 
 ## Files
 
-Registry dependencies: [chip](/docs/components/chip), [on-device-badge](/docs/components/on-device-badge), [skeleton](/docs/components/skeleton)
+Registry dependencies: [button](/docs/components/button), [chip](/docs/components/chip), [on-device-badge](/docs/components/on-device-badge), [shimmer-text](/docs/components/shimmer-text), [skeleton](/docs/components/skeleton), [surface](/docs/components/surface)
 
 npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-haptics`, `lucide-react-native`, `react-native-reanimated`, `zod`

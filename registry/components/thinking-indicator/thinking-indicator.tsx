@@ -3,18 +3,20 @@ import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-na
 import Animated, { Easing, cancelAnimation, useAnimatedProps, useAnimatedStyle, useSharedValue, withDelay, withRepeat, withSequence, withTiming } from 'react-native-reanimated'
 import Svg, { Circle, ClipPath, Defs, Ellipse, G, LinearGradient, RadialGradient, Stop } from 'react-native-svg'
 import { typeStyle, useMotion, useTheme } from '@ondai/tokens/react'
+import { ShimmerText } from '../shimmer-text/shimmer-text'
 
 export type ThinkingState = 'thinking' | 'listening' | 'speaking'
 
 export interface ThinkingIndicatorProps {
-  variant?: 'dots' | 'orb' | 'line' | 'sweep'
+  /** `shimmer` (default): the label itself carries a running light. `orb`: a breathing chrome sphere. */
+  variant?: 'shimmer' | 'dots' | 'orb' | 'line' | 'sweep'
   size?: 'sm' | 'md' | 'lg'
   /**
    * What the model is doing. Changes the orb's rhythm: `thinking` breathes with a slow inner swirl,
    * `listening` breathes slower while the halo swells outward, `speaking` pulses in short beats.
    */
   state?: ThinkingState
-  /** Optional mono label, e.g. "Thinking". */
+  /** What the model is doing, in a few words ("Reading the thread"). Shown next to the visual, or as the visual for `shimmer`. */
   label?: string
   style?: StyleProp<ViewStyle>
   testID?: string
@@ -24,13 +26,21 @@ const px = { sm: 4, md: 6, lg: 8 } as const
 const orbPx = { sm: 18, md: 28, lg: 40 } as const
 const stateLabel: Record<ThinkingState, string> = { thinking: 'Thinking', listening: 'Listening', speaking: 'Speaking' }
 
-/** Four ways to say "the model is working": dots, a metallic breathing orb, a sweeping line, or a light sweep behind a label. */
-export function ThinkingIndicator({ variant = 'dots', size = 'md', state = 'thinking', label, style, testID }: ThinkingIndicatorProps) {
+/** Ways to say "the model is working": a shimmering sentence, a chrome orb that breathes, dots, a line, or a sweep. */
+export function ThinkingIndicator({ variant = 'shimmer', size = 'md', state = 'thinking', label, style, testID }: ThinkingIndicatorProps) {
   const t = useTheme()
+  if (variant === 'shimmer') {
+    const text = label || stateLabel[state]
+    return (
+      <ShimmerText testID={testID} accessibilityRole="progressbar" style={style} size={size === 'lg' ? 'lg' : size === 'md' ? 'md' : 'sm'}>
+        {text}
+      </ShimmerText>
+    )
+  }
   return (
     <View testID={testID} accessibilityRole="progressbar" accessibilityLabel={label ?? stateLabel[state]} style={[{ flexDirection: 'row', alignItems: 'center', gap: 10 }, style]}>
       {variant === 'dots' ? <Dots size={size} /> : variant === 'orb' ? <Orb size={size} state={state} testID={testID ? `${testID}-orb` : undefined} /> : variant === 'line' ? <Line size={size} /> : <Sweep size={size} />}
-      {label ? <Text style={[typeStyle(t, size === 'lg' ? 'sm' : 'xs', { mono: true, tag: true, weight: 'medium' }), { color: t.colors.textSecondary }]}>{label}</Text> : null}
+      {label ? <Text style={[typeStyle(t, size === 'lg' ? 'md' : 'sm', { weight: 'medium' }), { color: t.colors.textSecondary }]}>{label}</Text> : null}
     </View>
   )
 }

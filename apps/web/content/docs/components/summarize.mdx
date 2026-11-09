@@ -1,13 +1,13 @@
 ---
 title: "Summarize"
-description: "A TL;DR for long text: card, inline, sheet or tooltip. Streams, and map-reduces input that does not fit the on-device context."
+description: "The gist of long text: card, inline, sheet or tooltip. Streams, and map-reduces input that does not fit the on-device context."
 ---
 
 <ComponentPreview name="summarize" state="done" height={360} />
 
 ## Install
 
-```bash
+```npm
 npx ondai add summarize
 ```
 
@@ -16,27 +16,47 @@ npx ondai add summarize
 ```tsx
 import { Summarize } from '@/components/ondai/summarize'
 
-<Summarize text={thread.text} presentation="card" length="bullets" style="plain" />
+<Summarize text={thread.text} presentation="card" length="bullets" emphasis="plain" />
 ```
 
 - Short input streams in one pass; long input is chunked, summarized per chunk and reduced (progress shown).
 - `useSummarize()` exposes the same logic headlessly.
 
+## Customize
+
+Every AI component takes the same look and customization props, so it fits your app rather than ours.
+
+```tsx
+<Summarize
+  variant="pop"
+  tint="#FF5A5F"
+  size="lg"
+  radius={12}
+  icons={{ title: Search, run: null }}
+  labels={{ title: '…', run: '…' }}
+/>
+```
+
+| Prop | What it does |
+| --- | --- |
+| `variant` | The look of the whole component: `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `size` | `sm`, `md`, `lg`; type, rows, icons and keys scale together |
+| `tint` | Any colour; the variant paints its keys, tiles and glow in it |
+| `radius` | Corner radius of the container |
+| `icons` | Replace any icon (a lucide component, an element, or `null` to hide it): `title`, `run`, `toggle`, `retry`, `copy`, `copied`, `again`, `bullet` |
+| `labels` | Every visible and spoken string; defaults are exported as `summarizeLabels`: `title`, `run`, `thinking`, `reading`, `idle`, `retry`, `copy`, `copied`, `again`, `preparing`, `tokens`, `show`, `hide` |
+| Slots | Draw a part yourself: `renderBullet`, `renderSummary`, `renderEmpty`, `renderAction`, `renderError` |
+| `styles` | Style any named part |
+
 ## Variants
 
 | Prop | Options |
 | --- | --- |
+| `variant` | `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
 | `presentation` | `card`, `inline`, `sheet`, `tooltip` |
+| `size` | `sm`, `md`, `lg` |
 | `length` | `oneLine`, `bullets`, `paragraph` |
-| `style` | `plain`, `quote`, `highlighted` |
-
-Every variant is live in the [playground](/playground/summarize).
-
-## Runs on
-
-| Capability | Apple FM | Gemini Nano | Llama | Cloud |
-| --- | --- | --- | --- | --- |
-| text | ✅ | ✅ | ✅ | ✅ |
+| `emphasis` | `plain`, `quote`, `highlighted` |
 
 ## Token budget
 
@@ -52,6 +72,6 @@ Fixtures: `evals/summarize/fixtures.json`.
 
 ## Files
 
-Registry dependencies: [button](/docs/components/button), [ion-border](/docs/components/ion-border), [model-download](/docs/components/model-download), [on-device-badge](/docs/components/on-device-badge), [sheet](/docs/components/sheet), [skeleton](/docs/components/skeleton), [streaming-text](/docs/components/streaming-text)
+Registry dependencies: [button](/docs/components/button), [model-download](/docs/components/model-download), [on-device-badge](/docs/components/on-device-badge), [sheet](/docs/components/sheet), [shimmer-text](/docs/components/shimmer-text), [skeleton](/docs/components/skeleton), [streaming-text](/docs/components/streaming-text), [surface](/docs/components/surface)
 
-npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-haptics`, `lucide-react-native`, `react-native-reanimated`
+npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-clipboard`, `expo-haptics`, `lucide-react-native`, `react-native-reanimated`

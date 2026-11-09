@@ -5,9 +5,23 @@
   "category": "organize",
   "priority": "P0",
   "capabilities": ["structured"],
-  "variants": { "presentation": ["chips", "inlineGhost", "dropdown"] },
-  "registryDependencies": ["chip", "on-device-badge", "skeleton"],
+  "variants": {
+    "presentation": ["chips", "inlineGhost", "dropdown"],
+    "variant": ["clean", "minimal", "glass", "pop", "candy", "metal", "shine", "bevel"],
+    "size": ["sm", "md", "lg"]
+  },
+  "registryDependencies": [
+    "button",
+    "chip",
+    "on-device-badge",
+    "shimmer-text",
+    "surface",
+    "skeleton"
+  ],
   "files": ["auto-tag.tsx", "use-auto-tag.ts", "prompts.ts", "schema.ts", "index.ts"],
-  "budget": { "input": 1500, "strategy": "One structured call with an enum-constrained array; results fuzzy-matched to the list." },
-  "runsOn": ["apple", "nano", "llama", "cloud"]
+  "budget": {
+    "input": 1500,
+    "strategy": "One structured call with an enum-constrained array; results fuzzy-matched to the list."
+  },
+  "runsOn": ["apple", "nano", "cloud"]
 }

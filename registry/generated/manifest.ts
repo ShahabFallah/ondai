@@ -13,18 +13,20 @@ export interface ManifestEntry {
   hasPlayground: boolean
   budget?: { input: number; strategy: string }
   runsOn?: string[]
+  limits?: string[]
 }
 
 export const manifest: ManifestEntry[] = [
   {
     "name": "agent-avatar",
     "title": "AgentAvatar",
-    "description": "A living face for the on-device assistant: a soft, lit body whose eyes glance and blink. Idle, thinking, speaking and sleeping; blob, square, pill or drop.",
-    "category": "primitive",
+    "description": "The assistant's face in your app's AI states (idle, thinking, speaking, sleeping), drawn by BotAvatar from libraries.dev.",
+    "category": "fx",
     "priority": "P1",
     "capabilities": [],
     "variants": {
       "shape": [
+        "chip",
         "blob",
         "square",
         "pill",
@@ -35,21 +37,188 @@ export const manifest: ManifestEntry[] = [
         "thinking",
         "speaking",
         "sleeping"
-      ],
-      "eyes": [
-        "dots",
-        "ovals"
       ]
     },
-    "registryDependencies": [],
+    "registryDependencies": [
+      "bot-avatar"
+    ],
     "files": [
       "agent-avatar.tsx",
       "index.ts"
     ],
+    "dependencies": [],
+    "hasPlayground": true
+  },
+  {
+    "name": "agent-run",
+    "title": "AgentRun",
+    "description": "An agent doing a job on the device, step by step: each tool call with its time, approval before anything risky runs, and the answer at the end.",
+    "category": "agentic",
+    "priority": "P0",
+    "capabilities": [
+      "tools"
+    ],
+    "variants": {
+      "variant": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
+      ],
+      "presentation": [
+        "card",
+        "plain"
+      ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
+      ]
+    },
+    "registryDependencies": [
+      "button",
+      "on-device-badge",
+      "shimmer-text",
+      "surface",
+      "tool-confirm-card"
+    ],
+    "files": [
+      "agent-run.tsx",
+      "index.ts"
+    ],
+    "runsOn": [
+      "apple",
+      "cloud"
+    ],
+    "limits": [
+      "Tool calling runs on Apple's model or a cloud model. Gemini Nano's tool calling is still an alpha preview, so Ondai does not route tools to it yet."
+    ],
+    "dependencies": [
+      "@ondai/core",
+      "@ondai/tokens",
+      "lucide-react-native",
+      "react-native-reanimated"
+    ],
+    "hasPlayground": true
+  },
+  {
+    "name": "ask-page",
+    "title": "AskPage",
+    "description": "Ask about the page on screen. The answer streams in grounded in its text, with tap-to-jump quotes and follow-ups, and says when the page does not hold it.",
+    "category": "search",
+    "priority": "P1",
+    "capabilities": [
+      "text"
+    ],
+    "variants": {
+      "variant": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
+      ],
+      "presentation": [
+        "card",
+        "inline",
+        "sheet"
+      ],
+      "quoteStyle": [
+        "cards",
+        "rule",
+        "chips"
+      ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
+      ]
+    },
+    "registryDependencies": [
+      "button",
+      "chip",
+      "model-download",
+      "on-device-badge",
+      "sheet",
+      "shimmer-text",
+      "skeleton",
+      "streaming-text",
+      "surface"
+    ],
+    "files": [
+      "ask-page.tsx",
+      "use-ask-page.ts",
+      "prompts.ts",
+      "index.ts"
+    ],
+    "budget": {
+      "input": 3400,
+      "strategy": "The whole page in one streamed pass when it fits; otherwise the chunks that best match the question, in page order. Quotes are checked against the page and dropped when they are not in it."
+    },
+    "runsOn": [
+      "apple",
+      "nano",
+      "cloud"
+    ],
+    "dependencies": [
+      "@ondai/core",
+      "@ondai/tokens",
+      "expo-haptics",
+      "lucide-react-native",
+      "react-native-reanimated"
+    ],
+    "hasPlayground": true
+  },
+  {
+    "name": "assistant-message",
+    "title": "AssistantMessage",
+    "description": "One reply from the on-device model: a trace of what it did, the answer streaming in, its sources, and copy or retry. Includes UserMessage for the person's turns.",
+    "category": "chat",
+    "priority": "P0",
+    "capabilities": [],
+    "variants": {
+      "variant": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
+      ],
+      "presentation": [
+        "plain",
+        "card"
+      ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
+      ]
+    },
+    "registryDependencies": [
+      "button",
+      "shimmer-text",
+      "streaming-text",
+      "surface"
+    ],
+    "files": [
+      "assistant-message.tsx",
+      "index.ts"
+    ],
     "dependencies": [
       "@ondai/tokens",
-      "react-native-reanimated",
-      "react-native-svg"
+      "expo-clipboard",
+      "lucide-react-native",
+      "react-native-reanimated"
     ],
     "hasPlayground": true
   },
@@ -67,11 +236,29 @@ export const manifest: ManifestEntry[] = [
         "chips",
         "inlineGhost",
         "dropdown"
+      ],
+      "variant": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
+      ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
       ]
     },
     "registryDependencies": [
+      "button",
       "chip",
       "on-device-badge",
+      "shimmer-text",
+      "surface",
       "skeleton"
     ],
     "files": [
@@ -88,7 +275,6 @@ export const manifest: ManifestEntry[] = [
     "runsOn": [
       "apple",
       "nano",
-      "llama",
       "cloud"
     ],
     "dependencies": [
@@ -104,7 +290,7 @@ export const manifest: ManifestEntry[] = [
   {
     "name": "availability-gate",
     "title": "AvailabilityGate",
-    "description": "Renders children only when the on-device model is ready; otherwise an elegant empty state with a way to enable it.",
+    "description": "Renders children only when the on-device model is ready; otherwise a quiet empty state with a way to turn it on.",
     "category": "primitive",
     "priority": "P0",
     "capabilities": [
@@ -118,8 +304,10 @@ export const manifest: ManifestEntry[] = [
       ]
     },
     "registryDependencies": [
+      "button",
       "model-download",
-      "skeleton"
+      "skeleton",
+      "surface"
     ],
     "files": [
       "availability-gate.tsx",
@@ -133,15 +321,115 @@ export const manifest: ManifestEntry[] = [
     "hasPlayground": true
   },
   {
+    "name": "border-beam",
+    "title": "BorderBeam",
+    "description": "A light that travels around a card's border while the model works. libraries.dev's border beam (MIT): Skia shader on iOS and Android, its CSS version on web.",
+    "category": "fx",
+    "priority": "P1",
+    "capabilities": [],
+    "variants": {
+      "tone": [
+        "mono",
+        "colorful",
+        "ocean",
+        "sunset"
+      ],
+      "size": [
+        "md",
+        "sm",
+        "line",
+        "pulse-inner",
+        "pulse-outside"
+      ]
+    },
+    "registryDependencies": [],
+    "files": [
+      "border-beam.tsx",
+      "border-beam.web.tsx",
+      "index.ts",
+      "engine.tsx",
+      "RotateBeam.tsx",
+      "LineBeam.tsx",
+      "PulseBeam.tsx",
+      "rotateShader.ts",
+      "blobShader.ts",
+      "colorMatrix.ts",
+      "lineDriver.ts",
+      "pulseDriver.ts",
+      "spec.ts",
+      "tuning.ts",
+      "types.ts",
+      "beam-spec.json",
+      "LICENSE"
+    ],
+    "dependencies": [
+      "@ondai/tokens",
+      "@shopify/react-native-skia",
+      "border-beam",
+      "react-native-reanimated"
+    ],
+    "hasPlayground": true
+  },
+  {
+    "name": "bot-avatar",
+    "title": "BotAvatar",
+    "description": "A glossy little body with eyes that blinks, glances, hops while the model works and sleeps when idle. libraries.dev's bot avatars (MIT): Skia on iOS and Android, canvas on web.",
+    "category": "fx",
+    "priority": "P1",
+    "capabilities": [],
+    "variants": {
+      "type": [
+        "chip",
+        "clover",
+        "blob",
+        "square",
+        "pill",
+        "drop",
+        "ghost",
+        "droid"
+      ],
+      "state": [
+        "default",
+        "working",
+        "sleeping"
+      ]
+    },
+    "registryDependencies": [],
+    "files": [
+      "bot-avatar.tsx",
+      "bot-avatar.web.tsx",
+      "index.ts",
+      "engine.tsx",
+      "draw.ts",
+      "forms.ts",
+      "light.ts",
+      "packet.ts",
+      "palette.ts",
+      "sheet.tsx",
+      "still.ts",
+      "ticker.ts",
+      "types.ts",
+      "LICENSE"
+    ],
+    "dependencies": [
+      "@ondai/tokens",
+      "@shopify/react-native-skia",
+      "bot-avatars",
+      "react-native-reanimated"
+    ],
+    "hasPlayground": true
+  },
+  {
     "name": "button",
     "title": "Button",
-    "description": "Minimal button with solid, soft, outline, ghost, accent and danger variants.",
+    "description": "Minimal button: ink solid, a soft raised key, and secondary variants that take the theme material (glass, Liquid Glass).",
     "category": "primitive",
     "priority": "P0",
     "capabilities": [],
     "variants": {
       "variant": [
         "solid",
+        "raised",
         "soft",
         "outline",
         "ghost",
@@ -152,15 +440,80 @@ export const manifest: ManifestEntry[] = [
         "sm",
         "md",
         "lg"
+      ],
+      "skin": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
       ]
     },
-    "registryDependencies": [],
+    "registryDependencies": [
+      "surface"
+    ],
     "files": [
       "button.tsx",
       "index.ts"
     ],
     "dependencies": [
-      "@ondai/tokens"
+      "@ondai/tokens",
+      "react-native-reanimated",
+      "react-native-svg"
+    ],
+    "hasPlayground": true
+  },
+  {
+    "name": "chat",
+    "title": "Chat",
+    "description": "A complete on-device conversation: streamed turns with their trace, stop mid-reply, retry, and history trimmed to the model's context.",
+    "category": "chat",
+    "priority": "P0",
+    "capabilities": [
+      "text"
+    ],
+    "variants": {
+      "variant": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
+      ],
+      "replies": [
+        "plain",
+        "card"
+      ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
+      ]
+    },
+    "registryDependencies": [
+      "assistant-message",
+      "prompt-composer",
+      "surface"
+    ],
+    "files": [
+      "chat.tsx",
+      "index.ts"
+    ],
+    "runsOn": [
+      "apple",
+      "nano",
+      "cloud"
+    ],
+    "dependencies": [
+      "@ondai/core",
+      "@ondai/tokens",
+      "lucide-react-native"
     ],
     "hasPlayground": true
   },
@@ -181,9 +534,21 @@ export const manifest: ManifestEntry[] = [
       "size": [
         "sm",
         "md"
+      ],
+      "skin": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
       ]
     },
-    "registryDependencies": [],
+    "registryDependencies": [
+      "surface"
+    ],
     "files": [
       "chip.tsx",
       "index.ts"
@@ -214,9 +579,14 @@ export const manifest: ManifestEntry[] = [
         "fullscreen"
       ],
       "variant": [
+        "clean",
+        "minimal",
         "glass",
-        "solid",
-        "minimal"
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
       ],
       "size": [
         "sm",
@@ -225,13 +595,14 @@ export const manifest: ManifestEntry[] = [
       ]
     },
     "registryDependencies": [
-      "ion-border",
+      "button",
       "key-hint",
       "on-device-badge",
       "sheet",
+      "shimmer-text",
+      "skeleton",
       "streaming-text",
-      "thinking-indicator",
-      "tool-confirm-card"
+      "surface"
     ],
     "files": [
       "command-bar.tsx",
@@ -248,8 +619,10 @@ export const manifest: ManifestEntry[] = [
     "runsOn": [
       "apple",
       "nano",
-      "llama",
       "cloud"
+    ],
+    "limits": [
+      "On Gemini Nano it picks the action from structured output instead of tool calls."
     ],
     "dependencies": [
       "@ondai/core",
@@ -295,25 +668,70 @@ export const manifest: ManifestEntry[] = [
   {
     "name": "image-reveal",
     "title": "ImageReveal",
-    "description": "An image that resolves out of a churning mosaic or an ASCII field as progress rises. The loader for anything the model draws or reads.",
+    "description": "An image arriving the way a diffusion model makes it: grain over a blurred field, resolved step by step.",
     "category": "primitive",
     "priority": "P1",
     "capabilities": [],
-    "variants": {
-      "mode": [
-        "mosaic",
-        "ascii"
-      ]
-    },
+    "variants": {},
     "registryDependencies": [],
     "files": [
       "image-reveal.tsx",
+      "grain.ts",
       "index.ts"
     ],
     "dependencies": [
       "@ondai/tokens",
-      "react-native-reanimated",
-      "react-native-svg"
+      "react-native-reanimated"
+    ],
+    "hasPlayground": true
+  },
+  {
+    "name": "inline-suggest",
+    "title": "InlineSuggest",
+    "description": "A text field that offers the rest of the sentence as ghost text while the person types, from the on-device model. Tab or the Add key takes it.",
+    "category": "input",
+    "priority": "P0",
+    "capabilities": [
+      "text"
+    ],
+    "variants": {
+      "variant": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
+      ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
+      ]
+    },
+    "registryDependencies": [
+      "button",
+      "key-hint",
+      "on-device-badge",
+      "shimmer-text",
+      "surface"
+    ],
+    "files": [
+      "inline-suggest.tsx",
+      "index.ts"
+    ],
+    "runsOn": [
+      "apple",
+      "nano",
+      "cloud"
+    ],
+    "dependencies": [
+      "@ondai/core",
+      "@ondai/tokens",
+      "lucide-react-native",
+      "react-native-reanimated"
     ],
     "hasPlayground": true
   },
@@ -403,9 +821,51 @@ export const manifest: ManifestEntry[] = [
     "hasPlayground": true
   },
   {
+    "name": "liquid-metal",
+    "title": "LiquidMetal",
+    "description": "A ring of liquid metal around a button, a mic or an avatar, glowing while the model works. libraries.dev's metal-fx (MIT, shader from Paper Shaders, Apache-2.0): Skia on iOS and Android, WebGL on web.",
+    "category": "fx",
+    "priority": "P1",
+    "capabilities": [],
+    "variants": {
+      "shape": [
+        "button",
+        "circle"
+      ],
+      "preset": [
+        "chromatic",
+        "silver",
+        "gold"
+      ]
+    },
+    "registryDependencies": [],
+    "files": [
+      "liquid-metal.tsx",
+      "liquid-metal.web.tsx",
+      "index.ts",
+      "engine.tsx",
+      "shader.ts",
+      "material.ts",
+      "geometry.ts",
+      "bend.ts",
+      "glow.ts",
+      "registry.ts",
+      "LICENSE",
+      "LICENSE-APACHE",
+      "NOTICE"
+    ],
+    "dependencies": [
+      "@ondai/tokens",
+      "@shopify/react-native-skia",
+      "metal-fx",
+      "react-native-reanimated"
+    ],
+    "hasPlayground": true
+  },
+  {
     "name": "model-download",
     "title": "ModelDownload",
-    "description": "Ion progress line, ring or card with a mono percentage while a model downloads.",
+    "description": "A thin progress line, ring or card with a tabular percentage while a model downloads.",
     "category": "primitive",
     "priority": "P0",
     "capabilities": [],
@@ -421,13 +881,17 @@ export const manifest: ManifestEntry[] = [
         "lg"
       ]
     },
-    "registryDependencies": [],
+    "registryDependencies": [
+      "button",
+      "surface"
+    ],
     "files": [
       "model-download.tsx",
       "index.ts"
     ],
     "dependencies": [
       "@ondai/tokens",
+      "lucide-react-native",
       "react-native-reanimated",
       "react-native-svg"
     ],
@@ -448,6 +912,21 @@ export const manifest: ManifestEntry[] = [
         "sheet",
         "inline"
       ],
+      "variant": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
+      ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
+      ],
       "chipStyle": [
         "soft",
         "outline"
@@ -456,9 +935,10 @@ export const manifest: ManifestEntry[] = [
     "registryDependencies": [
       "button",
       "chip",
-      "field",
       "on-device-badge",
       "sheet",
+      "shimmer-text",
+      "surface",
       "skeleton"
     ],
     "files": [
@@ -474,7 +954,6 @@ export const manifest: ManifestEntry[] = [
     "runsOn": [
       "apple",
       "nano",
-      "llama",
       "cloud"
     ],
     "dependencies": [
@@ -519,6 +998,117 @@ export const manifest: ManifestEntry[] = [
     "hasPlayground": true
   },
   {
+    "name": "photo-caption",
+    "title": "PhotoCaption",
+    "description": "A photo in; a caption and accessibility alt text out, written by the on-device vision model. Streamed, editable, copyable, and handed back as alt text.",
+    "category": "vision",
+    "priority": "P1",
+    "capabilities": [
+      "vision"
+    ],
+    "variants": {
+      "variant": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
+      ],
+      "presentation": [
+        "stacked",
+        "tabs"
+      ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
+      ],
+      "tone": [
+        "plain",
+        "warm",
+        "playful"
+      ]
+    },
+    "registryDependencies": [
+      "button",
+      "model-download",
+      "on-device-badge",
+      "shimmer-text",
+      "skeleton",
+      "streaming-text",
+      "surface"
+    ],
+    "files": [
+      "photo-caption.tsx",
+      "use-photo-caption.ts",
+      "prompts.ts",
+      "index.ts"
+    ],
+    "budget": {
+      "input": 1200,
+      "strategy": "One image plus a short instruction; a single streamed reply of two labelled lines (caption, alt) parsed as it arrives."
+    },
+    "runsOn": [
+      "nano",
+      "cloud"
+    ],
+    "limits": [
+      "Not on iPhone yet: Apple's model takes images from iOS 27, and the provider package Ondai uses does not pass them on yet. Runs on Gemini Nano (Prompt API, beta) or a cloud model."
+    ],
+    "dependencies": [
+      "@ondai/core",
+      "@ondai/tokens",
+      "expo-clipboard",
+      "expo-haptics",
+      "expo-image-picker",
+      "lucide-react-native",
+      "react-native-reanimated"
+    ],
+    "hasPlayground": true
+  },
+  {
+    "name": "prompt-composer",
+    "title": "PromptComposer",
+    "description": "Where a person writes to the on-device model: a growing field, attachments, the model badge and a send key that becomes stop while it answers.",
+    "category": "chat",
+    "priority": "P0",
+    "capabilities": [],
+    "variants": {
+      "variant": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
+      ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
+      ]
+    },
+    "registryDependencies": [
+      "button",
+      "on-device-badge",
+      "surface"
+    ],
+    "files": [
+      "prompt-composer.tsx",
+      "index.ts"
+    ],
+    "dependencies": [
+      "@ondai/tokens",
+      "lucide-react-native"
+    ],
+    "hasPlayground": true
+  },
+  {
     "name": "rewrite",
     "title": "Rewrite",
     "description": "Shorten, expand, friendlier, formal or fix grammar, streamed on device, with replace / diff / side-by-side results and accept/reject.",
@@ -528,6 +1118,16 @@ export const manifest: ManifestEntry[] = [
       "text"
     ],
     "variants": {
+      "variant": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
+      ],
       "presentation": [
         "toolbar",
         "menu",
@@ -537,15 +1137,22 @@ export const manifest: ManifestEntry[] = [
         "replace",
         "diff",
         "sideBySide"
+      ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
       ]
     },
     "registryDependencies": [
       "button",
       "chip",
-      "ion-border",
       "on-device-badge",
       "sheet",
-      "streaming-text"
+      "shimmer-text",
+      "skeleton",
+      "streaming-text",
+      "surface"
     ],
     "files": [
       "rewrite.tsx",
@@ -561,7 +1168,6 @@ export const manifest: ManifestEntry[] = [
     "runsOn": [
       "apple",
       "nano",
-      "llama",
       "cloud"
     ],
     "dependencies": [
@@ -569,7 +1175,8 @@ export const manifest: ManifestEntry[] = [
       "@ondai/tokens",
       "expo-haptics",
       "lucide-react-native",
-      "react-native-reanimated"
+      "react-native-reanimated",
+      "react-native-svg"
     ],
     "hasPlayground": true
   },
@@ -580,14 +1187,28 @@ export const manifest: ManifestEntry[] = [
     "category": "vision",
     "priority": "P0",
     "capabilities": [
-      "structured",
-      "vision"
+      "structured"
     ],
     "variants": {
+      "variant": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
+      ],
       "presentation": [
         "camera",
         "picker",
         "card"
+      ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
       ],
       "preset": [
         "receipt",
@@ -598,11 +1219,9 @@ export const manifest: ManifestEntry[] = [
     },
     "registryDependencies": [
       "button",
-      "field",
-      "image-reveal",
-      "ion-border",
       "on-device-badge",
-      "skeleton"
+      "shimmer-text",
+      "surface"
     ],
     "files": [
       "scan-to-data.tsx",
@@ -618,8 +1237,10 @@ export const manifest: ManifestEntry[] = [
     "runsOn": [
       "apple",
       "nano",
-      "llama",
       "cloud"
+    ],
+    "limits": [
+      "The text in the photo comes from an OCR you pass in as `ocr` (Apple Vision or ML Kit Text Recognition). The model only turns that text into fields."
     ],
     "dependencies": [
       "@ondai/core",
@@ -628,6 +1249,7 @@ export const manifest: ManifestEntry[] = [
       "expo-image-picker",
       "lucide-react-native",
       "react-native-reanimated",
+      "react-native-svg",
       "zod"
     ],
     "hasPlayground": true
@@ -647,18 +1269,33 @@ export const manifest: ManifestEntry[] = [
         "spotlight",
         "header"
       ],
+      "variant": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
+      ],
       "resultStyle": [
         "list",
         "cards",
         "grouped"
+      ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
       ]
     },
     "registryDependencies": [
-      "chip",
-      "field",
       "model-download",
       "on-device-badge",
       "sheet",
+      "shimmer-text",
+      "surface",
       "skeleton"
     ],
     "files": [
@@ -672,8 +1309,10 @@ export const manifest: ManifestEntry[] = [
     },
     "runsOn": [
       "apple",
-      "llama",
       "cloud"
+    ],
+    "limits": [
+      "Embeddings come from Apple (NLContextualEmbedding) or a cloud model. Without them it falls back to keyword search."
     ],
     "dependencies": [
       "@ondai/core",
@@ -702,7 +1341,9 @@ export const manifest: ManifestEntry[] = [
         "solid"
       ]
     },
-    "registryDependencies": [],
+    "registryDependencies": [
+      "surface"
+    ],
     "files": [
       "sheet.tsx",
       "index.ts"
@@ -710,6 +1351,32 @@ export const manifest: ManifestEntry[] = [
     "dependencies": [
       "@ondai/tokens",
       "expo-blur",
+      "react-native-reanimated"
+    ],
+    "hasPlayground": true
+  },
+  {
+    "name": "shimmer-text",
+    "title": "ShimmerText",
+    "description": "Text with a soft light running across it while the model works.",
+    "category": "primitive",
+    "priority": "P0",
+    "capabilities": [],
+    "variants": {
+      "size": [
+        "xs",
+        "sm",
+        "md",
+        "lg"
+      ]
+    },
+    "registryDependencies": [],
+    "files": [
+      "shimmer-text.tsx",
+      "index.ts"
+    ],
+    "dependencies": [
+      "@ondai/tokens",
       "react-native-reanimated"
     ],
     "hasPlayground": true
@@ -751,11 +1418,26 @@ export const manifest: ManifestEntry[] = [
       "structured"
     ],
     "variants": {
+      "variant": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
+      ],
       "presentation": [
         "field",
         "composer",
         "overlay",
         "card"
+      ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
       ],
       "confidenceStyle": [
         "highlight",
@@ -766,9 +1448,11 @@ export const manifest: ManifestEntry[] = [
     "registryDependencies": [
       "button",
       "chip",
-      "field",
       "ion-border",
-      "on-device-badge"
+      "on-device-badge",
+      "shimmer-text",
+      "skeleton",
+      "surface"
     ],
     "files": [
       "smart-input.tsx",
@@ -783,7 +1467,6 @@ export const manifest: ManifestEntry[] = [
     "runsOn": [
       "apple",
       "nano",
-      "llama",
       "cloud"
     ],
     "dependencies": [
@@ -807,10 +1490,25 @@ export const manifest: ManifestEntry[] = [
       "text"
     ],
     "variants": {
+      "variant": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
+      ],
       "presentation": [
         "chips",
         "stack",
         "ghost"
+      ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
       ],
       "tone": [
         "neutral",
@@ -820,9 +1518,12 @@ export const manifest: ManifestEntry[] = [
       ]
     },
     "registryDependencies": [
+      "button",
       "chip",
       "on-device-badge",
-      "skeleton"
+      "shimmer-text",
+      "skeleton",
+      "surface"
     ],
     "files": [
       "smart-reply.tsx",
@@ -838,7 +1539,6 @@ export const manifest: ManifestEntry[] = [
     "runsOn": [
       "apple",
       "nano",
-      "llama",
       "cloud"
     ],
     "dependencies": [
@@ -881,25 +1581,40 @@ export const manifest: ManifestEntry[] = [
   {
     "name": "summarize",
     "title": "Summarize",
-    "description": "A TL;DR for long text: card, inline, sheet or tooltip. Streams, and map-reduces input that does not fit the on-device context.",
+    "description": "The gist of long text: card, inline, sheet or tooltip. Streams, and map-reduces input that does not fit the on-device context.",
     "category": "text",
     "priority": "P0",
     "capabilities": [
       "text"
     ],
     "variants": {
+      "variant": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
+      ],
       "presentation": [
         "card",
         "inline",
         "sheet",
         "tooltip"
       ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
+      ],
       "length": [
         "oneLine",
         "bullets",
         "paragraph"
       ],
-      "style": [
+      "emphasis": [
         "plain",
         "quote",
         "highlighted"
@@ -907,12 +1622,13 @@ export const manifest: ManifestEntry[] = [
     },
     "registryDependencies": [
       "button",
-      "ion-border",
       "model-download",
       "on-device-badge",
       "sheet",
+      "shimmer-text",
       "skeleton",
-      "streaming-text"
+      "streaming-text",
+      "surface"
     ],
     "files": [
       "summarize.tsx",
@@ -927,12 +1643,12 @@ export const manifest: ManifestEntry[] = [
     "runsOn": [
       "apple",
       "nano",
-      "llama",
       "cloud"
     ],
     "dependencies": [
       "@ondai/core",
       "@ondai/tokens",
+      "expo-clipboard",
       "expo-haptics",
       "lucide-react-native",
       "react-native-reanimated"
@@ -940,14 +1656,126 @@ export const manifest: ManifestEntry[] = [
     "hasPlayground": true
   },
   {
+    "name": "surface",
+    "title": "Surface",
+    "description": "The container every card-shaped component draws with: solid, blurred glass, or the platform's own material (Liquid Glass on iOS 26, Material 3 on Android).",
+    "category": "primitive",
+    "priority": "P0",
+    "capabilities": [],
+    "variants": {
+      "material": [
+        "auto",
+        "solid",
+        "glass",
+        "native"
+      ],
+      "elevation": [
+        "inset",
+        "card",
+        "floating"
+      ],
+      "skin": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
+      ]
+    },
+    "registryDependencies": [
+      "ion-border"
+    ],
+    "files": [
+      "surface.tsx",
+      "index.ts"
+    ],
+    "dependencies": [
+      "@ondai/tokens",
+      "expo-blur",
+      "expo-glass-effect",
+      "react-native-reanimated",
+      "react-native-svg"
+    ],
+    "hasPlayground": true
+  },
+  {
+    "name": "text-to-event",
+    "title": "TextToEvent",
+    "description": "A pasted or selected message becomes a calendar event: title, date, time, place and people fill in one by one with per-field confidence, stay editable, then go to the calendar.",
+    "category": "organize",
+    "priority": "P1",
+    "capabilities": [
+      "structured"
+    ],
+    "variants": {
+      "variant": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
+      ],
+      "presentation": [
+        "card",
+        "message"
+      ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
+      ]
+    },
+    "registryDependencies": [
+      "button",
+      "chip",
+      "field",
+      "model-download",
+      "on-device-badge",
+      "shimmer-text",
+      "skeleton",
+      "surface"
+    ],
+    "files": [
+      "text-to-event.tsx",
+      "use-text-to-event.ts",
+      "prompts.ts",
+      "index.ts"
+    ],
+    "budget": {
+      "input": 800,
+      "strategy": "One structured call on the message; the model copies words, then dates, times and names are resolved and checked against the message on device."
+    },
+    "runsOn": [
+      "apple",
+      "nano",
+      "cloud"
+    ],
+    "dependencies": [
+      "@ondai/core",
+      "@ondai/tokens",
+      "expo-haptics",
+      "lucide-react-native",
+      "react-native-reanimated",
+      "zod"
+    ],
+    "hasPlayground": true
+  },
+  {
     "name": "thinking-indicator",
     "title": "ThinkingIndicator",
-    "description": "Dots, a metallic orb, line or sweep: calm indicators that the on-device model is working.",
+    "description": "A shimmering sentence, a chrome orb, dots, line or sweep: calm signs that the on-device model is working.",
     "category": "primitive",
     "priority": "P0",
     "capabilities": [],
     "variants": {
       "variant": [
+        "shimmer",
         "dots",
         "orb",
         "line",
@@ -964,7 +1792,9 @@ export const manifest: ManifestEntry[] = [
         "speaking"
       ]
     },
-    "registryDependencies": [],
+    "registryDependencies": [
+      "shimmer-text"
+    ],
     "files": [
       "thinking-indicator.tsx",
       "index.ts"
@@ -977,34 +1807,109 @@ export const manifest: ManifestEntry[] = [
     "hasPlayground": true
   },
   {
-    "name": "tool-confirm-card",
-    "title": "ToolConfirmCard",
-    "description": "Approval for any tool call: action, parameters and risk level, with approve / edit / cancel.",
-    "category": "agentic",
-    "priority": "P0",
+    "name": "tone-check",
+    "title": "ToneCheck",
+    "description": "Reads the tone of a draft as you type (friendly, neutral, blunt or tense, casual to formal) and offers a one-tap softer rewrite when it reads off.",
+    "category": "text",
+    "priority": "P1",
     "capabilities": [
-      "tools"
+      "structured",
+      "text"
     ],
     "variants": {
+      "variant": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
+      ],
       "presentation": [
         "card",
-        "sheet",
-        "banner"
+        "pill"
+      ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
       ]
     },
     "registryDependencies": [
       "button",
-      "sheet"
+      "model-download",
+      "on-device-badge",
+      "shimmer-text",
+      "streaming-text",
+      "surface"
+    ],
+    "files": [
+      "tone-check.tsx",
+      "use-tone-check.ts",
+      "prompts.ts",
+      "schema.ts",
+      "index.ts"
+    ],
+    "budget": {
+      "input": 1800,
+      "strategy": "The draft is truncated to half the window so the softer rewrite fits in the rest; the reading is a small JSON object."
+    },
+    "runsOn": [
+      "apple",
+      "nano",
+      "cloud"
+    ],
+    "dependencies": [
+      "@ondai/core",
+      "@ondai/tokens",
+      "expo-haptics",
+      "lucide-react-native",
+      "react-native-reanimated",
+      "zod"
+    ],
+    "hasPlayground": true
+  },
+  {
+    "name": "tool-confirm-card",
+    "title": "ToolConfirmCard",
+    "description": "Approval for any tool call: the call as a trace line, then a card with its parameters and deny or confirm.",
+    "category": "agentic",
+    "priority": "P0",
+    "capabilities": [],
+    "variants": {
+      "variant": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
+      ],
+      "presentation": [
+        "card",
+        "sheet",
+        "banner",
+        "inline"
+      ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
+      ]
+    },
+    "registryDependencies": [
+      "button",
+      "sheet",
+      "shimmer-text",
+      "surface"
     ],
     "files": [
       "tool-confirm-card.tsx",
       "index.ts"
-    ],
-    "runsOn": [
-      "apple",
-      "nano",
-      "llama",
-      "cloud"
     ],
     "dependencies": [
       "@ondai/core",
@@ -1015,15 +1920,93 @@ export const manifest: ManifestEntry[] = [
     "hasPlayground": true
   },
   {
+    "name": "translate",
+    "title": "Translate",
+    "description": "Live translation on device: the original, a row of target languages, the translation streaming in, with copy and an instant swap.",
+    "category": "text",
+    "priority": "P1",
+    "capabilities": [
+      "text"
+    ],
+    "variants": {
+      "variant": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
+      ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
+      ],
+      "to": [
+        "it",
+        "es",
+        "de",
+        "fr",
+        "ja"
+      ]
+    },
+    "registryDependencies": [
+      "button",
+      "chip",
+      "model-download",
+      "on-device-badge",
+      "shimmer-text",
+      "skeleton",
+      "streaming-text",
+      "surface"
+    ],
+    "files": [
+      "translate.tsx",
+      "use-translate.ts",
+      "prompts.ts",
+      "index.ts"
+    ],
+    "budget": {
+      "input": 1800,
+      "strategy": "Input is truncated to half the window so the translation, which can run longer, fits in the rest."
+    },
+    "runsOn": [
+      "apple",
+      "nano",
+      "cloud"
+    ],
+    "dependencies": [
+      "@ondai/core",
+      "@ondai/tokens",
+      "expo-clipboard",
+      "expo-haptics",
+      "lucide-react-native",
+      "react-native-reanimated"
+    ],
+    "hasPlayground": true
+  },
+  {
     "name": "voice-input",
     "title": "VoiceInput",
-    "description": "Push-to-talk that transcribes on device: a round mic, a level-driven waveform or glow, then the transcript with Use and Retry.",
+    "description": "Push-to-talk that transcribes on device: the mic is the variant's key, a waveform drawn in the variant, then the transcript with Use and Retry.",
     "category": "voice",
     "priority": "P1",
     "capabilities": [
       "transcription"
     ],
     "variants": {
+      "variant": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
+      ],
       "presentation": [
         "pill",
         "card"
@@ -1031,11 +2014,18 @@ export const manifest: ManifestEntry[] = [
       "visual": [
         "bars",
         "glow"
+      ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
       ]
     },
     "registryDependencies": [
       "button",
-      "streaming-text"
+      "shimmer-text",
+      "streaming-text",
+      "surface"
     ],
     "files": [
       "voice-input.tsx",
@@ -1045,6 +2035,9 @@ export const manifest: ManifestEntry[] = [
     "runsOn": [
       "apple"
     ],
+    "limits": [
+      "iPhone only for now (Apple SpeechAnalyzer). The app passes in the recorder (for example expo-audio); without one nothing is recorded."
+    ],
     "dependencies": [
       "@ondai/core",
       "@ondai/tokens",
@@ -1052,6 +2045,59 @@ export const manifest: ManifestEntry[] = [
       "lucide-react-native",
       "react-native-reanimated",
       "react-native-svg"
+    ],
+    "hasPlayground": true
+  },
+  {
+    "name": "voice-memo",
+    "title": "VoiceMemo",
+    "description": "Talk, and get the memo back as something to act on: a title, a two-line summary and the to-dos you mentioned, ticked and ready to add. All on device.",
+    "category": "voice",
+    "priority": "P0",
+    "capabilities": [
+      "transcription",
+      "structured"
+    ],
+    "variants": {
+      "variant": [
+        "clean",
+        "minimal",
+        "glass",
+        "pop",
+        "candy",
+        "metal",
+        "shine",
+        "bevel"
+      ],
+      "size": [
+        "sm",
+        "md",
+        "lg"
+      ]
+    },
+    "registryDependencies": [
+      "button",
+      "on-device-badge",
+      "shimmer-text",
+      "surface",
+      "voice-input"
+    ],
+    "files": [
+      "voice-memo.tsx",
+      "index.ts"
+    ],
+    "runsOn": [
+      "apple"
+    ],
+    "limits": [
+      "iPhone only for now: it records through VoiceInput (Apple SpeechAnalyzer), with the recorder passed in by the app."
+    ],
+    "dependencies": [
+      "@ondai/core",
+      "@ondai/tokens",
+      "lucide-react-native",
+      "react-native-reanimated",
+      "zod"
     ],
     "hasPlayground": true
   }

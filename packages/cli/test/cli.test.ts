@@ -32,9 +32,10 @@ describe('ondai cli', () => {
     const items = await resolveTree(registry, ['command-bar'])
     const names = items.map((i) => i.name)
     expect(names[names.length - 1]).toBe('command-bar')
-    expect(names).toContain('ion-border')
     expect(new Set(names).size).toBe(names.length)
-    expect(names.indexOf('sheet')).toBeLessThan(names.indexOf('tool-confirm-card'))
+    // Every item comes after the registry items it depends on.
+    for (const item of items) for (const dep of item.registryDependencies ?? []) expect(names.indexOf(dep)).toBeLessThan(names.indexOf(item.name))
+    expect(names.length).toBeGreaterThan(3)
   })
   it('adds a component with its files and reports dependencies, then diff is clean', async () => {
     const cwd = fakeApp()

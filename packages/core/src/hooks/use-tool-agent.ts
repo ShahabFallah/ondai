@@ -76,6 +76,8 @@ export function useToolAgent<T extends ToolSet>(options: UseToolAgentOptions<T>)
             return next
           })
           if (step.status === 'running') task.setStatus('tool')
+          // A finished step hands back to the model, which decides the next one.
+          else if (step.status === 'done') task.setStatus('thinking')
         },
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

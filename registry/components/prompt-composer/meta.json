@@ -1,0 +1,14 @@
+{
+  "name": "prompt-composer",
+  "title": "PromptComposer",
+  "description": "Where a person writes to the on-device model: a growing field, attachments, the model badge and a send key that becomes stop while it answers.",
+  "category": "chat",
+  "priority": "P0",
+  "capabilities": [],
+  "variants": {
+    "variant": ["clean", "minimal", "glass", "pop", "candy", "metal", "shine", "bevel"],
+    "size": ["sm", "md", "lg"]
+  },
+  "registryDependencies": ["button", "on-device-badge", "surface"],
+  "files": ["prompt-composer.tsx", "index.ts"]
+}

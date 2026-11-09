@@ -1,13 +1,13 @@
 ---
 title: "ThinkingIndicator"
-description: "Dots, a metallic orb, line or sweep: calm indicators that the on-device model is working."
+description: "A shimmering sentence, a chrome orb, dots, line or sweep: calm signs that the on-device model is working."
 ---
 
 <ComponentPreview name="thinking-indicator" state="thinking" height={180} query="variant=orb&size=lg" />
 
 ## Install
 
-```bash
+```npm
 npx ondai add thinking-indicator
 ```
 
@@ -25,17 +25,9 @@ import { ThinkingIndicator } from '@/components/ondai/thinking-indicator'
 
 | Prop | Options |
 | --- | --- |
-| `variant` | `dots`, `orb`, `line`, `sweep` |
+| `variant` | `shimmer`, `dots`, `orb`, `line`, `sweep` |
 | `size` | `sm`, `md`, `lg` |
 | `state` | `thinking`, `listening`, `speaking` |
-
-Every variant is live in the [playground](/playground/thinking-indicator).
-
-## Runs on
-
-| Capability | Apple FM | Gemini Nano | Llama | Cloud |
-| --- | --- | --- | --- | --- |
-| none (pure UI) | ✅ | ✅ | ✅ | ✅ |
 
 ## Fallback
 
@@ -46,5 +38,7 @@ Pure UI: no model required.
 No model-driven fixtures for this component.
 
 ## Files
+
+Registry dependencies: [shimmer-text](/docs/components/shimmer-text)
 
 npm dependencies: `@ondai/tokens`, `react-native-reanimated`, `react-native-svg`

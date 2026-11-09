@@ -1,13 +1,13 @@
 ---
 title: "ModelDownload"
-description: "Ion progress line, ring or card with a mono percentage while a model downloads."
+description: "A thin progress line, ring or card with a tabular percentage while a model downloads."
 ---
 
 <ComponentPreview name="model-download" state="preparing" height={200} />
 
 ## Install
 
-```bash
+```npm
 npx ondai add model-download
 ```
 
@@ -26,14 +26,6 @@ import { ModelDownload } from '@/components/ondai/model-download'
 | `variant` | `bar`, `ring`, `card` |
 | `size` | `sm`, `md`, `lg` |
 
-Every variant is live in the [playground](/playground/model-download).
-
-## Runs on
-
-| Capability | Apple FM | Gemini Nano | Llama | Cloud |
-| --- | --- | --- | --- | --- |
-| none (pure UI) | ✅ | ✅ | ✅ | ✅ |
-
 ## Fallback
 
 Pure UI: no model required.
@@ -44,4 +36,6 @@ No model-driven fixtures for this component.
 
 ## Files
 
-npm dependencies: `@ondai/tokens`, `react-native-reanimated`, `react-native-svg`
+Registry dependencies: [button](/docs/components/button), [surface](/docs/components/surface)
+
+npm dependencies: `@ondai/tokens`, `lucide-react-native`, `react-native-reanimated`, `react-native-svg`

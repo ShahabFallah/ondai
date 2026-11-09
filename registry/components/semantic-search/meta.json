@@ -5,9 +5,27 @@
   "category": "search",
   "priority": "P0",
   "capabilities": ["embeddings"],
-  "variants": { "presentation": ["bar", "spotlight", "header"], "resultStyle": ["list", "cards", "grouped"] },
-  "registryDependencies": ["chip", "field", "model-download", "on-device-badge", "sheet", "skeleton"],
+  "variants": {
+    "presentation": ["bar", "spotlight", "header"],
+    "variant": ["clean", "minimal", "glass", "pop", "candy", "metal", "shine", "bevel"],
+    "resultStyle": ["list", "cards", "grouped"],
+    "size": ["sm", "md", "lg"]
+  },
+  "registryDependencies": [
+    "model-download",
+    "on-device-badge",
+    "sheet",
+    "shimmer-text",
+    "surface",
+    "skeleton"
+  ],
   "files": ["semantic-search.tsx", "use-semantic-search.ts", "index.ts"],
-  "budget": { "input": 512, "strategy": "Embeddings only (Apple NLContextualEmbedding, 512 dims); no LLM call. Keyword fallback without embeddings." },
-  "runsOn": ["apple", "llama", "cloud"]
+  "budget": {
+    "input": 512,
+    "strategy": "Embeddings only (Apple NLContextualEmbedding, 512 dims); no LLM call. Keyword fallback without embeddings."
+  },
+  "runsOn": ["apple", "cloud"],
+  "limits": [
+    "Embeddings come from Apple (NLContextualEmbedding) or a cloud model. Without them it falls back to keyword search."
+  ]
 }

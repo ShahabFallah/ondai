@@ -1,12 +1,12 @@
 /* ------------------------------------------------------------------ */
 /* Ondai logo (Logo.tsx). The chip "o" and its hover: the core turns a  */
-/* quarter on a spring and lights up, one ion glint crosses the die.    */
+/* quarter on a spring and dims, one light glint crosses the die.    */
 /* ------------------------------------------------------------------ */
 
 .ondai-logo {
   display: inline-flex;
   align-items: baseline;
-  font-family: var(--font-site-sans), Inter, ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   font-weight: 600;
   /* The display cut at every size, so the chip's proportions match the letters it was drawn against. */
   font-variation-settings: 'opsz' 32;
@@ -56,8 +56,8 @@
 :is(a, button):focus-visible .ondai-chip-core,
 .ondai-logo:hover .ondai-chip-core,
 .ondai-chip:hover .ondai-chip-core {
-  fill: #9d8fff;
-  filter: drop-shadow(0 0 2px rgba(139, 124, 255, 0.9)) drop-shadow(0 0 6px rgba(139, 124, 255, 0.35));
+  fill: currentColor;
+  opacity: 0.55;
   transform: rotate(90deg);
   transition:
     fill 0.2s var(--ease-out),

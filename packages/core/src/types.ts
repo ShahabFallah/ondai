@@ -57,6 +57,12 @@ export interface ProviderAdapter {
   classifyError?(error: unknown): OndaiErrorKind | undefined
   /** Context window in tokens, when known. */
   contextWindow?: number
+  /**
+   * How the provider produces structured output. `schema` (default): the JSON schema is passed to the model
+   * as a response format (constrained or guided decoding). `prompt`: the provider rejects or ignores a
+   * response schema, so the schema goes into the instructions and the reply is parsed and validated here.
+   */
+  structuredOutput?: 'schema' | 'prompt'
 }
 
 export type OndaiErrorKind =

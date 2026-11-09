@@ -9,6 +9,7 @@
     "dev": "turbo run dev --filter=@ondai/web",
     "dev:web": "turbo run dev --filter=@ondai/web",
     "dev:gallery": "pnpm --filter @ondai/gallery start",
+    "bridge": "sh apps/gallery/bridge/run.sh",
     "storybook": "pnpm --filter @ondai/gallery storybook",
     "build": "turbo run build",
     "test": "turbo run test",
@@ -17,9 +18,13 @@
     "lint": "turbo run lint",
     "registry:build": "tsx scripts/build-registry.ts",
     "format": "prettier --write \"**/*.{ts,tsx,js,mjs,json,md,mdx,css,yaml}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,mjs,json,md,mdx,css,yaml}\""
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,mjs,json,md,mdx,css,yaml}\"",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo run build --filter=@ondai/core --filter=@ondai/tokens --filter=ondai && changeset publish"
   },
   "devDependencies": {
+    "@changesets/cli": "^3.0.3",
     "@ondai/config": "workspace:*",
     "@types/node": "^22.19.0",
     "eslint": "^10.13.0",

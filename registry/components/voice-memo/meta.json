@@ -1,0 +1,18 @@
+{
+  "name": "voice-memo",
+  "title": "VoiceMemo",
+  "description": "Talk, and get the memo back as something to act on: a title, a two-line summary and the to-dos you mentioned, ticked and ready to add. All on device.",
+  "category": "voice",
+  "priority": "P0",
+  "capabilities": ["transcription", "structured"],
+  "variants": {
+    "variant": ["clean", "minimal", "glass", "pop", "candy", "metal", "shine", "bevel"],
+    "size": ["sm", "md", "lg"]
+  },
+  "registryDependencies": ["button", "on-device-badge", "shimmer-text", "surface", "voice-input"],
+  "files": ["voice-memo.tsx", "index.ts"],
+  "runsOn": ["apple"],
+  "limits": [
+    "iPhone only for now: it records through VoiceInput (Apple SpeechAnalyzer), with the recorder passed in by the app."
+  ]
+}

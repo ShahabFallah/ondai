@@ -1,0 +1,77 @@
+---
+title: "Agent run"
+description: "An agent doing a job on the device, step by step: each tool call with its time, approval before anything risky runs, and the answer at the end."
+---
+
+<ComponentPreview name="agent-run" state="running" height={420} />
+
+## Install
+
+```npm
+npx ondai add agent-run
+```
+
+## Usage
+
+```tsx
+import { AgentRun } from '@/components/ondai/agent-run'
+import { tool } from '@ondai/core'
+import { z } from 'zod'
+
+<AgentRun
+  goal="Find a quiet dinner spot near Priya’s office on Friday and invite her"
+  tools={{ searchPlaces, checkCalendar, createEvent }}
+  meta={{ createEvent: { title: 'Create the event and invite Priya', policy: 'ask', risk: 'medium' } }}
+/>
+```
+
+- Tools with `policy: 'ask'` stop at an approval card before they run.
+- Built on `useToolAgent()`; Apple and Gemini Nano run the tool loop on device.
+
+## Customize
+
+Every AI component takes the same look and customization props, so it fits your app rather than ours.
+
+```tsx
+<AgentRun
+  variant="pop"
+  tint="#FF5A5F"
+  size="lg"
+  radius={12}
+  icons={{ run: Search, again: null }}
+  labels={{ run: '…', cancel: '…' }}
+/>
+```
+
+| Prop | What it does |
+| --- | --- |
+| `variant` | The look of the whole component: `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `size` | `sm`, `md`, `lg`; type, rows, icons and keys scale together |
+| `tint` | Any colour; the variant paints its keys, tiles and glow in it |
+| `radius` | Corner radius of the container |
+| `icons` | Replace any icon (a lucide component, an element, or `null` to hide it): `run`, `again`, `stepDone`, `stepRunning`, `stepError`, `stepCancelled`, `answer` |
+| `labels` | Every visible and spoken string; defaults are exported as `agentRunLabels`: `run`, `cancel`, `runAgain`, `idle`, `planning`, `nextStep`, `refusal`, `stopped` |
+| Slots | Draw a part yourself: `renderStep`, `renderConfirm`, `renderAnswer`, `renderIdle`, `renderActions` |
+| `styles` | Style any named part |
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `variant` | `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `presentation` | `card`, `plain` |
+| `size` | `sm`, `md`, `lg` |
+
+## Fallback
+
+When no provider is ready the component renders the unavailable state (`AvailabilityGate` copy) and, where a deterministic path exists, keeps working without the model.
+
+## Eval score
+
+No model-driven fixtures for this component.
+
+## Files
+
+Registry dependencies: [button](/docs/components/button), [on-device-badge](/docs/components/on-device-badge), [shimmer-text](/docs/components/shimmer-text), [surface](/docs/components/surface), [tool-confirm-card](/docs/components/tool-confirm-card)
+
+npm dependencies: `@ondai/core`, `@ondai/tokens`, `lucide-react-native`, `react-native-reanimated`

@@ -7,7 +7,7 @@ description: "Compact selectable pill for tags, filters, suggestions and replies
 
 ## Install
 
-```bash
+```npm
 npx ondai add chip
 ```
 
@@ -25,14 +25,7 @@ import { Chip } from '@/components/ondai/chip'
 | --- | --- |
 | `variant` | `soft`, `outline`, `solid`, `ghost` |
 | `size` | `sm`, `md` |
-
-Every variant is live in the [playground](/playground/chip).
-
-## Runs on
-
-| Capability | Apple FM | Gemini Nano | Llama | Cloud |
-| --- | --- | --- | --- | --- |
-| none (pure UI) | ✅ | ✅ | ✅ | ✅ |
+| `skin` | `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
 
 ## Fallback
 
@@ -43,5 +36,7 @@ Pure UI: no model required.
 No model-driven fixtures for this component.
 
 ## Files
+
+Registry dependencies: [surface](/docs/components/surface)
 
 npm dependencies: `@ondai/tokens`, `lucide-react-native`

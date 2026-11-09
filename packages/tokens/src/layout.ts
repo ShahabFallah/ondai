@@ -13,7 +13,7 @@ export const spacing = {
 } as const
 export type SpacingKey = keyof typeof spacing
 
-export const radii = { none: 0, sm: 8, md: 12, lg: 16, xl: 22, pill: 999 } as const
+export const radii = { none: 0, sm: 6, md: 10, lg: 14, xl: 20, pill: 999 } as const
 export type RadiusKey = keyof typeof radii
 
 /** Minimum touch target (pt). */

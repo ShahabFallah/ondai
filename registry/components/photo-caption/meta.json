@@ -1,0 +1,33 @@
+{
+  "name": "photo-caption",
+  "title": "PhotoCaption",
+  "description": "A photo in; a caption and accessibility alt text out, written by the on-device vision model. Streamed, editable, copyable, and handed back as alt text.",
+  "category": "vision",
+  "priority": "P1",
+  "capabilities": ["vision"],
+  "variants": {
+    "variant": ["clean", "minimal", "glass", "pop", "candy", "metal", "shine", "bevel"],
+    "presentation": ["stacked", "tabs"],
+    "size": ["sm", "md", "lg"],
+    "tone": ["plain", "warm", "playful"]
+  },
+  "registryDependencies": [
+    "button",
+    "model-download",
+    "on-device-badge",
+    "shimmer-text",
+    "skeleton",
+    "streaming-text",
+    "surface"
+  ],
+  "files": ["photo-caption.tsx", "use-photo-caption.ts", "prompts.ts", "index.ts"],
+  "budget": {
+    "input": 1200,
+    "strategy": "One image plus a short instruction; a single streamed reply of two labelled lines (caption, alt) parsed as it arrives."
+  },
+  "runsOn": ["nano", "cloud"],
+  "docs": "Needs a provider with the `vision` capability. Pass `image` (uri, or base64 from expo-image-picker) or let the user take or choose one; `onUseAlt` receives the edited alt text.",
+  "limits": [
+    "Not on iPhone yet: Apple's model takes images from iOS 27, and the provider package Ondai uses does not pass them on yet. Runs on Gemini Nano (Prompt API, beta) or a cloud model."
+  ]
+}

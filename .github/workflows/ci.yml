@@ -27,6 +27,24 @@ jobs:
       - run: pnpm --filter @ondai/web build
       - run: pnpm tsx scripts/run-evals.ts
 
+  packages:
+    name: Packages (build, pack, publint, types)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo run build --filter=@ondai/core --filter=@ondai/tokens --filter=ondai
+      # Pack exactly what npm would receive, then lint the tarballs.
+      - run: mkdir -p /tmp/packs && for p in core tokens cli; do (cd packages/$p && pnpm pack --pack-destination /tmp/packs); done
+      - run: for t in /tmp/packs/*.tgz; do npx -y publint@0.3 "$t"; done
+      - run: for t in /tmp/packs/ondai-core-*.tgz /tmp/packs/ondai-tokens-*.tgz; do npx -y @arethetypeswrong/cli@0.18 "$t" --profile esm-only; done
+      - run: node packages/cli/dist/index.mjs --version
+
   components:
     name: Component tests (jest-expo)
     runs-on: ubuntu-latest

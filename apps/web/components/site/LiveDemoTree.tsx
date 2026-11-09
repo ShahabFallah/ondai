@@ -22,6 +22,7 @@ export default function LiveDemoTree({
   overrides,
   title,
   onReady,
+  adapt,
 }: {
   name: DemoName
   /** Unset follows the site theme: paper in light mode, void in dark. */
@@ -29,6 +30,8 @@ export default function LiveDemoTree({
   overrides?: Record<string, unknown>
   title?: string
   onReady?: () => void
+  /** Swap parts of the playground definition (a custom render for a recording, say). Keep it stable. */
+  adapt?: (def: PlaygroundDef) => PlaygroundDef
 }) {
   const { resolvedTheme } = useTheme()
   const siteDark = resolvedTheme ? resolvedTheme === 'dark' : typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
@@ -54,7 +57,7 @@ export default function LiveDemoTree({
   const overridesKey = JSON.stringify(overrides ?? null)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const stableOverrides = useMemo(() => overrides, [overridesKey])
-  const live = useMemo<PlaygroundDef | null>(() => (def ? { ...def, states: { live: { script: demo.script } }, defaultState: 'live', review: [] } : null), [def, demo])
+  const live = useMemo<PlaygroundDef | null>(() => (def ? { ...(adapt ? adapt(def) : def), states: { live: { script: demo.script } }, defaultState: 'live', review: [] } : null), [def, demo, adapt])
   const query = useMemo<PlaygroundQuery | null>(
     () =>
       def
@@ -63,6 +66,8 @@ export default function LiveDemoTree({
             props: { ...(playgroundDefaults(def) as Record<string, unknown>), ...demo.props, ...stableOverrides } as PlaygroundQuery['props'],
             state: 'live',
             theme,
+            // The site is black and white; the components' AI accent follows.
+            accent: 'mono',
             tps: 60,
           }
         : null,

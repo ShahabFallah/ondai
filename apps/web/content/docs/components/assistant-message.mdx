@@ -1,0 +1,71 @@
+---
+title: "Assistant message"
+description: "One reply from the on-device model: a trace of what it did, the answer streaming in, its sources, and copy or retry. Includes UserMessage for the person's turns."
+---
+
+<ComponentPreview name="assistant-message" state="done" height={380} />
+
+## Install
+
+```npm
+npx ondai add assistant-message
+```
+
+## Usage
+
+```tsx
+import { AssistantMessage, UserMessage } from '@/components/ondai/assistant-message'
+
+<UserMessage text={question} />
+<AssistantMessage text={reply.text} status={reply.status} thoughtMs={reply.thoughtMs} steps={steps} sources={sources} onRetry={retry} />
+```
+
+- The trace reads "Thought for 1.2s" from the time to the first word; tool steps fold under it.
+
+## Customize
+
+Every AI component takes the same look and customization props, so it fits your app rather than ours.
+
+```tsx
+<AssistantMessage
+  variant="pop"
+  tint="#FF5A5F"
+  size="lg"
+  radius={12}
+  icons={{ avatar: Search, expand: null }}
+  labels={{ thinking: '…', thought: '…' }}
+/>
+```
+
+| Prop | What it does |
+| --- | --- |
+| `variant` | The look of the whole component: `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `size` | `sm`, `md`, `lg`; type, rows, icons and keys scale together |
+| `tint` | Any colour; the variant paints its keys, tiles and glow in it |
+| `radius` | Corner radius of the container |
+| `icons` | Replace any icon (a lucide component, an element, or `null` to hide it): `avatar`, `expand`, `collapse`, `stepDone`, `stepError`, `error`, `copy`, `copied`, `retry` |
+| `labels` | Every visible and spoken string; defaults are exported as `assistantMessageLabels`: `thinking`, `thought`, `stepsOne`, `stepsMany`, `error`, `refusal`, `copy`, `copied`, `retry` |
+| Slots | Draw a part yourself: `renderSource`, `renderStep`, `renderActions`, `renderError` |
+| `styles` | Style any named part |
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `variant` | `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `presentation` | `plain`, `card` |
+| `size` | `sm`, `md`, `lg` |
+
+## Fallback
+
+When no provider is ready the component renders the unavailable state (`AvailabilityGate` copy) and, where a deterministic path exists, keeps working without the model.
+
+## Eval score
+
+No model-driven fixtures for this component.
+
+## Files
+
+Registry dependencies: [button](/docs/components/button), [shimmer-text](/docs/components/shimmer-text), [streaming-text](/docs/components/streaming-text), [surface](/docs/components/surface)
+
+npm dependencies: `@ondai/tokens`, `expo-clipboard`, `lucide-react-native`, `react-native-reanimated`

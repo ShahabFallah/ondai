@@ -37,7 +37,7 @@ export interface PlaygroundFrame {
 export interface PlaygroundDef<CS extends Controls = Controls, P = any> {
   name: string
   title: string
-  category: 'primitive' | 'agentic' | 'input' | 'text' | 'organize' | 'search' | 'vision' | 'voice' | 'feed'
+  category: 'primitive' | 'agentic' | 'input' | 'text' | 'organize' | 'search' | 'vision' | 'voice' | 'feed' | 'chat' | 'fx'
   description: string
   component: ComponentType<P>
   controls: CS

@@ -39,7 +39,6 @@ html.dark #nd-sidebar {
   border-radius: var(--r-lg);
   background: color-mix(in oklab, var(--glass-fill) 70%, transparent);
   backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
   box-shadow:
     inset 0 0 0 1px var(--line),
     inset 0 1px 0 var(--edge);
@@ -65,10 +64,12 @@ html.dark #nd-sidebar {
     color 0.15s,
     background-color 0.15s;
 }
-#nd-sidebar a[data-active]:hover,
-#nd-sidebar-mobile a[data-active]:hover {
-  color: var(--fg);
-  background: var(--hover);
+@media (hover: hover) {
+  #nd-sidebar a[data-active]:hover,
+  #nd-sidebar-mobile a[data-active]:hover {
+    color: var(--fg);
+    background: var(--hover);
+  }
 }
 #nd-sidebar a[data-active='true'],
 #nd-sidebar-mobile a[data-active='true'] {
@@ -108,6 +109,200 @@ html.dark #nd-sidebar {
   scroll-padding-block: 48px;
 }
 
+/* ------------------------------------------------------------------ */
+/* Sidebar as the component index (components/docs/SidebarIndex.tsx)   */
+/* ------------------------------------------------------------------ */
+/* Component rows: larger names in ink, the others dim while one is hovered or focused. Rest is quiet
+   ink, dimmed is the index page's soft grey, so the hovered row is the one thing at full strength. */
+html {
+  --sbx-rest: color-mix(in oklab, var(--fg) 54%, var(--bg));
+  --sbx-dim: color-mix(in oklab, var(--fg) 22%, var(--bg));
+}
+html.dark {
+  --sbx-rest: color-mix(in oklab, var(--fg) 58%, var(--bg));
+  --sbx-dim: color-mix(in oklab, var(--fg) 28%, var(--bg));
+}
+
+:is(#nd-sidebar, #nd-sidebar-mobile) a.sbx-row[data-active] {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 0;
+  padding: 4px 10px 5px;
+  border-radius: var(--r-sm);
+  background: transparent;
+  font-weight: 400;
+  color: var(--sbx-rest);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+:is(#nd-sidebar, #nd-sidebar-mobile) a.sbx-row[data-active]:hover {
+  background: transparent;
+}
+.sbx-name {
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.028em;
+  color: var(--sbx-rest);
+  overflow-wrap: anywhere;
+  /* Back to rest after a beat, so crossing the hairline between two rows never flashes the list. */
+  transition: color 0.32s ease 0.08s;
+}
+.sbx-line {
+  display: block;
+  margin-top: 3px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  letter-spacing: 0;
+  color: var(--docs-quiet);
+  transition: color 0.32s ease 0.08s;
+}
+
+/* Current page: full ink, its line under it, and a short ink rule in the gutter. */
+a.sbx-row[data-active='true'] .sbx-name {
+  color: var(--fg);
+}
+a.sbx-row[data-active='true']::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 2px;
+  height: 14px;
+  border-radius: 1px;
+  background: var(--fg);
+}
+
+/* One row in focus, the rest step back. */
+@media (hover: hover) and (pointer: fine) {
+  #nd-sidebar:has(a.sbx-row:hover) a.sbx-row:not(:hover) .sbx-name {
+    color: var(--sbx-dim);
+    transition-delay: 0s;
+  }
+  #nd-sidebar:has(a.sbx-row:hover) a.sbx-row[data-active='true']:not(:hover) .sbx-name {
+    color: var(--sbx-rest);
+  }
+  #nd-sidebar a.sbx-row:hover .sbx-name {
+    color: var(--fg);
+    transition-duration: 0.18s;
+    transition-delay: 0s;
+  }
+}
+:is(#nd-sidebar, #nd-sidebar-mobile):has(a.sbx-row:focus-visible) a.sbx-row:not(:focus-visible) .sbx-name {
+  color: var(--sbx-dim);
+  transition-delay: 0s;
+}
+a.sbx-row:focus-visible .sbx-name {
+  color: var(--fg);
+  transition-delay: 0s;
+}
+:is(#nd-sidebar, #nd-sidebar-mobile) a.sbx-row:focus-visible {
+  box-shadow: inset 0 0 0 1.5px var(--fg);
+}
+@media (hover: none), (pointer: coarse) {
+  a.sbx-row:active .sbx-name {
+    color: var(--fg);
+    transition: none;
+  }
+}
+
+/* Group headings carry their count, as on the index. */
+.sbx-sep-n {
+  font-weight: 400;
+  color: var(--fg-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The floating preview. Position and tilt are written by the spring; this only shows and hides it. */
+.sbx-card {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 60;
+  width: clamp(240px, 19.5vw, 288px);
+  pointer-events: none;
+  transform: translate3d(-200vw, 0, 0);
+  transform-origin: 0 50%;
+  will-change: transform;
+}
+.sbx-card-body {
+  position: relative;
+  padding: 6px;
+  border-radius: var(--r-card);
+  background: color-mix(in oklab, var(--surface) 82%, transparent);
+  backdrop-filter: blur(20px) saturate(150%);
+  box-shadow:
+    inset 0 0 0 1px var(--line),
+    inset 0 1px 0 var(--edge),
+    var(--shadow-float);
+  opacity: 0;
+  transform: scale(0.92);
+  transform-origin: left center;
+  transition:
+    opacity 0.16s ease-out,
+    transform 0.2s var(--ease-out);
+}
+.sbx-card-body[data-shown='true'] {
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 0.28s var(--ease-out),
+    transform 0.55s var(--ease-lux);
+}
+.sbx-card-media {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: calc(var(--r-card) - 6px);
+  background: var(--ci-card-bg);
+  overflow: hidden;
+}
+.sbx-card-media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px var(--line);
+  pointer-events: none;
+}
+.sbx-card-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: ci-in 0.32s var(--ease-out) both;
+}
+.sbx-card-line {
+  margin: 0;
+  padding: 9px 8px 5px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--fg-2);
+  text-wrap: balance;
+  animation: ci-fade 0.24s ease-out both;
+}
+@media (hover: none), (pointer: coarse), (max-width: 767px) {
+  .sbx-card {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sbx-card-body,
+  .sbx-card-body[data-shown='true'] {
+    transform: none;
+    transition: opacity 0.2s ease;
+  }
+  .sbx-card-img {
+    animation-name: ci-fade;
+  }
+  .sbx-name,
+  .sbx-line {
+    transition: none;
+  }
+}
+
 /* Mobile drawer: an inset glass sheet. */
 #nd-sidebar-mobile {
   inset: 8px 8px 8px auto;
@@ -115,7 +310,6 @@ html.dark #nd-sidebar {
   border-radius: var(--r-lg);
   background: color-mix(in oklab, var(--bg) 86%, transparent);
   backdrop-filter: blur(24px) saturate(150%);
-  -webkit-backdrop-filter: blur(24px) saturate(150%);
   box-shadow:
     inset 0 0 0 1px var(--line),
     var(--shadow-float);
@@ -155,7 +349,6 @@ html.dark #nd-sidebar {
   border-color: var(--line);
   background: color-mix(in oklab, var(--glass-fill) 80%, transparent);
   backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
 }
 
 /* ------------------------------------------------------------------ */
@@ -442,6 +635,124 @@ html.dark #nd-sidebar {
   overflow: hidden;
   padding-block: 16px;
 }
+.docs-preview-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+  padding: 6px 8px 12px;
+}
+.docs-preview-variant {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.docs-preview-variant-label {
+  flex: none;
+  font-size: 13px;
+  line-height: 1.3;
+  color: var(--docs-quiet);
+}
+.docs-preview-variant .seg {
+  flex: none;
+}
+.docs-preview-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 40px;
+  padding: 8px 8px 2px 6px;
+}
+.docs-mock {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 26px;
+  padding-inline: 9px 11px;
+  border-radius: 8px;
+  background: var(--hover);
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--fg);
+  cursor: help;
+  outline-offset: 2px;
+}
+.docs-mock-note {
+  margin-left: -3px;
+  font-weight: 400;
+  color: var(--fg-2);
+}
+.docs-preview-runs-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.docs-mock[data-plain] {
+  cursor: default;
+  color: var(--fg-2);
+  background: transparent;
+  padding-inline: 4px;
+}
+.docs-mock-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+}
+.docs-mock-tip {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 8px);
+  z-index: 5;
+  width: 260px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--fg);
+  color: var(--bg);
+  font-size: 12.5px;
+  font-weight: 400;
+  line-height: 1.45;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px) scale(0.98);
+  transform-origin: 16px 100%;
+  transition:
+    opacity 0.16s var(--ease-out),
+    transform 0.2s var(--ease-out);
+}
+.docs-mock:hover .docs-mock-tip,
+.docs-mock:focus-visible .docs-mock-tip {
+  opacity: 1;
+  transform: none;
+}
+.docs-preview-runs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.docs-preview-runs li {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  color: var(--fg);
+}
+.docs-preview-runs li[data-supported='false'] {
+  opacity: 0.25;
+}
+.docs-preview-runs svg {
+  width: 17px;
+  height: 17px;
+}
 .docs-preview-stage iframe {
   display: block;
   width: 100%;
@@ -449,54 +760,246 @@ html.dark #nd-sidebar {
   background: transparent;
   color-scheme: normal;
 }
-.docs-preview-foot {
+
+/* ------------------------------------------------------------------ */
+/* Runs on (components/docs/RunsOn.tsx)                                 */
+/* ------------------------------------------------------------------ */
+.docs-runs {
+  margin-block: 20px 8px;
+}
+.docs-runs-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  max-width: 520px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  border-radius: var(--r-md);
+  background: color-mix(in oklab, var(--surface) 72%, transparent);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.docs-runs-item {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 8px 6px 2px 12px;
+  gap: 10px;
+  padding: 14px 4px 10px;
+  color: var(--fg);
+}
+.docs-runs-item[data-supported='false'] {
+  opacity: 0.3;
+}
+.docs-runs-mark {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+}
+.docs-runs-mark svg {
+  width: 24px;
+  height: 24px;
+}
+.docs-runs-name {
   font-size: 13px;
-  line-height: 1.4;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+}
+.docs-runs-needs {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
   color: var(--docs-quiet);
 }
-.docs-preview-foot a {
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  gap: 6px;
-  height: 30px;
-  padding-inline: 10px;
-  border-radius: var(--r-btn);
+
+/* ------------------------------------------------------------------ */
+/* Components page (components/docs/ComponentIndex.tsx)                 */
+/* ------------------------------------------------------------------ */
+/* The sidebar is the hover list; this page is the picture wall: every component as its still, quiet
+   until the pointer is on one. The card ground matches what scripts/thumbs.mjs renders on. */
+html {
+  --ci-card-bg: #ededef;
+}
+html.dark {
+  --ci-card-bg: #111114;
+}
+
+.ci {
+  container-type: inline-size;
+  margin-top: 12px;
+}
+.ci-count {
+  margin: 0 0 40px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--fg-2);
+}
+.ci-group + .ci-group {
+  margin-top: 64px;
+}
+#nd-page .ci .ci-group-title {
+  display: flex;
+  align-items: baseline;
+  column-gap: 8px;
+  margin: 0 0 20px;
+  font-size: 15px;
+  line-height: 1.4;
   font-weight: 500;
+  letter-spacing: -0.01em;
   color: var(--fg);
-  text-decoration: none;
-  transition: background-color 0.15s;
 }
-.docs-preview-foot a:hover {
-  background: var(--hover);
-}
-.docs-preview-foot a svg {
+.ci-group-n {
+  font-weight: 400;
   color: var(--fg-3);
-  transition: transform 0.25s var(--ease-out);
+  font-variant-numeric: tabular-nums;
 }
-.docs-preview-foot a:hover svg {
-  transform: translate(1px, -1px);
+.ci-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
-
-@media (max-width: 640px) {
-  .docs-preview-foot {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
-    padding-left: 10px;
+@container (min-width: 600px) {
+  .ci-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 36px 20px;
   }
-  .docs-preview-foot a {
-    margin-left: -10px;
+}
+@container (min-width: 1000px) {
+  .ci-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
-
+.ci-card {
+  display: block;
+  border-radius: var(--r-card);
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.ci-still {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  border-radius: var(--r-card);
+  background: var(--ci-card-bg);
+  overflow: hidden;
+}
+.ci-still::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px var(--line);
+  transition: box-shadow 0.3s ease;
+  pointer-events: none;
+}
+/* No display here: .only-light / .only-dark pick the picture for the theme. */
+.ci-still .loop-shot {
+  transition: transform 0.9s var(--ease-lux);
+}
+.ci-name {
+  display: block;
+  margin-top: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  color: var(--fg);
+}
+.ci-line {
+  display: block;
+  margin-top: 3px;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--docs-quiet);
+  text-wrap: pretty;
+}
+@media (hover: hover) and (pointer: fine) {
+  .ci-card:hover .ci-still .loop-shot {
+    transform: scale(1.03);
+  }
+  .ci-card:hover .ci-still::after {
+    box-shadow: inset 0 0 0 1px var(--line-strong);
+  }
+}
+.ci-card:focus-visible .ci-still::after {
+  box-shadow: inset 0 0 0 2px var(--fg);
+}
 @media (prefers-reduced-motion: reduce) {
-  .docs-preview-foot a svg {
+  .ci-still img {
     transition: none;
+  }
+}
+
+/* Shared by the sidebar's preview card. */
+@keyframes ci-in {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+@keyframes ci-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Black and white, everywhere. Live previews and highlighted code keep their tones and lose their hues. */
+.docs-preview-stage iframe,
+figure.shiki,
+pre.shiki {
+  filter: grayscale(1);
+}
+
+/* Platform notes under a component preview: where it runs, what the app passes in. */
+.docs-preview-limits {
+  margin: 0;
+  padding: 10px 14px 12px 30px;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--fg-2);
+  list-style: disc;
+}
+.docs-preview-limits li + li {
+  margin-top: 4px;
+}
+.docs-preview-limits code {
+  font-size: 12px;
+}
+
+/* Phones: each variant group stays on one line and its options scroll sideways (the label stays put) instead of wrapping into a ragged box. */
+@media (max-width: 640px) {
+  .docs-preview-variant {
+    width: 100%;
+    overflow: visible;
+  }
+  .docs-preview-variant .seg {
+    flex: 0 1 auto;
+    flex-wrap: nowrap;
+    min-width: 0;
+    max-width: none;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .docs-preview-variant .seg::-webkit-scrollbar {
+    display: none;
+  }
+  .docs-preview-variant .seg-item {
+    flex: none;
+    white-space: nowrap;
   }
 }

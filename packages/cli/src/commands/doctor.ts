@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { detectProject } from '../project'
+import { detectPackageManager, detectProject, runCommand } from '../project'
 import { dim, fail, mono, ok, title, warn } from '../ui'
 
 export interface Check {
@@ -10,7 +10,7 @@ export interface Check {
 }
 
 function major(range: string | undefined): number | undefined {
-  const m = range?.match(/(\d+)\./)
+  const m = range?.match(/(\d+)/)
   return m ? Number(m[1]) : undefined
 }
 
@@ -29,7 +29,7 @@ export function runDoctor(cwd: string): Check[] {
   checks.push({ name: 'Project', status: 'ok', detail: project.isExpo ? `Expo ${project.expoSdk}` : project.isBare ? `React Native ${project.reactNative}` : 'unknown' })
   const rn = d['react-native']
   checks.push({ name: 'React Native', status: rn ? 'ok' : 'fail', detail: rn ? `${rn} ${dim('(providers need 0.76+ and the New Architecture)')}` : 'missing' })
-  checks.push({ name: '@ondai/core', status: d['@ondai/core'] ? 'ok' : 'fail', detail: d['@ondai/core'] ?? `missing — run ${mono('npx ondai init')}` })
+  checks.push({ name: '@ondai/core', status: d['@ondai/core'] ? 'ok' : 'fail', detail: d['@ondai/core'] ?? `missing — run ${mono(runCommand(detectPackageManager(cwd), 'ondai init'))}` })
   const ai = d.ai
   checks.push({ name: 'ai (Vercel AI SDK)', status: !ai ? 'fail' : major(ai) === 6 ? 'ok' : 'warn', detail: ai ? `${ai} ${major(ai) === 6 ? '' : dim('(@react-native-ai 0.12 needs v6)')}` : 'missing' })
   checks.push({ name: 'Reanimated 4 + worklets', status: d['react-native-reanimated'] && d['react-native-worklets'] ? 'ok' : 'warn', detail: `${d['react-native-reanimated'] ?? 'missing'} / ${d['react-native-worklets'] ?? 'missing'}` })
@@ -49,7 +49,7 @@ export function runDoctor(cwd: string): Check[] {
       checks.push({ name: 'Dev client', status: d['expo-dev-client'] ? 'ok' : 'warn', detail: d['expo-dev-client'] ? 'installed' : 'missing (Expo Go cannot load native providers)' })
     }
   }
-  checks.push({ name: 'ondai.json', status: existsSync(join(cwd, 'ondai.json')) ? 'ok' : 'warn', detail: existsSync(join(cwd, 'ondai.json')) ? 'found' : `missing — run ${mono('npx ondai init')}` })
+  checks.push({ name: 'ondai.json', status: existsSync(join(cwd, 'ondai.json')) ? 'ok' : 'warn', detail: existsSync(join(cwd, 'ondai.json')) ? 'found' : `missing — run ${mono(runCommand(detectPackageManager(cwd), 'ondai init'))}` })
   return checks
 }
 

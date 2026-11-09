@@ -3,7 +3,7 @@ import { dirname, join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import * as p from '@clack/prompts'
 import { DEFAULT_REGISTRY, readConfig } from '../config'
-import { detectProject, installCommand } from '../project'
+import { detectPackageManager, detectProject, installCommand, runCommand } from '../project'
 import { resolveRegistryUrl, resolveTree, type RegistryItem } from '../registry'
 import { dim, fail, mono, ok, title, warn } from '../ui'
 
@@ -25,7 +25,7 @@ export function targetPath(item: RegistryItem, file: RegistryItem['files'][numbe
 export async function add(opts: AddOptions): Promise<{ written: string[]; skipped: string[]; installed: string[] }> {
   console.log(title(`add ${opts.names.join(' ')}`))
   const config = readConfig(opts.cwd)
-  if (!config) console.log(warn(`no ondai.json; using defaults (run ${mono('npx ondai init')} to configure)`))
+  if (!config) console.log(warn(`no ondai.json; using defaults (run ${mono(runCommand(detectPackageManager(opts.cwd), 'ondai init'))} to configure)`))
   const componentsDir = config?.componentsDir ?? 'components/ondai'
   const registry = resolveRegistryUrl(opts.registry, config?.registry, DEFAULT_REGISTRY)
   const items = await resolveTree(registry, opts.names)
@@ -67,7 +67,7 @@ export async function add(opts: AddOptions): Promise<{ written: string[]; skippe
   const project = detectProject(opts.cwd)
   const missing = [...deps].filter((d) => !(d.replace(/@[\^~]?[\d.]+.*$/, '') in project.deps))
   if (missing.length && opts.install !== false && !opts.dryRun) {
-    const cmd = installCommand(project.pm, missing)
+    const cmd = installCommand(project.pm, missing, { expo: project.isExpo })
     console.log(dim(`$ ${cmd.join(' ')}`))
     const r = spawnSync(cmd[0]!, cmd.slice(1), { cwd: opts.cwd, stdio: 'inherit' })
     if (r.status === 0) installed = missing

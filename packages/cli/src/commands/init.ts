@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import * as p from '@clack/prompts'
 import { DEFAULT_REGISTRY, readConfig, writeConfig } from '../config'
-import { detectProject, installCommand } from '../project'
+import { detectProject, expoCommand, installCommand, runCommand } from '../project'
 import { dim, mono, ok, title, warn } from '../ui'
 
 export interface InitOptions {
@@ -47,21 +47,21 @@ export async function init(opts: InitOptions) {
 
   const packages = [...corePackages, ...nativePackages.filter((n) => !(n in project.deps))]
   if (opts.install !== false) {
-    const cmd = installCommand(project.pm, packages)
+    const cmd = installCommand(project.pm, packages, { expo: project.isExpo })
     console.log(dim(`$ ${cmd.join(' ')}`))
     const r = spawnSync(cmd[0]!, cmd.slice(1), { cwd: opts.cwd, stdio: 'inherit' })
     if (r.status !== 0) console.log(warn('install failed; run the command above manually'))
   } else {
-    console.log(dim(`skipped install. Run: ${installCommand(project.pm, packages).join(' ')}`))
+    console.log(dim(`skipped install. Run: ${installCommand(project.pm, packages, { expo: project.isExpo }).join(' ')}`))
   }
 
   console.log(`\n${dim('Next steps')}`)
   console.log(`  1. Import ${mono('./ondai-polyfills')} at the very top of your entry file.`)
   console.log(`  2. Wrap your app in ${mono('<OndaiProvider>')} from ${mono(`${componentsDir}/provider.tsx`)}.`)
-  console.log(`  3. Rebuild the dev client: ${mono(project.isExpo ? 'npx expo prebuild && npx expo run:ios' : 'cd ios && pod install && cd .. && npx react-native run-ios')}.`)
+  console.log(`  3. Rebuild the dev client: ${mono(project.isExpo ? `${expoCommand(project.pm, 'prebuild')} && ${expoCommand(project.pm, 'run:ios')}` : 'cd ios && pod install && cd .. && npx react-native run-ios')}.`)
   console.log(`     iOS: Apple Foundation Models need iOS 26 and Apple Intelligence on (works in the simulator on Apple-silicon Macs).`)
   console.log(`     Android: set ${mono('minSdkVersion 26')} and the META-INF packaging excludes from the @react-native-ai/adk README (expo-build-properties).`)
-  console.log(`  4. ${mono('npx ondai add command-bar')}\n`)
+  console.log(`  4. ${mono(runCommand(project.pm, 'ondai add command-bar'))}\n`)
 }
 
 const PROVIDER_TEMPLATE = `import type { ReactNode } from 'react'
@@ -84,7 +84,7 @@ function providers(): Record<string, ProviderAdapter> {
 
 export const ondai = createOndai({
   providers: providers(),
-  policy: { order: ['apple', 'nano', 'llama', 'cloud'], allowCloud: false, prewarm: 'on-focus' },
+  policy: { order: ['apple', 'nano', 'cloud'], allowCloud: false, prewarm: 'on-focus' },
 })
 
 export function OndaiProvider({ children }: { children: ReactNode }) {

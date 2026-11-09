@@ -1,13 +1,13 @@
 ---
 title: "ImageReveal"
-description: "An image that resolves out of a churning mosaic or an ASCII field as progress rises. The loader for anything the model draws or reads."
+description: "An image arriving the way a diffusion model makes it: grain over a blurred field, resolved step by step."
 ---
 
 <ComponentPreview name="image-reveal" state="revealing" height={320} />
 
 ## Install
 
-```bash
+```npm
 npx ondai add image-reveal
 ```
 
@@ -22,20 +22,6 @@ import { ImageReveal } from '@/components/ondai/image-reveal'
 - `progress` is 0–1 from your own pipeline, or `"auto"` to loop while you wait. `mode="ascii"` suits scans and documents; `mosaic` suits pictures.
 - ScanToData uses it while OCR and extraction run.
 
-## Variants
-
-| Prop | Options |
-| --- | --- |
-| `mode` | `mosaic`, `ascii` |
-
-Every variant is live in the [playground](/playground/image-reveal).
-
-## Runs on
-
-| Capability | Apple FM | Gemini Nano | Llama | Cloud |
-| --- | --- | --- | --- | --- |
-| none (pure UI) | ✅ | ✅ | ✅ | ✅ |
-
 ## Fallback
 
 Pure UI: no model required.
@@ -46,4 +32,4 @@ No model-driven fixtures for this component.
 
 ## Files
 
-npm dependencies: `@ondai/tokens`, `react-native-reanimated`, `react-native-svg`
+npm dependencies: `@ondai/tokens`, `react-native-reanimated`

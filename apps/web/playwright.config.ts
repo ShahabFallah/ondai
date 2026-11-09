@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test'
 
 /**
  * Visual regression against the local playground. Baselines are generated on macOS Chromium;
- * CI runs the same suite on a macOS runner so anti-aliasing matches (see docs/RUNNING.md).
+ * CI runs the same suite on a macOS runner so anti-aliasing matches.
  */
 export default defineConfig({
   testDir: './tests/visual',

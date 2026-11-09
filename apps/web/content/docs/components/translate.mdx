@@ -1,0 +1,73 @@
+---
+title: "Translate"
+description: "Live translation on device: the original, a row of target languages, the translation streaming in, with copy and an instant swap."
+---
+
+<ComponentPreview name="translate" state="done" height={380} />
+
+## Install
+
+```npm
+npx ondai add translate
+```
+
+## Usage
+
+```tsx
+import { Translate } from '@/components/ondai/translate'
+
+<Translate text={message.text} from="en" to="it" onChangeTarget={setLang} />
+```
+
+- Picking a language translates again; the translation streams in word by word.
+- Swap flips the pair instantly: the translation becomes the source, with no second model call.
+- `languages` takes your own list (`{ code, label, name }`); `targets` picks which ones show as chips.
+- `useTranslate()` exposes the same logic headlessly.
+
+## Customize
+
+Every AI component takes the same look and customization props, so it fits your app rather than ours.
+
+```tsx
+<Translate
+  variant="pop"
+  tint="#FF5A5F"
+  size="lg"
+  radius={12}
+  icons={{ title: Globe, direction: null }}
+  labels={{ thinking: 'Traduco in {language}', copy: 'Copia' }}
+/>
+```
+
+| Prop | What it does |
+| --- | --- |
+| `variant` | The look of the whole component: `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine`, `bevel` |
+| `size` | `sm`, `md`, `lg`; type, chips, icons and keys scale together |
+| `tint` | Any colour; the variant paints its keys, chips, tiles and glow in it |
+| `radius` | Corner radius of the card |
+| `icons` | Replace any icon (a lucide component, an element, or `null` to hide it): `title`, `direction`, `run`, `swap`, `copy`, `copied`, `retry` |
+| `labels` | Every visible and spoken string; defaults are exported as `translateLabels`: `run`, `thinking`, `idle`, `empty`, `retry`, `copy`, `copied`, `swap`, `preparing`, `languages`, `source` |
+| Slots | Draw a part yourself: `renderLanguage`, `renderResult`, `renderEmpty`, `renderError` |
+| `styles` | Style any named part |
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `variant` | `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine`, `bevel` |
+| `size` | `sm`, `md`, `lg` |
+| `to` | `it`, `es`, `de`, `fr`, `ja` (any code in `languages`) |
+
+## Token budget
+
+Input budget: **1800 tokens**. Input is truncated to half the window so the translation, which can run longer, fits in the rest.
+
+## Fallback
+
+When no provider is ready the component renders the unavailable state (`AvailabilityGate` copy) and, while a model downloads, its progress.
+
+## Files
+
+Registry dependencies: [button](/docs/components/button), [chip](/docs/components/chip), [model-download](/docs/components/model-download), [on-device-badge](/docs/components/on-device-badge), [shimmer-text](/docs/components/shimmer-text), [skeleton](/docs/components/skeleton), [streaming-text](/docs/components/streaming-text), [surface](/docs/components/surface)
+
+npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-clipboard`, `expo-haptics`, `lucide-react-native`, `react-native-reanimated`

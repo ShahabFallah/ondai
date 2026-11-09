@@ -1,15 +1,16 @@
 import { Suspense } from 'react'
+import { redirect } from 'next/navigation'
 import { PlaygroundPage } from '@/components/playground/PlaygroundPage'
 import { manifest } from '@ondai/registry/manifest'
-import { PlaygroundNav } from '@/components/playground/PlaygroundNav'
-import { catalogGroups } from '@/components/playground/catalog'
-import { SiteHeader } from '@/components/site/SiteHeader'
-import { SiteFooter } from '@/components/site/SiteFooter'
 
+/**
+ * Only the embed survives: docs previews (components/docs/ComponentPreview.tsx) and scripts/thumbs.mjs
+ * render `/playground/<name>?embed=1`. Without `embed` the URL goes to the component's docs page.
+ */
 export async function generateMetadata({ params }: { params: Promise<{ name: string }> }) {
   const { name } = await params
   const m = manifest.find((x) => x.name === name)
-  return { title: m ? `${m.title} playground` : 'Playground', description: m?.description }
+  return { title: m ? `${m.title} preview` : 'Preview', description: m?.description, robots: { index: false } }
 }
 
 export function generateStaticParams() {
@@ -20,31 +21,10 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   const { name } = await params
   const sp = await searchParams
   const embed = sp.embed === '1' || sp.embed === 'true'
-  if (embed) {
-    return (
-      <Suspense fallback={null}>
-        <PlaygroundPage name={name} />
-      </Suspense>
-    )
-  }
-  const groups = catalogGroups()
-  const flat = groups.flatMap((g) => g.items.map((m) => ({ ...m, group: g.title })))
-  const at = flat.findIndex((m) => m.name === name)
-  const here = flat[at]
-  const link = (m?: { name: string; title: string }) => (m ? { name: m.name, title: m.title } : undefined)
-  const meta = here ? { line: here.line, category: here.group, prev: link(flat[at - 1]), next: link(flat[at + 1]) } : undefined
+  if (!embed) redirect(manifest.some((m) => m.name === name) ? `/docs/components/${name}` : '/docs/components')
   return (
-    <>
-      <SiteHeader />
-      <div className="wrap flex gap-12 pt-24 pb-16">
-        <PlaygroundNav current={name} groups={groups} />
-        <main className="min-w-0 flex-1 pt-4">
-          <Suspense fallback={null}>
-            <PlaygroundPage name={name} meta={meta} />
-          </Suspense>
-        </main>
-      </div>
-      <SiteFooter />
-    </>
+    <Suspense fallback={null}>
+      <PlaygroundPage name={name} />
+    </Suspense>
   )
 }

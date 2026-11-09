@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react'
-import { generateText, Output, truncateToBudget, useOndai, useTask, type TaskController } from '@ondai/core'
+import { generateText, Output, rejectsSchema, truncateToBudget, useOndai, useTask, type TaskController } from '@ondai/core'
 import { parseReplyLines, smartReplyInstructions, type ReplyTone } from './prompts'
 import { repliesSchema } from './schema'
 
@@ -50,12 +50,13 @@ export function useSmartReply(options: UseSmartReplyOptions = {}): SmartReplySta
           const system = smartReplyInstructions(count, tone, o.instructions)
           const prompt = truncateToBudget(threadToPrompt(thread), Math.max(300, window - 500), 'end')
           let out: string[] = []
-          if (ctx.resolved.adapter.capabilities.has('structured')) {
+          // Schema-guided first where the provider takes a schema; reply lines otherwise.
+          if (ctx.resolved.adapter.capabilities.has('structured') && ctx.resolved.adapter.structuredOutput !== 'prompt') {
             try {
               const r = await generateText({ model, system: `${system} Return JSON with a "replies" array.`, prompt, output: Output.object({ schema: repliesSchema }), abortSignal: ctx.signal, temperature: 0.6 })
               out = r.output.replies.map((s) => s.trim()).filter(Boolean)
             } catch (e) {
-              if (ondai.classify(e, ctx.resolved.provider) !== 'invalid-output') throw e
+              if (ondai.classify(e, ctx.resolved.provider) !== 'invalid-output' && !rejectsSchema(e)) throw e
             }
           }
           if (!out.length) {

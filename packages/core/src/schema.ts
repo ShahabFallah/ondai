@@ -54,6 +54,8 @@ export interface RefinedField {
 export interface RefineOptions {
   aliases?: Record<string, Record<string, string[]>>
   now?: Date
+  /** Read ambiguous numeric dates (05/10/2026) as day then month. Unambiguous ones (25/10/2026) are always read right. */
+  dayFirst?: boolean
 }
 
 /**
@@ -77,7 +79,7 @@ export function refineObject(fields: FieldInfo[], raw: Record<string, unknown>, 
         const num = money?.amount ?? parseNumber(String(v))
         r = num === null ? { value: undefined, confidence: 0 } : { value: num, confidence: 0.85, corrected: true }
       } else if (f.type === 'date') {
-        const d = typeof v === 'string' ? parseDate(v, { now: options.now }) : null
+        const d = typeof v === 'string' ? parseDate(v, { now: options.now, dayFirst: options.dayFirst }) : null
         r = d ? { value: d.date.toISOString(), confidence: d.precision === 'minute' ? 0.9 : 0.8, corrected: d.date.toISOString() !== v } : typeof v === 'string' && !Number.isNaN(Date.parse(v)) ? { value: new Date(v).toISOString(), confidence: 0.85 } : { value: v, confidence: 0.4 }
       } else if (f.type === 'boolean' && typeof v !== 'boolean') {
         r = { value: /^(true|yes|y|1)$/i.test(String(v)), confidence: 0.7, corrected: true }

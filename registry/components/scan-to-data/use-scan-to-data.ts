@@ -2,7 +2,7 @@ import { useCallback, useMemo, useRef, useState } from 'react'
 import type { z } from 'zod'
 import { describeSchema, refineObject, useStructured, type RefinedField, type StructuredState } from '@ondai/core'
 import { scanInstructions } from './prompts'
-import { presets, type ScanPreset } from './schema'
+import { mergeAliases, presetAliases, presets, type ScanPreset } from './schema'
 
 export interface ScanImage {
   uri: string
@@ -18,6 +18,7 @@ export interface UseScanToDataOptions<S extends z.ZodObject<z.ZodRawShape>> {
   /** On-device OCR (e.g. ML Kit text recognition, Apple Vision). Returns the recognized text. */
   ocr?: (image: ScanImage) => Promise<string>
   instructions?: string
+  /** Extra words per enum value, added to the preset's own (receipts already map "restaurant" to food and "VISA" to card). */
   aliases?: Record<string, Record<string, string[]>>
   component?: string
   localOnly?: boolean
@@ -38,7 +39,8 @@ export interface ScanToDataState<T> extends Omit<StructuredState<Record<string, 
 
 /** Camera or photo → OCR on device → structured data for a preset (receipt, business card, event) or your own schema. */
 export function useScanToData<S extends z.ZodObject<z.ZodRawShape>>(options: UseScanToDataOptions<S>): ScanToDataState<z.infer<S>> {
-  const { preset = 'receipt', schema, ocr, instructions, aliases, component = 'scan-to-data', localOnly } = options
+  const { preset = 'receipt', schema, ocr, instructions, aliases: extraAliases, component = 'scan-to-data', localOnly } = options
+  const aliases = useMemo(() => mergeAliases(presetAliases[preset], extraAliases), [preset, extraAliases])
   const resolved = useMemo(() => (preset === 'custom' ? schema : (presets[preset] as unknown as S)) as S, [preset, schema])
   if (!resolved) throw new Error('[ondai] ScanToData: preset "custom" needs a schema')
   const fieldInfo = useMemo(() => describeSchema(resolved), [resolved])

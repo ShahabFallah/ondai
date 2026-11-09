@@ -40,17 +40,13 @@ export default function MetalFxPage() {
     >
       <h1 style={{ fontSize: 20, fontWeight: 500, margin: 0 }}>Metal</h1>
       <p style={{ fontSize: 14, color: '#9BA1A9', margin: '6px 0 0' }}>
-        LiquidMetal (WebGL2), MetalText (SVG filter), BorderBeam (CSS). Review only.
+        LiquidMetal and BorderBeam are libraries.dev&apos;s metal-fx and border-beam; MetalText is an SVG filter. Review only.
       </p>
 
-      <Section title="LiquidMetal · orb, 96 / 160 / 240 px, strength 0.4 / 0.7 / 1">
-        <LiquidMetal size={96} strength={0.4} />
-        <LiquidMetal size={160} strength={0.7} />
-        <LiquidMetal size={240} strength={1} />
-      </Section>
-
-      <Section title="LiquidMetal · ring">
-        <LiquidMetal shape="ring" size={200} />
+      <Section title="LiquidMetal · ring, 48 / 64 / 96 px">
+        <LiquidMetal size={48} />
+        <LiquidMetal size={64} preset="silver" />
+        <LiquidMetal size={96} preset="gold" />
       </Section>
 
       <Section title="LiquidMetal · pill">
@@ -70,19 +66,19 @@ export default function MetalFxPage() {
         <BorderBeam size="sm">
           <div style={card}>
             <span style={{ fontSize: 16, fontWeight: 500 }}>Beam sm</span>
-            <span style={{ fontSize: 14, color: '#9BA1A9' }}>1 px ring, strength 0.7</span>
+            <span style={{ fontSize: 14, color: '#9BA1A9' }}>The compact beam</span>
           </div>
         </BorderBeam>
         <BorderBeam size="md" strength={1}>
           <div style={card}>
             <span style={{ fontSize: 16, fontWeight: 500 }}>Beam md</span>
-            <span style={{ fontSize: 14, color: '#9BA1A9' }}>2 px ring, strength 1</span>
+            <span style={{ fontSize: 14, color: '#9BA1A9' }}>Around the whole border</span>
           </div>
         </BorderBeam>
         <BorderBeam active={false}>
           <div style={card}>
             <span style={{ fontSize: 16, fontWeight: 500 }}>Inactive</span>
-            <span style={{ fontSize: 14, color: '#9BA1A9' }}>paused, halo hidden</span>
+            <span style={{ fontSize: 14, color: '#9BA1A9' }}>Faded out</span>
           </div>
         </BorderBeam>
       </Section>

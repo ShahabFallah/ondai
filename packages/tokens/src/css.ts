@@ -16,7 +16,7 @@ export function themeToCssVars(theme: Theme): Record<string, string> {
     '--primary-foreground': c.onAccent,
     '--secondary': c.elevated,
     '--secondary-foreground': c.text,
-    '--muted': c.input,
+    '--muted': c.muted,
     '--muted-foreground': c.textSecondary,
     '--accent': c.accent.soft,
     '--accent-foreground': c.text,

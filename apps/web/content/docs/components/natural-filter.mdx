@@ -1,5 +1,5 @@
 ---
-title: "NaturalFilter"
+title: "Natural filter"
 description: "A natural-language search request becomes a typed filter/sort object with editable chips."
 ---
 
@@ -7,7 +7,7 @@ description: "A natural-language search request becomes a typed filter/sort obje
 
 ## Install
 
-```bash
+```npm
 npx ondai add natural-filter
 ```
 
@@ -26,20 +26,40 @@ const filters = z.object({ cuisine: z.enum(['italian', 'japanese']).optional(), 
 
 - Chips are editable (tap an enum chip to cycle values) and removable.
 
+## Customize
+
+Every AI component takes the same look and customization props, so it fits your app rather than ours.
+
+```tsx
+<NaturalFilter
+  variant="pop"
+  tint="#FF5A5F"
+  size="lg"
+  radius={12}
+  icons={{ search: Search, clear: null }}
+  labels={{ placeholder: '…', thinking: '…' }}
+/>
+```
+
+| Prop | What it does |
+| --- | --- |
+| `variant` | The look of the whole component: `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `size` | `sm`, `md`, `lg`; type, rows, icons and keys scale together |
+| `tint` | Any colour; the variant paints its keys, tiles and glow in it |
+| `radius` | Corner radius of the container |
+| `icons` | Replace any icon (a lucide component, an element, or `null` to hide it): `search`, `clear`, `edit`, `submit`, `row`, `empty`, `error` |
+| `labels` | Every visible and spoken string; defaults are exported as `naturalFilterLabels`: `placeholder`, `thinking`, `submit`, `clear`, `clearFilters`, `editFilters`, `sheetTitle`, `done`, `any`, `yes`, `no`, `not`, `tapToChange`, `remove`, `emptyTitle`, `emptyHint`, `result`, `results`, `inputLabel` |
+| Slots | Draw a part yourself: `renderChip`, `renderSubmit`, `renderEmpty`, `renderFooter` |
+| `styles` | Style any named part |
+
 ## Variants
 
 | Prop | Options |
 | --- | --- |
 | `presentation` | `bar`, `sheet`, `inline` |
+| `variant` | `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `size` | `sm`, `md`, `lg` |
 | `chipStyle` | `soft`, `outline` |
-
-Every variant is live in the [playground](/playground/natural-filter).
-
-## Runs on
-
-| Capability | Apple FM | Gemini Nano | Llama | Cloud |
-| --- | --- | --- | --- | --- |
-| structured | ✅ | ✅ | ✅ | ✅ |
 
 ## Token budget
 
@@ -55,6 +75,6 @@ Fixtures: `evals/natural-filter/fixtures.json`.
 
 ## Files
 
-Registry dependencies: [button](/docs/components/button), [chip](/docs/components/chip), [field](/docs/components/field), [on-device-badge](/docs/components/on-device-badge), [sheet](/docs/components/sheet), [skeleton](/docs/components/skeleton)
+Registry dependencies: [button](/docs/components/button), [chip](/docs/components/chip), [on-device-badge](/docs/components/on-device-badge), [sheet](/docs/components/sheet), [shimmer-text](/docs/components/shimmer-text), [surface](/docs/components/surface), [skeleton](/docs/components/skeleton)
 
 npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-haptics`, `lucide-react-native`, `react-native-reanimated`, `zod`

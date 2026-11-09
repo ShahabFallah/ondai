@@ -15,7 +15,8 @@ import '../ui/ui.css'
 import './playground.css'
 
 const stateOrder = ['idle', 'focus', 'thinking', 'streaming', 'tool', 'confirm', 'done', 'error', 'refusal', 'unavailable', 'preparing']
-const themeLabel: Record<string, string> = { void: 'Void', paper: 'Paper', glass: 'Glass' }
+const themeLabel: Record<string, string> = { void: 'Dark', paper: 'Light' }
+const materialLabel: Record<string, string> = { solid: 'Solid', glass: 'Glass', native: 'Native' }
 const accentLabel: Record<string, string> = { ion: 'Ion', mono: 'Mono', aurora: 'Aurora', ember: 'Ember' }
 const deviceLabel: Record<string, string> = { apple: 'Apple', nano: 'Nano', llama: 'Llama', unavailable: 'No model' }
 const frameLabel: Record<string, string> = { none: 'None', iphone: 'iPhone', android: 'Android' }
@@ -99,6 +100,43 @@ function StateTabs({ states, value, onChange }: { states: string[]; value: strin
   )
 }
 
+/**
+ * In a docs embed, tells the parent page which variants this component has (its `variantKeys` select
+ * controls and their current values), and takes `{ type: 'ondai:set', key, value }` back to switch one
+ * in place, without reloading the frame; `{ type: 'ondai:state', value }` switches the state the same way.
+ */
+function EmbedBridge({ def, query, setQuery }: { def: PlaygroundDef; query: PlaygroundQuery; setQuery: (q: PlaygroundQuery) => void }) {
+  const variants = useMemo(
+    () =>
+      (def.variantKeys ?? []).flatMap((key) => {
+        const c = def.controls[key]
+        return c?.kind === 'select' ? [{ key, label: c.label ?? key, options: [...c.options], value: String((query.props as Record<string, unknown>)[key] ?? c.default) }] : []
+      }),
+    [def, query.props],
+  )
+  useEffect(() => {
+    if (window.parent === window) return
+    window.parent.postMessage({ type: 'ondai:variants', name: def.name, variants }, window.location.origin)
+  }, [def.name, variants])
+  useEffect(() => {
+    const onMessage = (e: MessageEvent) => {
+      if (e.origin !== window.location.origin) return
+      // `{ type: 'ondai:state', value }` moves to another state (scripts/loops.mjs plays prop-driven ones in sequence).
+      if (e.data?.type === 'ondai:state') {
+        if (def.states[e.data.value as string]) setQuery({ ...query, state: e.data.value as string })
+        return
+      }
+      if (e.data?.type !== 'ondai:set') return
+      const c = def.controls[e.data.key as string]
+      if (c?.kind !== 'select' || !c.options.includes(e.data.value)) return
+      setQuery({ ...query, props: { ...query.props, [e.data.key]: e.data.value } })
+    }
+    window.addEventListener('message', onMessage)
+    return () => window.removeEventListener('message', onMessage)
+  }, [def, query, setQuery])
+  return null
+}
+
 export function PlaygroundPage({ name, meta }: { name: string; meta?: PlaygroundMeta }) {
   const [def, setDef] = useState<PlaygroundDef | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -155,6 +193,7 @@ export function PlaygroundPage({ name, meta }: { name: string; meta?: Playground
     // Same box structure as the first release so the committed visual baselines stay valid.
     return (
       <div className="flex min-h-screen" data-embed="1">
+        <EmbedBridge def={def} query={query} setQuery={setQuery} />
         <div className="min-w-0 flex-1">
           <section className="flex justify-center">
             <Preview def={def} query={query} />
@@ -205,7 +244,11 @@ export function PlaygroundPage({ name, meta }: { name: string; meta?: Playground
         <div className="pg-toolbar" role="group" aria-label="Preview settings">
           <div className="pg-tool">
             <span>Theme</span>
-            <Segmented size="sm" options={['void', 'paper', 'glass'] as const} value={query.theme} onChange={(theme) => set({ theme })} label="Theme" format={(v) => themeLabel[v] ?? v} />
+            <Segmented size="sm" options={['paper', 'void'] as const} value={query.theme === 'paper' ? 'paper' : 'void'} onChange={(theme) => set({ theme })} label="Theme" format={(v) => themeLabel[v] ?? v} />
+          </div>
+          <div className="pg-tool">
+            <span>Surface</span>
+            <Segmented size="sm" options={['solid', 'glass', 'native'] as const} value={query.material} onChange={(material) => set({ material })} label="Surface" format={(v) => materialLabel[v] ?? v} />
           </div>
           <div className="pg-tool">
             <span>Accent</span>

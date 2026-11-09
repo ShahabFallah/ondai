@@ -21,7 +21,7 @@ export function detectProject(cwd: string): ProjectInfo {
   if (!existsSync(pkgPath)) throw new Error(`No package.json in ${cwd}. Run this inside your app.`)
   const packageJson = JSON.parse(readFileSync(pkgPath, 'utf8')) as Record<string, any>
   const deps = { ...(packageJson.dependencies ?? {}), ...(packageJson.devDependencies ?? {}) } as Record<string, string>
-  const pm: PackageManager = existsSync(join(cwd, 'pnpm-lock.yaml')) ? 'pnpm' : existsSync(join(cwd, 'bun.lock')) || existsSync(join(cwd, 'bun.lockb')) ? 'bun' : existsSync(join(cwd, 'yarn.lock')) ? 'yarn' : 'npm'
+  const pm: PackageManager = detectPackageManager(cwd)
   return {
     cwd,
     packageJson,
@@ -36,8 +36,39 @@ export function detectProject(cwd: string): ProjectInfo {
   }
 }
 
-export function installCommand(pm: PackageManager, packages: string[]): string[] {
+/**
+ * The install command for the app. Expo projects go through `npx expo install`, which pins Expo SDK
+ * modules (expo-haptics, expo-blur, react-native-reanimated…) to the versions the app's SDK expects and
+ * passes everything else to the app's package manager.
+ */
+/**
+ * The app's package manager: its lockfile first (also one folder up, for monorepos), then the manager
+ * that ran this CLI (`pnpm dlx ondai`, `yarn dlx ondai`, `bunx ondai` set npm_config_user_agent), then npm.
+ */
+export function detectPackageManager(cwd: string, userAgent = process.env.npm_config_user_agent ?? ''): PackageManager {
+  for (const dir of [cwd, join(cwd, '..'), join(cwd, '..', '..')]) {
+    if (existsSync(join(dir, 'pnpm-lock.yaml'))) return 'pnpm'
+    if (existsSync(join(dir, 'bun.lock')) || existsSync(join(dir, 'bun.lockb'))) return 'bun'
+    if (existsSync(join(dir, 'yarn.lock'))) return 'yarn'
+    if (existsSync(join(dir, 'package-lock.json'))) return 'npm'
+  }
+  const agent = userAgent.split('/')[0]
+  return agent === 'pnpm' || agent === 'yarn' || agent === 'bun' ? agent : 'npm'
+}
+
+/** How to run a package's binary with this manager, e.g. `pnpm dlx ondai add x`. */
+export function runCommand(pm: PackageManager, command: string): string {
+  return `${{ npm: 'npx', pnpm: 'pnpm dlx', yarn: 'yarn dlx', bun: 'bunx' }[pm]} ${command}`
+}
+
+/** How to run the project's own Expo CLI with this manager, e.g. `pnpm expo prebuild`. */
+export function expoCommand(pm: PackageManager, args: string): string {
+  return `${{ npm: 'npx expo', pnpm: 'pnpm expo', yarn: 'yarn expo', bun: 'bunx expo' }[pm]} ${args}`
+}
+
+export function installCommand(pm: PackageManager, packages: string[], options: { expo?: boolean } = {}): string[] {
   if (!packages.length) return []
+  if (options.expo) return [...expoCommand(pm, 'install').split(' '), ...packages]
   switch (pm) {
     case 'pnpm':
       return ['pnpm', 'add', ...packages]

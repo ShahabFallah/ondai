@@ -51,8 +51,24 @@ export function manualClock(start = 0): ManualClock {
       })
     },
     async advance(ms) {
-      t += ms
-      await runDue()
+      // Step through time one due sleep at a time, so a sleep queued after an earlier one resolves (the next
+      // token, or the next model call once a tool's promise settles) is timed from that instant, not from the end.
+      const target = t + Math.max(0, ms)
+      let idle = 0
+      for (let i = 0; i < 20_000 && idle < 10; i++) {
+        queue.sort((a, b) => a.at - b.at)
+        const next = queue[0]
+        if (!next || next.at > target) {
+          idle++
+          await tick()
+          continue
+        }
+        idle = 0
+        t = Math.max(t, next.at)
+        while (queue.length && queue[0]!.at <= t) queue.shift()!.resolve()
+        await tick()
+      }
+      t = target
     },
     async flush() {
       for (let i = 0; i < 1000; i++) {

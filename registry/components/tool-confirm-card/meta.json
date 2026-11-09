@@ -1,1 +1,15 @@
-{ "name": "tool-confirm-card", "title": "ToolConfirmCard", "description": "Approval for any tool call: action, parameters and risk level, with approve / edit / cancel.", "category": "agentic", "priority": "P0", "capabilities": ["tools"], "variants": { "presentation": ["card", "sheet", "banner"] }, "registryDependencies": ["button", "sheet"], "files": ["tool-confirm-card.tsx", "index.ts"], "runsOn": ["apple", "nano", "llama", "cloud"] }
+{
+  "name": "tool-confirm-card",
+  "title": "ToolConfirmCard",
+  "description": "Approval for any tool call: the call as a trace line, then a card with its parameters and deny or confirm.",
+  "category": "agentic",
+  "priority": "P0",
+  "capabilities": [],
+  "variants": {
+    "variant": ["clean", "minimal", "glass", "pop", "candy", "metal", "shine", "bevel"],
+    "presentation": ["card", "sheet", "banner", "inline"],
+    "size": ["sm", "md", "lg"]
+  },
+  "registryDependencies": ["button", "sheet", "shimmer-text", "surface"],
+  "files": ["tool-confirm-card.tsx", "index.ts"]
+}

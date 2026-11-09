@@ -32,6 +32,8 @@ export function nanoAdapter(mod: AdkModule, options: NanoAdapterOptions = {}): P
     locality: 'on-device',
     capabilities: caps,
     contextWindow: 4096,
+    // @react-native-ai/adk 0.12 throws on `responseFormat.schema` ("ADK does not support responseFormat.schema yet").
+    structuredOutput: 'prompt',
     async availability(): Promise<Availability> {
       if (Platform.OS !== 'android') return { status: 'unavailable', reason: 'unsupported-os', detail: Platform.OS, provider: 'nano' }
       if (AppState.currentState !== 'active') return { status: 'unavailable', reason: 'background-blocked', provider: 'nano' }

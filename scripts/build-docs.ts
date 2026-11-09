@@ -51,9 +51,88 @@ const usage: Record<string, { imports: string; code: string; previewState?: stri
     height: 620,
     notes: ['OCR runs on device through the `ocr` function you pass (ML Kit, Apple Vision). The model only sees text, which also keeps the request inside the 4K budget.', 'Presets: `receipt`, `businessCard`, `event`; or `preset="custom"` with your own zod schema.'],
   },
+  chat: {
+    imports: `import { Chat } from '@/components/ondai/chat'`,
+    code: `<Chat system="You are a helpful assistant inside a notes app. Be brief." suggestions={['Plan a slow Saturday in Lyon', 'What did I note about the budget?']} />`,
+    previewState: 'done',
+    height: 560,
+    notes: ['Built on `useChat()` from `@ondai/core`: history is trimmed to the model context, oldest turns first.', 'Compose your own screen from PromptComposer and AssistantMessage when you need a different layout.'],
+  },
+  'prompt-composer': {
+    imports: `import { PromptComposer } from '@/components/ondai/prompt-composer'`,
+    code: `<PromptComposer onSubmit={chat.send} busy={chat.isBusy} onStop={chat.stop} onAttach={pickPhoto} attachments={files} onRemoveAttachment={removeFile} />`,
+    previewState: 'attachments',
+    height: 260,
+    notes: ['Enter sends on web and hardware keyboards; Shift+Enter adds a line.', 'While `busy`, the raised send key becomes a stop key.'],
+  },
+  'assistant-message': {
+    imports: `import { AssistantMessage, UserMessage } from '@/components/ondai/assistant-message'`,
+    code: `<UserMessage text={question} />
+<AssistantMessage text={reply.text} status={reply.status} thoughtMs={reply.thoughtMs} steps={steps} sources={sources} onRetry={retry} />`,
+    previewState: 'done',
+    height: 380,
+    notes: ['The trace reads "Thought for 1.2s" from the time to the first word; tool steps fold under it.'],
+  },
+  'agent-run': {
+    imports: `import { AgentRun } from '@/components/ondai/agent-run'\nimport { tool } from '@ondai/core'\nimport { z } from 'zod'`,
+    code: `<AgentRun
+  goal="Find a quiet dinner spot near Priya’s office on Friday and invite her"
+  tools={{ searchPlaces, checkCalendar, createEvent }}
+  meta={{ createEvent: { title: 'Create the event and invite Priya', policy: 'ask', risk: 'medium' } }}
+/>`,
+    previewState: 'running',
+    height: 420,
+    notes: ['Tools with `policy: \'ask\'` stop at an approval card before they run.', 'Built on `useToolAgent()`; Apple and Gemini Nano run the tool loop on device.'],
+  },
+  'inline-suggest': {
+    imports: `import { InlineSuggest } from '@/components/ondai/inline-suggest'`,
+    code: `<InlineSuggest context="A message to Priya about Friday’s dinner" value={text} onChangeText={setText} />`,
+    previewState: 'suggesting',
+    height: 220,
+    notes: ['The model runs only after a pause in typing, and a guess for older text is never shown.'],
+  },
+  'voice-memo': {
+    imports: `import { VoiceMemo } from '@/components/ondai/voice-memo'`,
+    code: `<VoiceMemo onAdd={(todos) => reminders.add(todos)} addLabel="Add to Reminders" />`,
+    previewState: 'done',
+    height: 480,
+    notes: ['Recording, transcription and reading all run on the device; the schema is exported as `memoSchema`.'],
+  },
+  'border-beam': {
+    imports: `import { BorderBeam } from '@/components/ondai/border-beam'`,
+    code: `<BorderBeam active={isThinking} radius="lg">
+  <Card />
+</BorderBeam>`,
+    previewState: 'working',
+    height: 220,
+    notes: ['libraries.dev’s border beam (MIT, Jakub Antalik): a Skia shader on iOS and Android, its CSS version on web.', 'Needs `@shopify/react-native-skia` (included in Expo Go).'],
+  },
+  'liquid-metal': {
+    imports: `import { LiquidMetal } from '@/components/ondai/liquid-metal'`,
+    code: `<LiquidMetal active={isListening} shape="circle">
+  <MicButton />
+</LiquidMetal>`,
+    previewState: 'working',
+    height: 200,
+    notes: ['libraries.dev’s metal-fx (MIT); the material is Paper Shaders’ liquidMetal (Apache-2.0, NOTICE included).', 'Needs `@shopify/react-native-skia` (included in Expo Go).'],
+  },
+  'bot-avatar': {
+    imports: `import { BotAvatar } from '@/components/ondai/bot-avatar'`,
+    code: `<BotAvatar state={isWorking ? 'working' : 'default'} size={64} />`,
+    previewState: 'family',
+    height: 260,
+    notes: ['libraries.dev’s bot avatars (MIT): 18 bodies plus Ondai’s chrome chip.', 'Needs `@shopify/react-native-skia` (included in Expo Go).'],
+  },
+  surface: {
+    imports: `import { Surface } from '@/components/ondai/surface'`,
+    code: `<Surface elevation="card" style={{ padding: 16 }}>
+  <Text>Follows the theme: solid, glass, or Liquid Glass on iOS 26</Text>
+</Surface>`,
+    height: 200,
+  },
   summarize: {
     imports: `import { Summarize } from '@/components/ondai/summarize'`,
-    code: `<Summarize text={thread.text} presentation="card" length="bullets" style="plain" />`,
+    code: `<Summarize text={thread.text} presentation="card" length="bullets" emphasis="plain" />`,
     previewState: 'done',
     height: 360,
     notes: ['Short input streams in one pass; long input is chunked, summarized per chunk and reduced (progress shown).', '`useSummarize()` exposes the same logic headlessly.'],
@@ -155,25 +234,67 @@ const recorder: Recorder = {
   field: { imports: `import { Field } from '@/components/ondai/field'`, code: `<Field label="Merchant" value={v} onChangeText={setV} state={status} confidence={0.9} />`, previewState: 'filled', height: 200 },
 }
 
+/** The shared look and customization props of an AI component, read from its source. */
+function customizeSection(name: string, title: string): string[] {
+  const file = join(root, 'registry', 'components', name, `${name}.tsx`)
+  if (!existsSync(file)) return []
+  const src = readFileSync(file, 'utf8')
+  if (!/\bvariant\?: SkinInput\b/.test(src)) return []
+  const lab = src.match(/export const (\w+Labels)\b[^=]*= \{([\s\S]*?)\n\}/)
+  const ico = src.match(/export interface (\w+Icons) \{([\s\S]*?)\n\}/)
+  const keys = (body: string) => [...body.matchAll(/^\s+(\w+)\??:/gm)].map((m) => m[1]!)
+  const labelKeys = lab ? keys(lab[2]!) : []
+  const iconKeys = ico ? keys(ico[2]!) : []
+  const labelLine = labelKeys.length ? `  labels={{ ${labelKeys[0]}: '…'${labelKeys[1] ? `, ${labelKeys[1]}: '…'` : ''} }}` : ''
+  const iconLine = iconKeys.length ? `  icons={{ ${iconKeys[0]}: Search${iconKeys[1] ? `, ${iconKeys[1]}: null` : ''} }}` : ''
+  const out = [
+    '## Customize',
+    '',
+    'Every AI component takes the same look and customization props, so it fits your app rather than ours.',
+    '',
+    '```tsx',
+    `<${title}`,
+    '  variant="pop"',
+    '  tint="#FF5A5F"',
+    '  size="lg"',
+    '  radius={12}',
+    ...(iconLine ? [iconLine] : []),
+    ...(labelLine ? [labelLine] : []),
+    '/>',
+    '```',
+    '',
+    '| Prop | What it does |',
+    '| --- | --- |',
+    '| `variant` | The look of the whole component: `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine`, `bevel` |',
+    '| `size` | `sm`, `md`, `lg`; type, rows, icons and keys scale together |',
+    '| `tint` | Any colour; the variant paints its keys, tiles and glow in it |',
+    '| `radius` | Corner radius of the container |',
+  ]
+  if (iconKeys.length) out.push(`| \`icons\` | Replace any icon (a lucide component, an element, or \`null\` to hide it): ${iconKeys.map((k) => `\`${k}\``).join(', ')} |`)
+  if (labelKeys.length) out.push(`| \`labels\` | Every visible and spoken string; defaults are exported as \`${lab![1]}\`: ${labelKeys.map((k) => `\`${k}\``).join(', ')} |`)
+  const slots = [...new Set([...src.matchAll(/^\s+(render[A-Z]\w*)\?:/gm)].map((m) => m[1]!))]
+  if (slots.length) out.push(`| Slots | Draw a part yourself: ${slots.map((k) => `\`${k}\``).join(', ')} |`)
+  if (/\bstyles\?: Partial</.test(src)) out.push('| `styles` | Style any named part |')
+  out.push('')
+  return out
+}
+
 for (const item of manifest.items) {
   const u = usage[item.name]
   const o = item.meta.ondai
   const variants = Object.entries(o.variants)
-  const runsOn = o.runsOn ?? ['apple', 'nano', 'llama', 'cloud']
   const lines: string[] = []
   lines.push('---', `title: ${JSON.stringify(item.title)}`, `description: ${JSON.stringify(item.description)}`, '---', '')
   if (u) lines.push(`<ComponentPreview name="${item.name}" state="${u.previewState ?? ''}" height={${u.height ?? 400}}${u.previewQuery ? ` query="${u.previewQuery}"` : ''} />`, '')
   lines.push('## Install', '', '```bash', `npx ondai add ${item.name}`, '```', '')
   if (u) lines.push('## Usage', '', '```tsx', u.imports, '', u.code, '```', '')
   if (u?.notes?.length) lines.push(...u.notes.map((n) => `- ${n}`), '')
+  lines.push(...customizeSection(item.name, item.title))
   if (variants.length) {
     lines.push('## Variants', '', '| Prop | Options |', '| --- | --- |')
     for (const [k, v] of variants) lines.push(`| \`${k}\` | ${v.map((x) => `\`${x}\``).join(', ')} |`)
-    lines.push('', 'Every variant is live in the [playground](/playground/' + item.name + ').', '')
+    lines.push('')
   }
-  lines.push('## Runs on', '', '| Capability | Apple FM | Gemini Nano | Llama | Cloud |', '| --- | --- | --- | --- | --- |')
-  const cap = o.capabilities.length ? o.capabilities.join(', ') : 'none (pure UI)'
-  lines.push(`| ${cap} | ${runsOn.includes('apple') ? '✅' : 'No'} | ${runsOn.includes('nano') ? '✅' : 'No'} | ${runsOn.includes('llama') ? '✅' : 'No'} | ${runsOn.includes('cloud') ? '✅' : 'No'} |`, '')
   if (o.budget) lines.push('## Token budget', '', `Input budget: **${o.budget.input} tokens**. ${o.budget.strategy}`, '')
   lines.push('## Fallback', '', o.capabilities.length ? 'When no provider is ready the component renders the unavailable state (`AvailabilityGate` copy) and, where a deterministic path exists, keeps working without the model.' : 'Pure UI: no model required.', '')
   lines.push('## Eval score', '', existsSync(join(root, 'evals', item.name, 'fixtures.json')) ? `Fixtures: \`evals/${item.name}/fixtures.json\`.` : '', '')

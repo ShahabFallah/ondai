@@ -1,0 +1,31 @@
+{
+  "name": "ask-page",
+  "title": "AskPage",
+  "description": "Ask about the page on screen. The answer streams in grounded in its text, with tap-to-jump quotes and follow-ups, and says when the page does not hold it.",
+  "category": "search",
+  "priority": "P1",
+  "capabilities": ["text"],
+  "variants": {
+    "variant": ["clean", "minimal", "glass", "pop", "candy", "metal", "shine", "bevel"],
+    "presentation": ["card", "inline", "sheet"],
+    "quoteStyle": ["cards", "rule", "chips"],
+    "size": ["sm", "md", "lg"]
+  },
+  "registryDependencies": [
+    "button",
+    "chip",
+    "model-download",
+    "on-device-badge",
+    "sheet",
+    "shimmer-text",
+    "skeleton",
+    "streaming-text",
+    "surface"
+  ],
+  "files": ["ask-page.tsx", "use-ask-page.ts", "prompts.ts", "index.ts"],
+  "budget": {
+    "input": 3400,
+    "strategy": "The whole page in one streamed pass when it fits; otherwise the chunks that best match the question, in page order. Quotes are checked against the page and dropped when they are not in it."
+  },
+  "runsOn": ["apple", "nano", "cloud"]
+}

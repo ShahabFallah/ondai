@@ -1,5 +1,5 @@
 import { useEffect, useId, useMemo, useState, type ReactNode } from 'react'
-import { Platform, StyleSheet, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native'
+import { StyleSheet, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native'
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming, cancelAnimation } from 'react-native-reanimated'
 import Svg, { Defs, LinearGradient, Path, Rect, Stop } from 'react-native-svg'
 import { hairlineWidth, useMotion, useTheme } from '@ondai/tokens/react'
@@ -26,6 +26,18 @@ export interface IonBorderProps {
   fill?: string
   /** Soft outer glow while active (elevation 3). */
   glow?: boolean
+  /** Resting shadow from the theme. Cards use `sm`, floating panels `lg`. */
+  shadow?: 'none' | 'sm' | 'md' | 'lg'
+  /** Idle border color. Defaults to the theme hairline. */
+  borderColor?: string
+  /** Light colours, three stops. Defaults to the theme accent. */
+  colors?: AccentStops
+  /** `beam` and `pulse` draw a soft halo outside the edge. Default true. */
+  halo?: boolean
+  /** Degrees of tail behind the beam's head. Default 150. */
+  tail?: number
+  /** The beam's head burns white. Turn off for a dark glint on light surfaces. Default true. */
+  hotHead?: boolean
   style?: StyleProp<ViewStyle>
   contentStyle?: StyleProp<ViewStyle>
   children?: ReactNode
@@ -43,7 +55,7 @@ const haloOpacity = [0.1, 0.08, 0.07, 0.06, 0.05, 0.04] as const
  * The signature "thinking" border: a slow gradient light travels around the edge of any container.
  * Idle: hairline. Focus: faint ring. Active: the ion sweep (or a comet beam, or a breathing pulse). Done: fades out within 300ms.
  */
-export function IonBorder({ active = false, focused = false, variant = 'sweep', radius = 'lg', width = 1.5, speed, fill, glow = false, style, contentStyle, children, testID }: IonBorderProps) {
+export function IonBorder({ active = false, focused = false, variant = 'sweep', radius = 'lg', width = 1.5, speed, fill, glow = false, shadow = 'none', borderColor, colors, halo = true, tail = tailAngle, hotHead = true, style, contentStyle, children, testID }: IonBorderProps) {
   const t = useTheme()
   const motion = useMotion()
   const uid = useId().replace(/[^a-zA-Z0-9_-]/g, '')
@@ -92,25 +104,28 @@ export function IonBorder({ active = false, focused = false, variant = 'sweep', 
   }
   const d = Math.ceil(Math.hypot(size.w, size.h)) + 8
   const bg = fill ?? t.colors.surface
-  const g = t.colors.accent
-  const glowStyle: ViewStyle =
-    glow && active
-      ? Platform.OS === 'web'
-        ? ({ boxShadow: `0 0 24px ${g.glow}` } as unknown as ViewStyle)
-        : { shadowColor: g.solid, shadowOpacity: 0.35, shadowRadius: 16, shadowOffset: { width: 0, height: 0 } }
-      : {}
+  const g = colors ? { ...t.colors.accent, ...colors, solid: colors.b } : t.colors.accent
+  // Depth: the resting shadow, a 3px soft ring on focus (the reui input ring), a calm accent bloom while active.
+  const layers: string[] = []
+  if (shadow !== 'none') layers.push(t.shadows[shadow])
+  if (focused && !active) layers.push(`0 0 0 3px ${g.soft}`)
+  if (glow && active) layers.push(`0 0 0 1px ${g.soft}`, `0 8px 28px ${g.glow}`)
+  const glowStyle: ViewStyle = layers.length ? ({ boxShadow: layers.join(', ') } as ViewStyle) : {}
 
   // Beam geometry: one fan for the ring, a larger softer one for the halo outside it.
   const beamD = Math.ceil(Math.hypot(size.w, size.h)) + 16
   const haloD = Math.ceil(Math.hypot(size.w + 2 * haloStep * haloRings, size.h + 2 * haloStep * haloRings)) + 16
-  const beam = useMemo(() => (variant === 'beam' && size.w > 0 ? comet(beamD, g, { lead: 4, alpha: 0.98, layers: 36 }) : []), [variant, size.w, beamD, g])
-  const haloBeam = useMemo(() => (variant === 'beam' && size.w > 0 ? comet(haloD, g, { lead: 5, alpha: 0.95, layers: 16 }) : []), [variant, size.w, haloD, g])
+  const ga = g.a
+  const gb = g.b
+  const gc = g.c
+  const beam = useMemo(() => (variant === 'beam' && size.w > 0 ? comet(beamD, { a: ga, b: gb, c: gc }, { lead: 4, alpha: 0.98, layers: 36, tail, hot: hotHead }) : []), [variant, size.w, beamD, ga, gb, gc, tail, hotHead])
+  const haloBeam = useMemo(() => (variant === 'beam' && halo && size.w > 0 ? comet(haloD, { a: ga, b: gb, c: gc }, { lead: 5, alpha: 0.95, layers: 16, tail, hot: hotHead }) : []), [variant, halo, size.w, haloD, ga, gb, gc, tail, hotHead])
 
   const layer = testID ? (k: string) => `${testID}-${k}` : () => undefined
 
   return (
     <View style={[glowStyle, { borderRadius: r }, style]} testID={testID}>
-      {variant !== 'sweep' && size.w > 0 ? (
+      {variant !== 'sweep' && halo && size.w > 0 ? (
         <Animated.View pointerEvents="none" testID={layer('halo')} style={[StyleSheet.absoluteFill, fade]}>
           {Array.from({ length: haloRings }, (_, i) => {
             const k = haloRings - i
@@ -129,7 +144,7 @@ export function IonBorder({ active = false, focused = false, variant = 'sweep', 
           })}
         </Animated.View>
       ) : null}
-      <View onLayout={onLayout} testID={layer('clip')} style={[styles.clip, { borderRadius: r, backgroundColor: bg, borderWidth: hairlineWidth, borderColor: focused ? t.colors.accent.ring : t.colors.hairline }]}>
+      <View onLayout={onLayout} testID={layer('clip')} style={[styles.clip, { borderRadius: r, backgroundColor: bg, borderWidth: hairlineWidth, borderColor: focused ? t.colors.accent.ring : (borderColor ?? t.colors.hairline) }]}>
         {size.w > 0 ? (
           <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, styles.center, fade]}>
             {variant === 'pulse' ? (
@@ -143,11 +158,11 @@ export function IonBorder({ active = false, focused = false, variant = 'sweep', 
                 <Svg width={d} height={d}>
                   <Defs>
                     <LinearGradient id={`ondai-ion-${uid}`} x1="0" y1="0" x2="1" y2="1">
-                      <Stop offset="0" stopColor={g.a} stopOpacity={0} />
-                      <Stop offset="0.3" stopColor={g.a} stopOpacity={0.15} />
-                      <Stop offset="0.5" stopColor={g.b} stopOpacity={1} />
-                      <Stop offset="0.62" stopColor={g.c} stopOpacity={0.9} />
-                      <Stop offset="0.8" stopColor={g.c} stopOpacity={0} />
+                      <Stop offset="0.18" stopColor={g.a} stopOpacity={0} />
+                      <Stop offset="0.38" stopColor={g.a} stopOpacity={0.35} />
+                      <Stop offset="0.5" stopColor={g.b} stopOpacity={0.95} />
+                      <Stop offset="0.6" stopColor={g.c} stopOpacity={0.7} />
+                      <Stop offset="0.78" stopColor={g.c} stopOpacity={0} />
                     </LinearGradient>
                   </Defs>
                   <Rect x={0} y={0} width={d} height={d} fill={`url(#ondai-ion-${uid})`} />
@@ -192,14 +207,14 @@ const lerp = (a: Rgb, b: Rgb, t: number): Rgb => [a[0] + (b[0] - a[0]) * t, a[1]
 const css = ([r, g, b]: Rgb) => `rgb(${Math.round(r)},${Math.round(g)},${Math.round(b)})`
 
 /** Colour along the tail (u = 0 at the head, 1 at the end): white-hot accent.b, then accent.a, fading into accent.c. */
-function cometColor(u: number, g: AccentStops): string {
+function cometColor(u: number, g: AccentStops, hot = true): string {
   const white: Rgb = [255, 255, 255]
   const a = rgbOf(g.a)
   const b = rgbOf(g.b)
   const c = rgbOf(g.c)
   const stops: Array<[number, Rgb]> = [
-    [0, lerp(b, white, 0.82)],
-    [0.05, lerp(a, white, 0.55)],
+    [0, hot ? lerp(b, white, 0.82) : b],
+    [0.05, hot ? lerp(a, white, 0.55) : a],
     [0.14, a],
     [0.62, c],
     [1, c],
@@ -217,7 +232,7 @@ function cometColor(u: number, g: AccentStops): string {
  * makes the stack sum to `alpha · (1 − u)^2.2`. Nesting (instead of adjacent wedges) avoids seams at the joins.
  * The head leads the 0° ray by `lead` degrees; the tail trails counter-clockwise behind it.
  */
-function comet(size: number, g: AccentStops, { lead, alpha, layers }: { lead: number; alpha: number; layers: number }): Wedge[] {
+function comet(size: number, g: AccentStops, { lead, alpha, layers, tail = tailAngle, hot = true }: { lead: number; alpha: number; layers: number; tail?: number; hot?: boolean }): Wedge[] {
   const c = size / 2
   const rad = size / 2 + 2
   const profile = (u: number) => alpha * Math.pow(1 - u, 2.2)
@@ -227,14 +242,14 @@ function comet(size: number, g: AccentStops, { lead, alpha, layers }: { lead: nu
     const u = Math.pow(k / layers, 1.5)
     const delta = 1 - (1 - profile(prev)) / (1 - profile(u))
     const from = lead
-    const to = -tailAngle * u
+    const to = -tail * u
     const n = Math.max(2, Math.ceil((from - to) / 6))
     const pts: string[] = []
     for (let i = 0; i <= n; i++) {
       const a = ((from + ((to - from) * i) / n) * Math.PI) / 180
       pts.push(`${(c + Math.cos(a) * rad).toFixed(2)} ${(c + Math.sin(a) * rad).toFixed(2)}`)
     }
-    out.push({ d: `M${c} ${c} L${pts.join(' L')} Z`, fill: cometColor((prev + u) / 2, g), opacity: Math.max(0, Math.min(1, delta)) })
+    out.push({ d: `M${c} ${c} L${pts.join(' L')} Z`, fill: cometColor((prev + u) / 2, g, hot), opacity: Math.max(0, Math.min(1, delta)) })
     prev = u
   }
   // Longest first, so the white head is drawn last and sits on top.

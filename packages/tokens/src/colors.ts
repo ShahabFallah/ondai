@@ -4,36 +4,36 @@
  * The accent ("ion") is reserved for AI states: thinking, streaming, focus on AI inputs.
  */
 
-/** 12-step cool gray scale for dark surfaces (index 0 = darkest). */
+/** 12-step neutral scale for dark surfaces (index 0 = darkest). Barely cool, so it reads as ink, not blue. */
 export const grayDark = [
-  '#07080A', // 0  void background
-  '#0E1013', // 1  surface
-  '#15181C', // 2  elevated
-  '#1C2025', // 3  elevated hover
-  '#242931', // 4  hairline-strong / input bg
-  '#2E343D', // 5  border emphasis
-  '#3A414B', // 6  disabled text on dark
-  '#4B535E', // 7
-  '#5D636B', // 8  tertiary text
-  '#7B828B', // 9
-  '#9BA1A9', // 10 secondary text
-  '#EDEFF2', // 11 primary text
+  '#09090B', // 0  void background
+  '#111113', // 1  surface
+  '#18181B', // 2  elevated / muted fill
+  '#1F1F23', // 3  elevated hover
+  '#26262B', // 4  pressed / track
+  '#303036', // 5  border emphasis
+  '#45454D', // 6  disabled text on dark
+  '#5A5A63', // 7
+  '#7D7D86', // 8  tertiary text (4.6:1 on bg)
+  '#93939B', // 9
+  '#ADADB5', // 10 secondary text
+  '#EDEDEF', // 11 primary text
 ] as const
 
-/** 12-step cool gray scale for light surfaces (index 0 = lightest). */
+/** 12-step neutral scale for light surfaces (index 0 = lightest). */
 export const grayLight = [
   '#FAFAFA', // 0  paper background
   '#FFFFFF', // 1  surface
-  '#F3F4F6', // 2  elevated
-  '#ECEEF1', // 3  elevated hover
-  '#E3E6EA', // 4  input bg
-  '#D4D8DE', // 5  border emphasis
-  '#B9BFC7', // 6  disabled
-  '#A0A7B0', // 7
-  '#8A9099', // 8  tertiary text
-  '#6F757E', // 9
-  '#5C6168', // 10 secondary text
-  '#0B0C0E', // 11 primary text
+  '#F4F4F5', // 2  elevated / muted fill
+  '#EDEDEF', // 3  elevated hover
+  '#E4E4E7', // 4  pressed / track
+  '#D4D4D8', // 5  border emphasis
+  '#A1A1AA', // 6  disabled
+  '#8B8B93', // 7
+  '#6B6B74', // 8  tertiary text (5.1:1 on bg)
+  '#5A5A62', // 9
+  '#4B4B53', // 10 secondary text
+  '#09090B', // 11 primary text
 ] as const
 
 export interface AccentStops {
@@ -52,7 +52,7 @@ export const accents = {
   mono: { a: '#FFFFFF', b: '#C9CED6', c: '#9BA1A9' },
 } as const satisfies Record<string, AccentStops>
 
-export const monoLight: AccentStops = { a: '#0B0C0E', b: '#3A414B', c: '#6F757E' }
+export const monoLight: AccentStops = { a: '#09090B', b: '#3F3F46', c: '#71717A' }
 
 export type AccentName = keyof typeof accents | 'custom'
 

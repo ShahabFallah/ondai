@@ -1,66 +1,57 @@
 import Link from 'next/link'
-import { AlignLeft, ArrowRight, Command, MessageSquareReply, PenLine, SlidersHorizontal, Tags, TextCursorInput } from 'lucide-react'
-import { LiveDemo } from '@/components/site/LiveDemo'
-import type { DemoName } from '@/components/site/demos'
-import { BentoCard, CardMeta, Screen, type Icon } from './Bento'
-import { AutoType } from './AutoType'
-import { CommandBarStage } from './CommandBarStage'
+import { ArrowUpRight } from 'lucide-react'
+import { GooLink } from './GooLink'
 import { Reveal } from './Reveal'
+import { ReelVideo } from './ReelVideo'
+import './reels.css'
 
-interface Item {
-  name: DemoName
-  area: string
+interface Reel {
+  name: string
   title: string
   line: string
-  screen: string
-  icon: Icon
-  /** Typed into the demo once when the card comes into view. */
-  auto?: string
-  /** Chat-like demos sit at the bottom of their screen. */
-  bottom?: boolean
-  wide?: boolean
-  props?: Record<string, unknown>
+  /** What the clip shows, for screen readers. */
+  label: string
+  /** The recording's width and height (scripts/record-reels.mjs), so the card holds its shape before it loads. */
+  size: [number, number]
 }
 
-const items: Item[] = [
-  { name: 'smart-input', area: 'si', title: 'SmartInput', line: 'Forms that fill themselves.', screen: 'New expense', icon: TextCursorInput, auto: 'Lunch at Nopa, 24 dollars yesterday', props: { presentation: 'card' } },
-  { name: 'summarize', area: 'sum', title: 'Summarize', line: 'Forty messages, four lines.', screen: '#launch-week', icon: AlignLeft },
-  { name: 'natural-filter', area: 'nf', title: 'NaturalFilter', line: 'Search the way you talk.', screen: 'Dinner nearby', icon: SlidersHorizontal, auto: 'cheap italian open now within 2 km', props: { presentation: 'bar' } },
-  { name: 'smart-reply', area: 'sr', title: 'SmartReply', line: 'The reply, already written.', screen: 'Sam', icon: MessageSquareReply, bottom: true },
-  { name: 'rewrite', area: 'rw', title: 'Rewrite', line: 'Your draft, but better.', screen: 'Draft to Priya', icon: PenLine, wide: true },
-  { name: 'auto-tag', area: 'at', title: 'AutoTag', line: 'Tags that pick themselves.', screen: 'Notes', icon: Tags, wide: true },
+// Order is the reading order; reels.css places them (one wide clip, then pairs of mixed widths).
+const reels: Reel[] = [
+  { name: 'command-bar', title: 'Command bar', line: 'Say it. The app does it.', label: 'Typing "Remind me to call Sam tomorrow" into a command bar, which creates the task Call Sam, due tomorrow.', size: [600, 375] },
+  { name: 'smart-reply', title: 'Smart reply', line: 'The reply, already written.', label: 'A message arrives asking about a printout and a ride; three replies are suggested and the first is sent.', size: [380, 484] },
+  { name: 'auto-tag', title: 'Auto tag', line: 'Tags that pick themselves.', label: 'Writing a note about a train to Lyon for a workshop; the tags travel, work and finance are suggested and accepted.', size: [380, 444] },
+  { name: 'rewrite', title: 'Rewrite', line: 'Your draft, made better.', label: 'A rough draft about a budget is rewritten in a formal tone, shown as a diff, and accepted.', size: [640, 366] },
+  { name: 'smart-input', title: 'Smart input', line: 'Forms that fill themselves.', label: 'Typing "Lunch with Sam at Nopa, 24 dollars" fills merchant, amount, currency and category.', size: [480, 416] },
+  { name: 'natural-filter', title: 'Natural filter', line: 'Search the way you talk.', label: 'Typing "cheap italian open now within 2 km" becomes four filters and narrows the list to two restaurants.', size: [600, 350] },
 ]
 
 export function Showcase() {
   return (
-    <section className="section home-section" aria-labelledby="try">
+    <section className="section home-section" aria-labelledby="reels-title">
       <div className="wrap">
         <header className="home-head home-head-row">
           <div>
-            <h2 id="try" className="home-h2">
-              Go on, poke them.
+            <h2 id="reels-title" className="home-h2">
+              Watch them work.
             </h2>
-            <p className="home-sub">Real components on a scripted model. Type anything.</p>
+            <p className="home-sub">Real components, recorded as they run. On a phone, the device&rsquo;s own model answers.</p>
           </div>
-          <Link href="/playground" className="btn btn-secondary btn-sm home-head-link">
-            All 26 components
-            <ArrowRight size={14} strokeWidth={1.75} />
-          </Link>
+          <GooLink href="/docs/components">All components</GooLink>
         </header>
-        <Reveal className="bento reveal">
-          <BentoCard area="cb" className="bento-wide">
-            <CommandBarStage />
-            <CardMeta name="command-bar" title="CommandBar" line="Say it. The app does it." icon={Command} />
-          </BentoCard>
-          {items.map((item) => (
-            <BentoCard key={item.name} area={item.area}>
-              <AutoType prompt={item.auto ?? ''} className="bento-stage" disabled={!item.auto}>
-                <Screen label={item.screen} className={`${item.bottom ? 'bento-screen-bottom' : ''} ${item.wide ? 'bento-screen-wide' : ''}`}>
-                  <LiveDemo name={item.name} title={item.title} props={item.props} />
-                </Screen>
-              </AutoType>
-              <CardMeta name={item.name} title={item.title} line={item.line} icon={item.icon} />
-            </BentoCard>
+        <Reveal className="reels reveal">
+          {reels.map((r) => (
+            <Link key={r.name} href={`/docs/components/${r.name}`} className="reel" data-reel={r.name}>
+              <span className="reel-frame" style={{ aspectRatio: `${r.size[0]} / ${r.size[1]}` }}>
+                <ReelVideo name={r.name} label={r.label} />
+              </span>
+              <span className="reel-cap">
+                <span className="reel-text">
+                  <span className="reel-title">{r.title}</span>
+                  <span className="reel-line">{r.line}</span>
+                </span>
+                <ArrowUpRight className="reel-arrow" size={16} strokeWidth={1.75} aria-hidden />
+              </span>
+            </Link>
           ))}
         </Reveal>
       </div>

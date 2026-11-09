@@ -6,6 +6,9 @@ import { useOndai } from '../context'
 import { OndaiError } from '../errors'
 import type { ProviderId } from '../types'
 import { useTask, type TaskController } from './use-task'
+import { rejectsSchema, withJsonInstructions } from '../structured-prompt'
+
+export { rejectsSchema, withJsonInstructions }
 
 export interface UseStructuredOptions<T> {
   schema: z.ZodType<T>
@@ -68,7 +71,7 @@ export function useStructured<T>(options: UseStructuredOptions<T>): StructuredSt
           }
           /** Strict parse failed (e.g. an off-list enum from a model without constrained decoding): refine the raw JSON, then validate. */
           const recover = (e: unknown): { value: T; conf: number } | null => {
-            const raw = NoObjectGeneratedError.isInstance(e) ? e.text : undefined
+            const raw = NoObjectGeneratedError.isInstance(e) ? e.text : e instanceof OndaiError && typeof e.raw === 'string' ? e.raw : undefined
             if (!raw) return null
             const json = extractJson(raw)
             if (!json) return null
@@ -77,7 +80,33 @@ export function useStructured<T>(options: UseStructuredOptions<T>): StructuredSt
             if (!parsed.success) return null
             return { value: parsed.data, conf: Math.min(0.8, refined.conf ?? 0.8) }
           }
-          const attempt = async (budget: number) => {
+          // Providers that reject or ignore a response schema get it in the instructions instead.
+          let mode: 'schema' | 'prompt' = ctx.resolved.adapter.structuredOutput ?? 'schema'
+          const promptAttempt = async (budget: number) => {
+            const result = await generateText({
+              model: ctx.resolved.adapter.languageModel!(),
+              system: withJsonInstructions(system, o.schema),
+              prompt: truncateToBudget(input, budget),
+              abortSignal: ctx.signal,
+              temperature: o.temperature ?? 0,
+            })
+            const json = extractJson(result.text)
+            const parsed = json ? o.schema.safeParse(json) : null
+            if (parsed?.success) return parsed.data
+            // Not valid as it stands: `recover` refines the raw JSON and validates again.
+            throw new OndaiError('invalid-output', 'The model reply did not match the schema.', { raw: result.text, provider: ctx.resolved.provider })
+          }
+          const attempt = async (budget: number): Promise<T> => {
+            if (mode === 'prompt') return promptAttempt(budget)
+            try {
+              return await schemaAttempt(budget)
+            } catch (e) {
+              if (!rejectsSchema(e)) throw e
+              mode = 'prompt'
+              return promptAttempt(budget)
+            }
+          }
+          const schemaAttempt = async (budget: number) => {
             const result = await generateText({
               model: ctx.resolved.adapter.languageModel!(),
               system,

@@ -1,5 +1,5 @@
 /* ------------------------------------------------------------------ */
-/* Hero (docs/decisions/0008-site-light-and-dark.md). A calm centred intro on   */
+/* Hero. A calm centred intro on                                       */
 /* the ambient gradient: live effect tiles, a headline with small       */
 /* screens inside it, a split CTA, then the product shot that rises.    */
 /* Everything is prefixed `hx-`. Surfaces and text use the site tokens; */
@@ -9,6 +9,18 @@
 .hx {
   /* Local materials, light. */
   --hx-screen: #0b0b0e;
+  /* The chip frame ("thinks"): a dark, glowing die in both themes (chips are dark); what changes is the
+     board it sits on. Screen, pins and the drop under the die follow the theme. `r g b` values take an alpha. */
+  --hx-chip-screen: linear-gradient(180deg, #f7f7f9 0%, #ececf0 100%);
+  --hx-chip-die-1: #3c3c43;
+  --hx-chip-die-2: #202025;
+  --hx-chip-die-3: #141417;
+  --hx-chip-rim: 255 255 255;
+  --hx-chip-shade: 255 255 255;
+  --hx-chip-ink: 255 255 255;
+  --hx-chip-line: 0.08;
+  --hx-chip-pin: 40 40 48;
+  --hx-chip-drop: 0.32;
   --hx-tag-bg: #5e5e66;
   --hx-tag-fg: #ffffff;
   --hx-frame-shadow:
@@ -34,6 +46,16 @@
 }
 .dark .hx {
   --hx-screen: #070709;
+  --hx-chip-screen: #0a0a0c;
+  --hx-chip-die-1: #34343a;
+  --hx-chip-die-2: #1c1c20;
+  --hx-chip-die-3: #121214;
+  --hx-chip-rim: 255 255 255;
+  --hx-chip-shade: 255 255 255;
+  --hx-chip-ink: 255 255 255;
+  --hx-chip-line: 0.07;
+  --hx-chip-pin: 255 255 255;
+  --hx-chip-drop: 0;
   --hx-tag-bg: #2a2a30;
   --hx-tag-fg: var(--fg);
   --hx-frame-shadow:
@@ -80,225 +102,6 @@
   color: var(--fg-3);
 }
 
-/* Effect tiles */
-.hx-tiles {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin: 0 0 clamp(30px, 4vw, 44px);
-  padding: 0;
-  list-style: none;
-}
-.hx-tile-wrap {
-  --o: 40ms;
-  position: relative;
-}
-.hx-tile {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
-  overflow: hidden;
-  background: var(--hx-screen);
-  box-shadow: var(--hx-frame-shadow);
-  outline-offset: 3px;
-  transition:
-    transform 0.35s var(--ease-spring),
-    box-shadow 0.3s var(--ease-out);
-}
-.hx-tile[data-tone='light'] {
-  background: linear-gradient(180deg, var(--surface), var(--elevated));
-}
-.hx-tile::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  border-radius: inherit;
-  pointer-events: none;
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.22);
-}
-.hx-tile-wrap:hover .hx-tile,
-.hx-tile:focus-visible {
-  transform: translateY(-4px);
-}
-.hx-tip {
-  position: absolute;
-  bottom: calc(100% + 10px);
-  left: 50%;
-  z-index: 5;
-  padding: 5px 9px;
-  border-radius: var(--r-sm);
-  background: var(--ink);
-  color: var(--ink-fg);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1.2;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  translate: -50% 4px;
-  box-shadow: var(--shadow-float);
-  transition:
-    opacity 0.2s var(--ease-out),
-    translate 0.3s var(--ease-out);
-}
-.hx-tile-wrap:hover .hx-tip,
-.hx-tile-wrap:focus-within .hx-tip {
-  opacity: 1;
-  translate: -50% -4px;
-}
-
-/* Tile: VoiceInput */
-.hx-voice,
-.hx-voice > div {
-  width: 100%;
-  height: 100%;
-}
-.hx-voice-box {
-  display: grid;
-  place-items: center;
-  width: 100%;
-  height: 100%;
-  background:
-    radial-gradient(80% 60% at 50% 110%, rgba(139, 124, 255, 0.35), transparent 70%),
-    var(--hx-screen);
-}
-.hx-bars {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  height: 22px;
-  margin-top: -8px;
-}
-.hx-bars span {
-  width: 3px;
-  height: 100%;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.92);
-  transform-origin: 50% 50%;
-  animation: hx-bar 1.1s ease-in-out calc(var(--b) * -0.23s) infinite alternate;
-}
-.hx-bars span:nth-child(odd) {
-  animation-duration: 0.8s;
-}
-@keyframes hx-bar {
-  from {
-    transform: scaleY(0.22);
-  }
-  to {
-    transform: scaleY(1);
-  }
-}
-
-/* Tile: IonBorder */
-.hx-beam {
-  display: grid;
-  place-items: center;
-  width: 100%;
-  height: 100%;
-}
-.hx-chip {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: var(--r-sm);
-  background: var(--ink);
-  box-shadow:
-    0 0 0 3px color-mix(in oklab, var(--ink) 10%, transparent),
-    0 4px 10px -4px rgba(0, 0, 0, 0.4);
-}
-.hx-chip-core {
-  font-size: 11px;
-  font-weight: 650;
-  letter-spacing: -0.01em;
-  color: var(--ink-fg);
-}
-
-/* Tile: AgentAvatar */
-.hx-face {
-  display: grid;
-  place-items: center;
-  width: 100%;
-  height: 100%;
-}
-.hx-face-body {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 40px;
-  border-radius: 15px 15px 14px 14px;
-  background:
-    radial-gradient(90% 80% at 30% 18%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0) 55%),
-    linear-gradient(160deg, #cfc9ff 0%, #a69bff 55%, #8b7cff 100%);
-  box-shadow:
-    inset 0 -4px 8px rgba(80, 60, 200, 0.25),
-    0 6px 14px -6px rgba(110, 90, 255, 0.55);
-  animation: hx-breathe 4s ease-in-out infinite;
-}
-.hx-face-eyes {
-  display: flex;
-  gap: 9px;
-  margin-top: 2px;
-  animation: hx-glance 5.6s var(--ease-soft) infinite;
-}
-.hx-face-eyes span {
-  width: 5px;
-  height: 8px;
-  border-radius: 3px;
-  background: #121216;
-  animation: hx-blink 4.2s ease-in-out infinite;
-}
-@keyframes hx-blink {
-  0%,
-  90%,
-  100% {
-    transform: scaleY(1);
-  }
-  94% {
-    transform: scaleY(0.12);
-  }
-}
-@keyframes hx-glance {
-  0%,
-  18% {
-    transform: translate(0, 0);
-  }
-  24%,
-  44% {
-    transform: translate(3px, -1px);
-  }
-  50%,
-  70% {
-    transform: translate(-3px, 1px);
-  }
-  76%,
-  100% {
-    transform: translate(0, 0);
-  }
-}
-@keyframes hx-breathe {
-  0%,
-  100% {
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(-1px) scale(1.025);
-  }
-}
-
-/* Tile: ImageReveal */
-.hx-reveal {
-  width: 100%;
-}
-
 /* Headline --------------------------------------------------------- */
 .hx-title {
   display: flex;
@@ -322,6 +125,9 @@
 }
 .hx-word {
   display: inline-block;
+}
+.hx-frame {
+  filter: grayscale(1);
 }
 .hx-frame-wrap {
   position: relative;
@@ -348,24 +154,19 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.18),
     inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
-.hx-frame-fill {
+/* The globe: a canvas filling the frame, faded in once it has drawn. */
+.hx-frame-globe {
+  background: var(--hx-chip-screen);
+}
+.hx-globe {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: center;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.9s var(--ease-lux);
 }
-.hx-frame-fill::before {
-  content: '';
-  position: absolute;
-  inset: -20%;
-  background:
-    radial-gradient(40% 50% at 30% 60%, rgba(124, 247, 255, 0.22), transparent 70%),
-    radial-gradient(40% 50% at 72% 40%, rgba(139, 124, 255, 0.3), transparent 70%);
-  opacity: 0.35;
-  transition: opacity 0.6s var(--ease-out);
-}
-.hx-frame-fill[data-state='thinking']::before,
-.hx-frame-fill[data-state='listening']::before {
+.hx-globe[data-ready='true'] {
   opacity: 1;
 }
 
@@ -599,37 +400,11 @@
   gap: 10px;
   margin-top: 28px;
 }
-.hx-cta {
-  display: inline-flex;
-  align-items: center;
+/* The two CTAs are site keys (.btn in global.css), a step taller here. */
+.hx-cta,
+.hx-secondary {
   height: 44px;
   padding-inline: 18px;
-  border-radius: var(--r-md);
-  background: var(--ink);
-  color: var(--ink-fg);
-  font-size: 14px;
-  font-weight: 500;
-  white-space: nowrap;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.25),
-    0 0 0 1px color-mix(in oklab, var(--ink) 80%, black),
-    0 10px 20px -10px rgba(0, 0, 0, 0.55);
-  transition:
-    background-color 0.2s,
-    scale 0.12s;
-}
-.dark .hx-cta {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.8),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.1),
-    0 10px 24px -10px rgba(255, 255, 255, 0.18);
-}
-.hx-cta:hover {
-  background: color-mix(in oklab, var(--ink) 90%, var(--ink-fg));
-}
-.hx-cta:active {
-  scale: 0.97;
 }
 .hx-cta-roll {
   position: relative;
@@ -657,34 +432,13 @@
 .hx-cta-a {
   margin-right: 12px;
   padding-right: 12px;
-  border-right: 1px solid color-mix(in oklab, var(--ink-fg) 22%, transparent);
-  color: color-mix(in oklab, var(--ink-fg) 72%, transparent);
+  border-right: 1px solid color-mix(in oklab, currentColor 22%, transparent);
+  color: color-mix(in oklab, currentColor 66%, transparent);
 }
 .hx-cta-b {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-}
-.hx-secondary {
-  display: inline-flex;
-  align-items: center;
-  height: 44px;
-  padding-inline: 18px;
-  border-radius: var(--r-md);
-  background: color-mix(in oklab, var(--fg) 6%, transparent);
-  color: var(--fg);
-  font-size: 14px;
-  font-weight: 500;
-  white-space: nowrap;
-  transition:
-    background-color 0.2s,
-    scale 0.12s;
-}
-.hx-secondary:hover {
-  background: color-mix(in oklab, var(--fg) 10%, transparent);
-}
-.hx-secondary:active {
-  scale: 0.97;
 }
 .hx-proof {
   display: inline-flex;
@@ -699,25 +453,30 @@
   line-height: 1.35;
   color: var(--fg-2);
 }
-.hx-live-dot {
-  flex: none;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--ion-a), var(--ion-b));
-  box-shadow: 0 0 0 3px color-mix(in oklab, var(--ion-b) 18%, transparent);
+.hx-marks {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-right: 4px;
+  padding-right: 11px;
+  border-right: 1px solid var(--line-strong);
+  color: var(--fg);
+}
+.hx-marks svg {
+  width: 14px;
+  height: 14px;
 }
 
 /* Entrance: one sequence, ~1 s. ------------------------------------ */
 .hx-in {
-  animation: hx-rise 560ms var(--ease-out) both;
-  animation-delay: calc(var(--i, 0) * 36ms + var(--o, 0ms));
+  animation: hx-rise 1100ms var(--ease-lux) both;
+  animation-delay: calc(120ms + var(--i, 0) * 70ms + var(--o, 0ms));
 }
 @keyframes hx-rise {
   from {
     opacity: 0;
-    transform: translateY(14px);
-    filter: blur(8px);
+    transform: translateY(18px);
+    filter: blur(10px);
   }
   to {
     opacity: 1;
@@ -726,454 +485,51 @@
   }
 }
 
-/* Product stage ---------------------------------------------------- */
-.hx-stage {
-  --px: 0;
-  --py: 0;
-  position: relative;
-  width: min(1200px, calc(100% - 32px));
-  height: clamp(560px, 50vw, 660px);
+/* The still under the hero ---------------------------------------- */
+/* A transparent PNG: no frame, plate or mask; it floats on the page's own light. */
+.hx-still {
+  width: min(1040px, 100% - 32px);
   margin: 0 auto;
 }
-.hx-stage-panel {
-  position: absolute;
-  inset: 0;
-  border-radius: var(--r-lg);
-  background: linear-gradient(
-    180deg,
-    color-mix(in oklab, var(--surface) 55%, transparent) 0%,
-    color-mix(in oklab, var(--surface) 0%, transparent) 92%
-  );
-  box-shadow:
-    inset 0 0 0 1px var(--line),
-    inset 0 1px 0 var(--edge);
-  -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
-  mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
-}
-.hx-stage-glow {
-  position: absolute;
-  top: 2%;
-  left: 50%;
-  width: min(900px, 100%);
-  aspect-ratio: 1.4;
-  translate: -50% 0;
-  background: var(--hx-glow);
-  pointer-events: none;
-}
-.hx-stage-phone {
-  position: absolute;
-  inset: 56px 0 0;
-  display: flex;
-  justify-content: center;
-  perspective: 1400px;
-  -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent 100%);
-  mask-image: linear-gradient(180deg, #000 70%, transparent 100%);
-}
-.hx-phone-beam::before {
-  transition: opacity 0.5s var(--ease-out);
-}
-.hx-phone-beam[data-active='false']::before {
-  opacity: 0;
-}
-.hx-phone-beam {
-  transform: translateY(calc((1 - var(--rise)) * 110px)) rotateX(calc(var(--py) * -2deg))
-    rotateY(calc(var(--px) * 3deg));
-  transform-style: preserve-3d;
-  will-change: transform;
-}
-
-/* The device */
-.hx-phone {
-  position: relative;
-  width: 300px;
-  height: 620px;
-  border-radius: 54px;
-  background: var(--hx-dev-frame);
-  box-shadow: var(--hx-dev-ring), var(--hx-dev-shadow);
-}
-.hx-phone-btn {
-  position: absolute;
-  width: 3px;
-  border-radius: 2px;
-  background: var(--hx-dev-btn);
-}
-.hx-phone-btn-a {
-  top: 118px;
-  left: -2px;
-  height: 26px;
-}
-.hx-phone-btn-b {
-  top: 166px;
-  left: -2px;
-  height: 52px;
-}
-.hx-phone-btn-c {
-  top: 182px;
-  right: -2px;
-  height: 78px;
-  transform: scaleX(-1);
-}
-.hx-screen {
-  position: absolute;
-  inset: 11px;
-  overflow: hidden;
-  border-radius: 44px;
-  background: var(--hx-screen-bg);
-  box-shadow:
-    0 0 0 3px #050506,
-    0 0 0 3.5px rgba(255, 255, 255, 0.08);
-  color: var(--fg);
-}
-.hx-screen::before {
-  /* Dark until the phone powers on. */
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 6;
-  background: #050506;
-  pointer-events: none;
-}
-.hx-phone[data-on='true'] .hx-screen::before {
-  animation: hx-screen-on 650ms var(--ease-out) both;
-}
-.hx-status {
-  position: absolute;
-  inset: 0 0 auto;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 50px;
-  padding: 0 26px 0 32px;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-.hx-island {
-  position: absolute;
-  top: 11px;
-  left: 50%;
-  width: 92px;
-  height: 27px;
-  translate: -50% 0;
-  border-radius: 999px;
-  background: #000;
-}
-.hx-status-r {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.hx-status-r svg {
+.hx-still-pic img {
   display: block;
+  width: 100%;
+  height: auto;
 }
-.hx-ui {
-  --ui-scale: 0.9;
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: calc(100% / var(--ui-scale));
-  height: calc(100% / var(--ui-scale));
-  padding: 66px 14px 16px;
-  transform: scale(var(--ui-scale));
-  transform-origin: top left;
-}
-.hx-topbar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 34px;
-  padding-inline: 4px;
-  opacity: 0;
-}
-.hx-topbar-text {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  text-align: left;
-}
-.hx-topbar-title {
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: -0.01em;
-}
-.hx-topbar-sub {
-  font-size: 12px;
-  line-height: 1;
-  color: var(--fg-3);
-}
-.hx-demo,
-.hx-hints {
-  opacity: 0;
-}
-.hx-hints {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding-top: 2px;
-}
-.hx-hints[hidden] {
-  display: none;
-}
-.hx-hints-label {
-  padding: 6px 10px 2px;
-  font-size: 12px;
-  color: var(--fg-3);
-  text-align: left;
-}
-.hx-hint {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 42px;
-  padding-inline: 10px;
-  border-radius: var(--r-btn);
-  font-size: 14px;
-  text-align: left;
-  color: var(--fg-2);
-  transition:
-    background-color 0.15s,
-    color 0.15s;
-}
-.hx-hint:hover {
-  background: var(--hover);
-  color: var(--fg);
-}
-.hx-hint-icon {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  border-radius: var(--r-sm);
-  background: var(--hover);
-  color: var(--fg-2);
-}
-.hx-home {
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
-  z-index: 5;
-  width: 112px;
-  height: 4px;
-  translate: -50% 0;
-  border-radius: 2px;
-  background: color-mix(in oklab, var(--fg) 85%, transparent);
-}
-.hx-phone[data-on='true'] .hx-topbar {
-  animation: hx-fade-up 420ms var(--ease-out) 450ms both;
-}
-.hx-phone[data-on='true'] .hx-demo,
-.hx-phone[data-on='true'] .hx-hints {
-  animation: hx-fade-up 460ms var(--ease-out) 650ms both;
-}
-@keyframes hx-screen-on {
-  to {
-    opacity: 0;
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .hx-still-pic {
+      animation: hx-still-settle linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 40%;
+    }
   }
 }
-@keyframes hx-fade-up {
+@keyframes hx-still-settle {
   from {
+    transform: translateY(48px);
     opacity: 0;
-    transform: translateY(6px);
   }
   to {
-    opacity: 1;
     transform: none;
+    opacity: 1;
   }
-}
-
-/* Floating cards */
-.hx-float {
-  position: absolute;
-  z-index: 2;
-  width: 256px;
-  opacity: calc(var(--rise) * 1.6 - 0.2);
-  transform: translate3d(
-      calc(var(--px) * var(--depth) * 1px),
-      calc(var(--py) * var(--depth) * 0.7px + (1 - var(--rise)) * var(--lift)),
-      0
-    )
-    rotate(var(--rot));
-  will-change: transform, opacity;
-}
-.hx-float-l {
-  --rot: -4deg;
-  --depth: 16;
-  --lift: 170px;
-  top: 30%;
-  right: calc(50% + 190px);
-}
-.hx-float-r {
-  --rot: 3.5deg;
-  --depth: -12;
-  --lift: 230px;
-  top: 44%;
-  left: calc(50% + 196px);
-}
-.hx-card {
-  position: relative;
-  padding: 14px;
-  border-radius: var(--r-card);
-  background: var(--surface);
-  text-align: left;
-  box-shadow:
-    inset 0 0 0 1px var(--line),
-    inset 0 1px 0 var(--edge),
-    var(--shadow-float),
-    0 40px 70px -40px rgba(0, 0, 0, 0.3);
-}
-.dark .hx-card {
-  background: color-mix(in oklab, var(--surface) 92%, white);
-  box-shadow:
-    inset 0 0 0 1px var(--line-strong),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    var(--shadow-float),
-    0 40px 80px -40px rgba(0, 0, 0, 0.9);
-}
-.hx-float-tag {
-  top: -12px;
-  right: 18px;
-  animation: none;
-}
-.hx-card-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.hx-av {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  border-radius: var(--r-sm);
-  background: linear-gradient(140deg, #f2b8a2, #d9839a);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 600;
-}
-.hx-card-who {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  font-size: 12px;
-  line-height: 1;
-  color: var(--fg-3);
-}
-.hx-card-who b {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--fg);
-}
-.hx-bubble {
-  margin: 12px 0 12px;
-  padding: 9px 12px;
-  border-radius: 12px 12px 12px 4px;
-  background: var(--hover);
-  font-size: 13px;
-  line-height: 1.4;
-  color: var(--fg);
-}
-.hx-card-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 8px;
-  font-size: 12px;
-  color: var(--fg-3);
-}
-.hx-replies {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.hx-replies span,
-.hx-sum li {
-  opacity: clamp(0, (var(--rise) - 0.55 - var(--k) * 0.12) * 5, 1);
-  translate: 0 calc(clamp(0, 1 - (var(--rise) - 0.55 - var(--k) * 0.12) * 5, 1) * 6px);
-}
-.hx-replies span {
-  display: inline-flex;
-  align-items: center;
-  height: 28px;
-  padding-inline: 10px;
-  border-radius: var(--r-sm);
-  background: var(--surface);
-  box-shadow: inset 0 0 0 1px var(--line-strong);
-  font-size: 12.5px;
-  font-weight: 500;
-  color: var(--fg);
-}
-.dark .hx-replies span {
-  background: var(--hover);
-}
-.hx-sum {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 14px 0 12px;
-  padding: 0;
-  list-style: none;
-}
-.hx-sum li {
-  position: relative;
-  padding-left: 16px;
-  font-size: 13px;
-  line-height: 1.35;
-  color: var(--fg);
-}
-.hx-sum li::before {
-  content: '';
-  position: absolute;
-  top: 0.5em;
-  left: 2px;
-  width: 6px;
-  height: 6px;
-  border-radius: 2px;
-  background: linear-gradient(135deg, var(--ion-a), var(--ion-b));
-}
-.hx-card-foot {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding-top: 10px;
-  border-top: 1px solid var(--line);
-  font-size: 12px;
-  color: var(--fg-3);
 }
 
 /* Small screens ---------------------------------------------------- */
-@media (max-width: 960px) {
-  .hx-float {
-    display: none;
-  }
-}
 @media (max-width: 640px) {
   .hx-intro {
     min-height: 0;
     padding: 112px 16px 56px;
   }
   .hx-proof {
-    max-width: 310px;
+    max-width: 330px;
     font-size: 12.5px;
     text-align: left;
   }
   .hx-tag[data-corner='br'] {
     top: calc(100% - 3px);
     left: 6px;
-  }
-  .hx-tiles {
-    gap: 8px;
-  }
-  .hx-tile {
-    width: 56px;
-    height: 56px;
-    border-radius: 14px;
   }
   .hx-tag {
     height: 22px;
@@ -1184,41 +540,22 @@
     width: 11px;
     height: 11px;
   }
-  .hx-stage {
-    height: 560px;
-  }
-  .hx-stage-phone {
-    top: 40px;
+  /* On a phone the still swaps to its own crop (hero-sm), drawn for the column. */
+  .hx-still {
+    width: min(390px, 100%);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hx-in,
   .hx-tag,
-  .hx-bars span,
-  .hx-face-body,
-  .hx-face-eyes,
-  .hx-face-eyes span,
   .hx-mini-caret,
   .hx-mini-dot,
   .hx-mini-sweep {
     animation: none !important;
   }
-  .hx-bars span {
-    transform: scaleY(calc(0.35 + 0.13 * var(--b)));
-  }
-  .hx-tile,
-  .hx-tip,
   .hx-mini-result,
   .hx-cta-face {
     transition: none;
-  }
-  .hx-phone[data-on='true'] .hx-screen::before {
-    animation: none;
-    opacity: 0;
-  }
-  .hx-phone[data-on='true'] :is(.hx-topbar, .hx-demo, .hx-hints) {
-    animation: none;
-    opacity: 1;
   }
 }

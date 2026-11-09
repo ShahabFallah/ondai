@@ -1,6 +1,6 @@
 # ModelDownload
 
-Ion progress line, ring or card with a mono percentage while a model downloads.
+A thin progress line, ring or card with a tabular percentage while a model downloads.
 
 ```bash
 npx ondai add model-download

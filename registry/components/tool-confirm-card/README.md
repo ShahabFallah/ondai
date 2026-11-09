@@ -1,6 +1,6 @@
 # ToolConfirmCard
 
-Approval for any tool call: action, parameters and risk level, with approve / edit / cancel.
+Approval for any tool call: the call as a trace line, then a card with its parameters and deny or confirm.
 
 ```bash
 npx ondai add tool-confirm-card

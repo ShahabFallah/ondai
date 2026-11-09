@@ -77,4 +77,26 @@ describe('parseDate', () => {
     expect(d('10/31')!.date.getDate()).toBe(31)
     expect(d('nothing here')).toBeNull()
   })
+  it('numeric day and month: the part over 12 is the day', () => {
+    const ymd = (s: string, o?: { dayFirst?: boolean }) => {
+      const r = parseDate(s, { now, ...o })!.date
+      return [r.getFullYear(), r.getMonth() + 1, r.getDate()]
+    }
+    expect(ymd('25/10/2026')).toEqual([2026, 10, 25])
+    expect(ymd('10/25/2026')).toEqual([2026, 10, 25])
+    expect(ymd('25.10.2026')).toEqual([2026, 10, 25])
+    expect(ymd('25-10-26')).toEqual([2026, 10, 25])
+    expect(ymd('05/10/2026')).toEqual([2026, 5, 10])
+    expect(ymd('05/10/2026', { dayFirst: true })).toEqual([2026, 10, 5])
+    expect(parseDate('31/02/2026', { now })).toBeNull()
+    const receipt = parseDate('25/10/2026 13:42', { now })!
+    expect([receipt.date.getDate(), receipt.date.getHours(), receipt.date.getMinutes(), receipt.precision]).toEqual([25, 13, 42, 'minute'])
+  })
+  it('reads a zoned ISO timestamp as the same instant', () => {
+    const at = new Date(2026, 9, 25)
+    const r = parseDate(at.toISOString(), { now })!
+    expect(r.date.getTime()).toBe(at.getTime())
+    expect(r.precision).toBe('day')
+    expect(parseDate('2026-10-25T11:42:00+0200', { now })!.date.toISOString()).toBe('2026-10-25T09:42:00.000Z')
+  })
 })

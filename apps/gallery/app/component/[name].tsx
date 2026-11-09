@@ -15,7 +15,7 @@ import { useMetrics } from '@/metrics'
 import { LatencyChip } from '@ondai/registry/components/latency-chip'
 
 export default function ComponentScreen() {
-  const { name } = useLocalSearchParams<{ name: string }>()
+  const { name, state, theme, material } = useLocalSearchParams<{ name: string; state?: string; theme?: string; material?: string }>()
   const t = useTheme()
   const router = useRouter()
   const insets = useSafeAreaInsets()
@@ -23,6 +23,12 @@ export default function ComponentScreen() {
   const prefs = usePrefs()
   const metrics = useMetrics()
   const meta = manifest.find((m) => m.name === name)
+  // Deep links can pin the look for screenshots: ondai-gallery://component/button?theme=paper&material=native
+  const { setPrefs } = prefs
+  useEffect(() => {
+    if (theme === 'void' || theme === 'paper' || theme === 'system') setPrefs({ theme })
+    if (material === 'solid' || material === 'glass' || material === 'native') setPrefs({ material })
+  }, [theme, material, setPrefs])
   useEffect(() => {
     const loader = playgrounds[name as PlaygroundName]
     if (loader) void loader().then((m) => setDef(m.default as PlaygroundDef))
@@ -46,7 +52,7 @@ export default function ComponentScreen() {
           </Pressable>
           {prefs.showLatency && metrics.last ? <LatencyChip latencyMs={metrics.last.latencyMs} tokensPerSecond={metrics.last.tokensPerSecond} provider={metrics.last.provider} /> : null}
         </View>
-        {def ? <Story def={def} /> : <Label>loading…</Label>}
+        {def ? <Story key={state ?? ''} def={def} initialState={state} /> : <Label>loading…</Label>}
       </View>
     </View>
   )

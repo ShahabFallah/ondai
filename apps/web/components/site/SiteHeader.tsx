@@ -2,20 +2,18 @@
 import {
   useCallback,
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
-  type FocusEvent as ReactFocusEvent,
   type KeyboardEvent as ReactKeyboardEvent,
   type PointerEvent as ReactPointerEvent,
-  type ReactNode,
 } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ArrowRight, ArrowUpRight, ChevronDown, Cpu, Download, Feather, Menu, Palette, Plug, Search, Smartphone, X } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, ChevronDown, Cpu, Download, Menu, Palette, Plug, Route, Search, Smartphone, X, type LucideIcon } from 'lucide-react'
 import { useSearchContext } from 'fumadocs-ui/contexts/search'
-import { manifest, type ManifestEntry } from '@ondai/registry/manifest'
+import { aiComponents, displayTitle, GROUPS, groupOf, membersLine } from '@/lib/ai-components'
+import { LoopShot } from './LoopShot'
 import { Logo } from './Logo'
 import { ThemeToggle } from './ThemeToggle'
 import { SmoothScroll } from './SmoothScroll'
@@ -23,70 +21,55 @@ import { gitConfig } from '@/lib/shared'
 import './nav.css'
 
 /**
- * The floating capsule: logo, Docs, Components, Playground, Themes, then Search (Fumadocs dialog, which
- * binds ⌘K), GitHub and the theme toggle. One highlight springs between items under the pointer.
+ * The bar. At the top of a page it is open and transparent across the full width: logo left, links
+ * centred, tools right. Once the page scrolls it gathers into one compact glass bar in the middle.
  *
- * Docs, Components and Playground share ONE dropdown (the Stripe / Vercel morphing menu). The panel stays
- * mounted while the pointer moves between triggers: its x, width and height spring to fit the next
- * content, a caret slides to the trigger, and the contents cross-fade while sliding in the direction of
- * travel (each content sits left or right of the active one by its order, so direction falls out of it).
- * Opening from closed snaps the geometry first and only fades the panel in, so it never flies in.
+ * Docs opens the guides beside a picture of the one under the pointer, with the install command below. Components opens the reference's "Explore"
+ * dropdown: a list of three doors on the left and a large picture on the right that cross-fades, with
+ * a slight settle and blur, to the door under the pointer. A soft highlight slides between the rows.
+ * The pictures are real components composited over our photograph (`scripts/render-stills.mjs`).
+ * How it works is a plain link. Moving between the two triggers swaps the panels in place.
  *
- * Mouse: hover intent (open on enter, close 150 ms after leaving trigger and panel). Touch and keyboard:
- * click toggles; ArrowDown or Tab moves into the panel; Escape closes and returns focus. Route change
- * closes. Below 1024 px: logo, search, theme, menu button and a full-screen sheet.
- * Renders `<SmoothScroll />` so every page with the nav gets the wheel lerp.
+ * Mouse: hover intent (open on enter, close 160 ms after leaving trigger and panel). Touch and keyboard:
+ * click toggles; ArrowDown moves into the list; Escape closes and returns focus. Route change closes.
+ * Below 860 px: logo, search, theme, a menu button and a full-screen sheet.
+ * Renders `<SmoothScroll />` so every page with the nav gets the wheel glide.
  */
 
 const githubUrl = `https://github.com/${gitConfig.user}/${gitConfig.repo}`
 const SHEET_ID = 'site-menu'
-const CLOSE_DELAY = 150
-const EDGE = 12
-const thumb = (name: string) => `/thumbs/${name}.png`
+const CLOSE_DELAY = 160
 
-type MenuId = 'docs' | 'components' | 'playground'
-const MENUS: MenuId[] = ['docs', 'components', 'playground']
-const MENU_LABEL: Record<MenuId, string> = { docs: 'Docs', components: 'Components', playground: 'Playground' }
+type MenuId = 'docs' | 'components'
+const MENUS: MenuId[] = ['docs', 'components']
+const MENU_LABEL: Record<MenuId, string> = { docs: 'Docs', components: 'Components' }
 const menuDomId = (id: MenuId) => `nav-menu-${id}`
 
-// Same order as the docs sidebar (content/docs/components/meta.json).
-const ORDER = [
-  'command-bar', 'smart-input', 'scan-to-data', 'summarize', 'rewrite', 'smart-reply', 'auto-tag', 'semantic-search', 'natural-filter', 'tool-confirm-card', 'voice-input',
-  'availability-gate', 'on-device-badge', 'ion-border', 'streaming-text', 'thinking-indicator', 'skeleton', 'key-hint', 'latency-chip', 'model-download', 'chip', 'button', 'sheet', 'field', 'agent-avatar', 'image-reveal',
-]
-const rank = (name: string) => {
-  const i = ORDER.indexOf(name)
-  return i === -1 ? ORDER.length : i
-}
-const components = manifest.filter((m) => m.hasPlayground).sort((a, b) => rank(a.name) - rank(b.name))
-const features = components.filter((m) => m.category !== 'primitive')
-const primitives = components.filter((m) => m.category === 'primitive')
-const byName = new Map(components.map((m) => [m.name, m] as const))
-const CATEGORY: Record<string, string> = { agentic: 'Agent', input: 'Input', vision: 'Vision', text: 'Text', search: 'Search', organize: 'Organize', voice: 'Voice', primitive: 'Primitive' }
-const DEFAULT_PREVIEW = features[0]?.name ?? 'command-bar'
-const componentsHref = `/docs/components/${DEFAULT_PREVIEW}`
-
-const DOCS = [
-  { href: '/docs/installation', title: 'Installation', line: 'Add Ondai to an Expo app.', Icon: Download },
-  { href: '/docs/core', title: 'Core', line: 'Router, hooks, availability.', Icon: Cpu },
-  { href: '/docs/providers', title: 'Providers', line: 'Apple, Gemini Nano, llama.rn.', Icon: Plug },
-  { href: '/docs/theming', title: 'Theming', line: 'Void, Paper, Glass, your accent.', Icon: Palette },
-  { href: '/docs/device-support', title: 'Device support', line: 'Which phones ship a model.', Icon: Smartphone },
-  { href: '/docs/small-models', title: 'Small models', line: 'Built for 3B and 4K context.', Icon: Feather },
+const GUIDES: { id: string; href: string; title: string; line: string; Icon: LucideIcon }[] = [
+  { id: 'installation', href: '/docs/installation', title: 'Installation', line: 'Add Ondai to an Expo app.', Icon: Download },
+  { id: 'how-it-works', href: '/docs/how-it-works', title: 'How it works', line: 'From install to an answer.', Icon: Route },
+  { id: 'core', href: '/docs/core', title: 'Core runtime', line: 'The router, the hooks, availability.', Icon: Cpu },
+  { id: 'providers', href: '/docs/providers', title: 'Providers', line: 'Apple, Gemini Nano, or a cloud model.', Icon: Plug },
+  { id: 'theming', href: '/docs/theming', title: 'Theming', line: 'Light, dark, glass, your accent.', Icon: Palette },
+  { id: 'device-support', href: '/docs/device-support', title: 'Device support', line: 'Which phones ship a model.', Icon: Smartphone },
 ]
 
-const PLAY = [
-  { name: 'command-bar', line: 'Say it, the app does it.' },
-  { name: 'smart-reply', line: 'Three replies, one tap.' },
-  { name: 'voice-input', line: 'Talk. It types, offline.' },
-]
 
-type Section = 'docs' | 'components' | 'playground' | 'themes' | null
+// One door per group (lib/ai-components.ts), then the whole list. Each door shows its lead component.
+const DOORS: { id: string; href: string; title: string; line: string; lead: string }[] = [
+  ...GROUPS.map((g) => {
+    const members = aiComponents.filter((m) => groupOf(m.category) === g.id)
+    return { id: g.id, href: `/docs/components#ci-${g.id}`, title: g.title, line: membersLine(members.map((m) => displayTitle(m.title))), lead: g.lead }
+  }),
+  { id: 'all', href: '/docs/components', title: 'All components', line: 'Every component, grouped by what it does.', lead: 'summarize' },
+]
+type DoorId = string
+
+type Section = 'docs' | 'components' | 'how' | null
 function sectionOf(pathname: string): Section {
   if (pathname.startsWith('/docs/components')) return 'components'
+  if (pathname.startsWith('/docs/how-it-works')) return 'how'
   if (pathname.startsWith('/docs')) return 'docs'
-  if (pathname.startsWith('/playground')) return 'playground'
-  if (pathname.startsWith('/themes')) return 'themes'
   return null
 }
 
@@ -98,238 +81,129 @@ function GitHubMark({ size = 18 }: { size?: number }) {
   )
 }
 
-/** A dark render in a dark frame: intentional in light mode, native in dark. */
-function Thumb({ name, zoom = false, className }: { name: string; zoom?: boolean; className?: string }) {
+/** One still per theme; CSS shows the one that matches. */
+function Still({ name, className }: { name: string; className?: string }) {
   return (
-    <span className={`nav-thumb${zoom ? ' nav-thumb-zoom' : ''}${className ? ` ${className}` : ''}`}>
-      <img src={thumb(name)} alt="" loading="lazy" decoding="async" draggable={false} />
-    </span>
+    <>
+      <img className={`${className ?? ''} only-light`} src={`/img/stills/${name}-light.webp`} alt="" draggable={false} decoding="async" />
+      <img className={`${className ?? ''} only-dark`} src={`/img/stills/${name}-dark.webp`} alt="" draggable={false} decoding="async" />
+    </>
   )
 }
 
-/* ------------------------------------------------------------------ */
-/* Highlight: one capsule-relative pill that springs between items.     */
-/* ------------------------------------------------------------------ */
-interface Glow {
-  x: number
-  w: number
-  visible: boolean
-  instant: boolean
-}
-function useGlow(host: React.RefObject<HTMLElement | null>) {
-  const [glow, setGlow] = useState<Glow>({ x: 0, w: 0, visible: false, instant: true })
-  const visible = useRef(false)
-  const move = useCallback(
-    (el: HTMLElement | null) => {
-      const h = host.current
-      if (!el || !h) return
-      const x = el.getBoundingClientRect().left - h.getBoundingClientRect().left
-      const w = el.offsetWidth
-      if (visible.current) {
-        setGlow({ x, w, visible: true, instant: false })
-        return
-      }
-      visible.current = true
-      setGlow({ x, w, visible: true, instant: true })
-      requestAnimationFrame(() => requestAnimationFrame(() => setGlow((g) => (g.instant ? { ...g, instant: false } : g))))
-    },
-    [host],
-  )
-  const hide = useCallback(() => {
-    visible.current = false
-    setGlow((g) => (g.visible ? { ...g, visible: false } : g))
-  }, [])
-  return { glow, move, hide }
-}
-
-/* ------------------------------------------------------------------ */
-/* Components preview: two stacked images that cross-fade on hover.      */
-/* ------------------------------------------------------------------ */
-interface Layers {
-  a: string
-  b: string
-  front: 'a' | 'b'
-}
-function usePreview() {
-  const [layers, setLayers] = useState<Layers>({ a: DEFAULT_PREVIEW, b: DEFAULT_PREVIEW, front: 'a' })
-  const wanted = useRef(DEFAULT_PREVIEW)
-  const show = useCallback((name: string) => {
-    if (wanted.current === name) return
-    wanted.current = name
-    const commit = () => {
-      if (wanted.current !== name) return
-      setLayers((l) => {
-        if ((l.front === 'a' ? l.a : l.b) === name) return l
-        return l.front === 'a' ? { ...l, b: name, front: 'b' } : { ...l, a: name, front: 'a' }
-      })
-    }
-    const img = new Image()
-    img.onload = commit
-    img.onerror = commit
-    img.src = thumb(name)
-    if (img.complete && img.naturalWidth > 0) commit()
-  }, [])
-  const shown = layers.front === 'a' ? layers.a : layers.b
-  return { layers, shown, show }
-}
-
-/* ------------------------------------------------------------------ */
-/* Panel contents                                                       */
-/* ------------------------------------------------------------------ */
 function ComponentsMenu({ onNavigate }: { onNavigate: () => void }) {
-  const { layers, shown, show } = usePreview()
-  const current: ManifestEntry | undefined = byName.get(shown)
-  const variantGroup = current ? Object.entries(current.variants)[0] : undefined
+  const [hot, setHot] = useState<DoorId>(DOORS[0]!.id)
+  const listRef = useRef<HTMLUListElement>(null)
+  const [mark, setMark] = useState<{ y: number; h: number } | null>(null)
+
+  const point = (id: DoorId, el: HTMLElement) => {
+    setHot(id)
+    const list = listRef.current
+    if (!list) return
+    setMark({ y: el.offsetTop, h: el.offsetHeight })
+  }
+
+  // Rest the highlight on the first door when the menu mounts.
+  useEffect(() => {
+    const first = listRef.current?.querySelector<HTMLElement>('.mm-door')
+    if (first) setMark({ y: first.offsetTop, h: first.offsetHeight })
+  }, [])
+
   return (
-    <div className="mm-components">
-      <div className="mm-col">
-        <p className="mm-heading">Features</p>
-        <ul className="mm-feats">
-          {features.map((m) => (
-            <li key={m.name}>
-              <Link
-                href={`/docs/components/${m.name}`}
-                className="mm-feat"
-                data-hot={shown === m.name}
-                onPointerEnter={() => show(m.name)}
-                onFocus={() => show(m.name)}
-                onClick={onNavigate}
-              >
-                <Thumb name={m.name} zoom />
-                <span className="mm-feat-text">
-                  <span className="mm-title">{m.title}</span>
-                  <span className="mm-sub">{CATEGORY[m.category] ?? m.category}</span>
-                </span>
-              </Link>
-            </li>
-          ))}
-          <li>
-            <Link href={componentsHref} className="mm-feat mm-feat-all" onClick={onNavigate}>
-              <span className="mm-feat-all-icon" aria-hidden="true">
-                <ArrowRight size={15} />
+    <div className="mm-grid">
+      <ul ref={listRef} className="mm-doors">
+        <span className="mm-mark" aria-hidden="true" style={mark ? ({ '--y': `${mark.y}px`, '--h': `${mark.h}px` } as CSSProperties) : undefined} data-on={!!mark} />
+        {DOORS.map((d) => (
+          <li key={d.id}>
+            <Link
+              href={d.href}
+              className="mm-door"
+              data-hot={hot === d.id}
+              onPointerEnter={(e) => point(d.id, e.currentTarget)}
+              onFocus={(e) => point(d.id, e.currentTarget)}
+              onClick={onNavigate}
+            >
+              <span className="mm-door-title">
+                {d.title}
+                {d.id === 'all' ? <ArrowRight size={14} strokeWidth={2} aria-hidden="true" /> : null}
               </span>
-              <span className="mm-feat-text">
-                <span className="mm-title">All components</span>
-                <span className="mm-sub">{components.length} and counting</span>
-              </span>
+              <span className="mm-door-line">{d.line}</span>
             </Link>
           </li>
-        </ul>
-        <p className="mm-heading">Primitives</p>
-        <ul className="mm-prims">
-          {primitives.map((m) => (
-            <li key={m.name}>
-              <Link
-                href={`/docs/components/${m.name}`}
-                className="mm-prim"
-                data-hot={shown === m.name}
-                onPointerEnter={() => show(m.name)}
-                onFocus={() => show(m.name)}
-                onClick={onNavigate}
-              >
-                {m.title}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className="mm-preview">
-        <span className="nav-thumb mm-preview-media">
-          <img src={thumb(layers.a)} alt="" data-front={layers.front === 'a'} draggable={false} />
-          <img src={thumb(layers.b)} alt="" data-front={layers.front === 'b'} draggable={false} />
-        </span>
-        <div className="mm-preview-text" key={shown}>
-          <p className="mm-preview-title">
-            {current?.title ?? shown}
-            <span className="mm-tag">{CATEGORY[current?.category ?? ''] ?? ''}</span>
-          </p>
-          <p className="mm-preview-desc">{current?.description}</p>
-          {variantGroup ? (
-            <ul className="mm-variants" aria-label={`${variantGroup[0]} options`}>
-              {variantGroup[1].slice(0, 5).map((v) => (
-                <li key={v}>{v}</li>
-              ))}
-            </ul>
-          ) : null}
-        </div>
-        <div className="mm-preview-actions">
-          <Link href={`/playground/${shown}`} className="mm-cta" onClick={onNavigate}>
-            Try it live
-            <ArrowRight size={14} aria-hidden="true" />
-          </Link>
-          <Link href={`/docs/components/${shown}`} className="mm-ghost" onClick={onNavigate}>
-            Docs
-          </Link>
-        </div>
+        ))}
+      </ul>
+      <div className="mm-pic mm-pic-loop" aria-hidden="true">
+        {DOORS.map((d) => (
+          <span key={d.id} className="mm-pic-layer" data-on={hot === d.id}>
+            {/* The lead component's still, shown whole on the same ground as the picture. */}
+            <LoopShot name={d.lead} loop={false} />
+          </span>
+        ))}
       </div>
     </div>
   )
 }
 
 function DocsMenu({ onNavigate }: { onNavigate: () => void }) {
+  const [hot, setHot] = useState(GUIDES[0]!.id)
+  const listRef = useRef<HTMLUListElement>(null)
+  const [mark, setMark] = useState<{ y: number; h: number } | null>(null)
+
+  const point = (id: string, el: HTMLElement) => {
+    setHot(id)
+    setMark({ y: el.offsetTop, h: el.offsetHeight })
+  }
+
+  useEffect(() => {
+    const first = listRef.current?.querySelector<HTMLElement>('.mm-guide')
+    if (first) setMark({ y: first.offsetTop, h: first.offsetHeight })
+  }, [])
+
   return (
     <div className="mm-docs">
-      <ul className="mm-docs-grid">
-        {DOCS.map(({ href, title, line, Icon }) => (
-          <li key={href}>
-            <Link href={href} className="mm-doc" onClick={onNavigate}>
-              <span className="mm-doc-icon" aria-hidden="true">
-                <Icon size={17} strokeWidth={1.75} />
-              </span>
-              <span className="mm-feat-text">
-                <span className="mm-title">{title}</span>
-                <span className="mm-sub">{line}</span>
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <div className="mm-grid mm-grid-docs">
+        <ul ref={listRef} className="mm-guides">
+          <span className="mm-mark" aria-hidden="true" style={mark ? ({ '--y': `${mark.y}px`, '--h': `${mark.h}px` } as CSSProperties) : undefined} data-on={!!mark} />
+          {GUIDES.map(({ id, href, title, line, Icon }) => (
+            <li key={href}>
+              <Link
+                href={href}
+                className="mm-guide"
+                data-hot={hot === id}
+                onPointerEnter={(e) => point(id, e.currentTarget)}
+                onFocus={(e) => point(id, e.currentTarget)}
+                onClick={onNavigate}
+              >
+                <span className="mm-guide-icon" aria-hidden="true">
+                  <Icon size={16} strokeWidth={1.6} />
+                </span>
+                <span className="mm-guide-text">
+                  <span className="mm-door-title">{title}</span>
+                  <span className="mm-door-line">{line}</span>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <div className="mm-pic" aria-hidden="true">
+          {GUIDES.map((g) => (
+            <span key={g.id} className="mm-pic-layer" data-on={hot === g.id}>
+              <Still name={`docs-${g.id}`} />
+            </span>
+          ))}
+        </div>
+      </div>
       <div className="mm-foot">
         <code className="mm-cmd">
           <span aria-hidden="true">$ </span>npx ondai init
         </code>
         <Link href="/docs" className="mm-cta" onClick={onNavigate}>
           Read the docs
-          <ArrowRight size={14} aria-hidden="true" />
+          <ArrowRight size={14} strokeWidth={2} aria-hidden="true" />
         </Link>
       </div>
     </div>
   )
-}
-
-function PlaygroundMenu({ onNavigate }: { onNavigate: () => void }) {
-  return (
-    <div className="mm-play">
-      <ul className="mm-play-grid">
-        {PLAY.map(({ name, line }) => (
-          <li key={name}>
-            <Link href={`/playground/${name}`} className="mm-play-card" onClick={onNavigate}>
-              <Thumb name={name} />
-              <span className="mm-title">{byName.get(name)?.title ?? name}</span>
-              <span className="mm-sub">{line}</span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-      <div className="mm-foot">
-        <span className="mm-foot-note">Every prop, live in the browser.</span>
-        <Link href="/playground" className="mm-cta" onClick={onNavigate}>
-          Open the playground
-          <ArrowRight size={14} aria-hidden="true" />
-        </Link>
-      </div>
-    </div>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/* Header                                                               */
-/* ------------------------------------------------------------------ */
-interface Geo {
-  x: number
-  w: number
-  h: number
-  caret: number
 }
 
 export function SiteHeader() {
@@ -338,34 +212,15 @@ export function SiteHeader() {
   const search = useSearchContext()
   const [scrolled, setScrolled] = useState(false)
   const [sheetOpen, setSheetOpen] = useState(false)
-
-  // Which menu is open, which one the panel shows (kept while it fades out), and its geometry.
   const [open, setOpen] = useState<MenuId | null>(null)
-  const [shown, setShown] = useState<MenuId>('components')
-  const [geo, setGeo] = useState<Geo>({ x: 0, w: 0, h: 0, caret: 0 })
-  const [instant, setInstant] = useState(true)
+  const [anchor, setAnchor] = useState<Record<MenuId, number>>({ docs: 0, components: 0 })
 
-  const capsuleRef = useRef<HTMLDivElement>(null)
-  const panelRef = useRef<HTMLDivElement>(null)
-  const triggerRefs = useRef<Record<MenuId, HTMLButtonElement | null>>({ docs: null, components: null, playground: null })
-  const contentRefs = useRef<Record<MenuId, HTMLDivElement | null>>({ docs: null, components: null, playground: null })
-  const closeTimer = useRef<number | null>(null)
-  const pointerType = useRef<string>('mouse')
+  const barRef = useRef<HTMLDivElement>(null)
+  const panelRefs = useRef<Record<MenuId, HTMLDivElement | null>>({ docs: null, components: null })
+  const triggerRefs = useRef<Record<MenuId, HTMLButtonElement | null>>({ docs: null, components: null })
   const openRef = useRef<MenuId | null>(null)
-  const { glow, move: moveGlow, hide: hideGlow } = useGlow(capsuleRef)
-
-  /** Panel geometry for a menu: centred under its trigger, clamped to the viewport, caret on the trigger. */
-  const measure = useCallback((id: MenuId): Geo | null => {
-    const t = triggerRefs.current[id]
-    const c = contentRefs.current[id]
-    if (!t || !c) return null
-    const r = t.getBoundingClientRect()
-    const w = c.offsetWidth
-    const h = c.offsetHeight
-    const centre = r.left + r.width / 2
-    const x = Math.round(Math.max(EDGE, Math.min(window.innerWidth - EDGE - w, centre - w / 2)))
-    return { x, w, h, caret: Math.round(centre - x) }
-  }, [])
+  const closeTimer = useRef<number | null>(null)
+  const pointerType = useRef('mouse')
 
   const clearCloseTimer = useCallback(() => {
     if (closeTimer.current !== null) {
@@ -373,22 +228,15 @@ export function SiteHeader() {
       closeTimer.current = null
     }
   }, [])
-
   const openMenu = useCallback(
     (id: MenuId) => {
       clearCloseTimer()
-      const g = measure(id)
-      if (g) setGeo(g)
-      if (openRef.current === null) {
-        // From closed: place the panel without animating, then let the next move morph.
-        setInstant(true)
-        requestAnimationFrame(() => requestAnimationFrame(() => setInstant(false)))
-      }
+      const r = triggerRefs.current[id]?.getBoundingClientRect()
+      if (r) setAnchor((a) => ({ ...a, [id]: Math.round(r.left + r.width / 2) }))
       openRef.current = id
-      setShown(id)
       setOpen(id)
     },
-    [clearCloseTimer, measure],
+    [clearCloseTimer],
   )
   const closeMenu = useCallback(() => {
     clearCloseTimer()
@@ -407,82 +255,43 @@ export function SiteHeader() {
     setSheetOpen(false)
   }, [closeMenu])
 
-  const focusables = (id: MenuId) => Array.from(contentRefs.current[id]?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])') ?? [])
-  const focusInto = useCallback((id: MenuId) => {
-    requestAnimationFrame(() => focusables(id)[0]?.focus())
-  }, [])
-
-  // Keep the open panel fitted when its content or the viewport changes size.
-  useLayoutEffect(() => {
-    const ro = new ResizeObserver(() => {
-      const id = openRef.current
-      if (!id) return
-      const g = measure(id)
-      if (g) setGeo((p) => (p.x === g.x && p.w === g.w && p.h === g.h && p.caret === g.caret ? p : g))
-    })
-    for (const id of MENUS) {
-      const c = contentRefs.current[id]
-      if (c) ro.observe(c)
-    }
-    const onResize = () => {
-      const id = openRef.current
-      if (id) {
-        const g = measure(id)
-        if (g) setGeo(g)
-      }
-    }
-    window.addEventListener('resize', onResize)
-    return () => {
-      ro.disconnect()
-      window.removeEventListener('resize', onResize)
-    }
-  }, [measure])
-
-  // Slightly denser glass once the page has scrolled.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24)
+    const onScroll = () => setScrolled(window.scrollY > 40)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Route change closes everything.
   useEffect(() => {
     closeAll()
   }, [pathname, closeAll])
 
-  // Escape closes; focus returns to the trigger when it was inside the panel.
   useEffect(() => {
     if (!open && !sheetOpen) return
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return
-      if (open) {
-        const t = triggerRefs.current[open]
-        if (panelRef.current?.contains(document.activeElement) || document.activeElement === t) t?.focus()
-      }
+      if (open && (panelRefs.current[open]?.contains(document.activeElement) || document.activeElement === triggerRefs.current[open])) triggerRefs.current[open]?.focus()
       closeAll()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [open, sheetOpen, closeAll])
 
-  // Pointer down outside the capsule and the panel closes the menu.
   useEffect(() => {
     if (!open) return
     const onDown = (e: PointerEvent) => {
       const t = e.target as Node
-      if (!panelRef.current?.contains(t) && !capsuleRef.current?.contains(t)) closeMenu()
+      if (!MENUS.some((id) => panelRefs.current[id]?.contains(t)) && !barRef.current?.contains(t)) closeMenu()
     }
     document.addEventListener('pointerdown', onDown)
     return () => document.removeEventListener('pointerdown', onDown)
   }, [open, closeMenu])
 
-  // The sheet locks page scroll and gives up when the viewport grows past the breakpoint.
   useEffect(() => {
     if (!sheetOpen) return
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    const mq = window.matchMedia('(min-width: 1024px)')
+    const mq = window.matchMedia('(min-width: 860px)')
     const onChange = () => {
       if (mq.matches) setSheetOpen(false)
     }
@@ -495,13 +304,37 @@ export function SiteHeader() {
 
   useEffect(() => clearCloseTimer, [clearCloseTimer])
 
-  // While a menu is open the highlight rests on its trigger, wherever the pointer is.
-  useEffect(() => {
-    if (open) moveGlow(triggerRefs.current[open])
-    else if (!capsuleRef.current?.matches(':hover')) hideGlow()
-  }, [open, moveGlow, hideGlow])
+  const focusFirst = (id: MenuId) => requestAnimationFrame(() => panelRefs.current[id]?.querySelector<HTMLElement>('a[href]')?.focus())
 
-  /* Trigger handlers ------------------------------------------------- */
+  const onTriggerKey = (id: MenuId) => (e: ReactKeyboardEvent) => {
+    if (e.key === 'ArrowDown' || (e.key === 'Tab' && !e.shiftKey && open === id)) {
+      e.preventDefault()
+      openMenu(id)
+      focusFirst(id)
+    }
+  }
+  const onPanelKey = (id: MenuId) => (e: ReactKeyboardEvent) => {
+    const links = Array.from(panelRefs.current[id]?.querySelectorAll<HTMLElement>('a[href]') ?? [])
+    const i = links.indexOf(document.activeElement as HTMLElement)
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault()
+      links[(i + (e.key === 'ArrowDown' ? 1 : -1) + links.length) % links.length]?.focus()
+    } else if (e.key === 'Tab') {
+      if (e.shiftKey && i === 0) {
+        e.preventDefault()
+        triggerRefs.current[id]?.focus()
+      } else if (!e.shiftKey && i === links.length - 1) {
+        closeMenu()
+      }
+    }
+  }
+
+  const sheetLinks = [
+    { href: '/docs', label: 'Docs', note: 'Install, providers, theming', active: section === 'docs' },
+    { href: '/docs/components', label: 'Components', note: 'Grouped by what they do', active: section === 'components' },
+    { id: 'how-it-works', href: '/docs/how-it-works', label: 'How it works', note: 'From install to an answer on the phone', active: section === 'how' },
+  ]
+
   const triggerProps = (id: MenuId) => ({
     ref: (el: HTMLButtonElement | null) => {
       triggerRefs.current[id] = el
@@ -514,83 +347,24 @@ export function SiteHeader() {
     onPointerDown: (e: ReactPointerEvent) => {
       pointerType.current = e.pointerType
     },
-    onPointerEnter: (e: ReactPointerEvent<HTMLButtonElement>) => {
-      moveGlow(e.currentTarget)
+    onPointerEnter: (e: ReactPointerEvent) => {
       if (e.pointerType === 'mouse') openMenu(id)
     },
     onPointerLeave: (e: ReactPointerEvent) => {
       if (e.pointerType === 'mouse') closeSoon()
     },
     onClick: (e: React.MouseEvent) => {
-      // A mouse already opened it on hover; a click must not close it again.
-      if (e.detail > 0 && pointerType.current === 'mouse') {
-        openMenu(id)
-        return
-      }
+      if (e.detail > 0 && pointerType.current === 'mouse') return openMenu(id)
       if (open === id) closeMenu()
       else openMenu(id)
     },
-    onKeyDown: (e: ReactKeyboardEvent) => {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault()
-        openMenu(id)
-        focusInto(id)
-      } else if (e.key === 'Tab' && !e.shiftKey && open === id) {
-        e.preventDefault()
-        focusInto(id)
-      }
-    },
+    onKeyDown: onTriggerKey(id),
   })
 
-  /** Tab off either end of the panel goes back into the bar in reading order. */
-  const onPanelKeyDown = (e: ReactKeyboardEvent) => {
-    if (e.key !== 'Tab' || !open) return
-    const list = focusables(open)
-    if (!list.length) return
-    const trigger = triggerRefs.current[open]
-    if (e.shiftKey && document.activeElement === list[0]) {
-      e.preventDefault()
-      trigger?.focus()
-    } else if (!e.shiftKey && document.activeElement === list[list.length - 1]) {
-      e.preventDefault()
-      const items = Array.from(capsuleRef.current?.querySelectorAll<HTMLElement>('.nav-links .nav-item') ?? [])
-      const next = items[items.indexOf(trigger as HTMLElement) + 1]
-      closeMenu()
-      next?.focus()
-    }
-  }
-  const onPanelBlur = (e: ReactFocusEvent) => {
-    const next = e.relatedTarget as Node | null
-    if (next && !panelRef.current?.contains(next) && !Object.values(triggerRefs.current).includes(next as HTMLButtonElement)) closeMenu()
-  }
-
-  const shownIndex = MENUS.indexOf(shown)
-  const panelStyle = {
-    '--mm-x': `${geo.x}px`,
-    '--mm-w': `${geo.w}px`,
-    '--mm-h': `${geo.h}px`,
-    '--mm-caret': `${geo.caret}px`,
-  } as CSSProperties
-  const glowStyle: CSSProperties = { transform: `translateX(${glow.x}px)`, width: glow.w }
-
-  const contents: Record<MenuId, ReactNode> = {
-    docs: <DocsMenu onNavigate={closeAll} />,
-    components: <ComponentsMenu onNavigate={closeAll} />,
-    playground: <PlaygroundMenu onNavigate={closeAll} />,
-  }
-
-  const sheetLinks = [
-    { href: '/docs', label: 'Docs', note: 'Install, core, providers', active: section === 'docs' },
-    { href: componentsHref, label: 'Components', note: `${components.length} on-device features`, active: section === 'components' },
-    { href: '/playground', label: 'Playground', note: 'Every prop, live', active: section === 'playground' },
-    { href: '/themes', label: 'Themes', note: 'Make it yours', active: section === 'themes' },
-  ]
-
   return (
-    <header className="nav-root">
+    <header className="nav-root" data-scrolled={scrolled} data-open={open}>
       <SmoothScroll disabled={sheetOpen || search.open} />
 
-      {/* Mobile sheet ---------------------------------------------------- */}
       <div id={SHEET_ID} className="nav-sheet" data-state={sheetOpen ? 'open' : 'closed'} inert={!sheetOpen}>
         <nav aria-label="Menu" className="nav-sheet-inner">
           <ul className="nav-sheet-list">
@@ -604,18 +378,7 @@ export function SiteHeader() {
               </li>
             ))}
           </ul>
-          <div className="nav-sheet-try" style={{ '--i': sheetLinks.length } as CSSProperties}>
-            <p className="nav-sheet-kicker">Try one</p>
-            <div className="nav-sheet-strip">
-              {PLAY.map(({ name }) => (
-                <Link key={name} href={`/playground/${name}`} className="nav-sheet-card" onClick={closeAll}>
-                  <Thumb name={name} />
-                  <span>{byName.get(name)?.title ?? name}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
-          <a href={githubUrl} target="_blank" rel="noreferrer" className="nav-sheet-gh" style={{ '--i': sheetLinks.length + 1 } as CSSProperties} onClick={closeAll}>
+          <a href={githubUrl} target="_blank" rel="noreferrer" className="nav-sheet-gh" style={{ '--i': sheetLinks.length } as CSSProperties} onClick={closeAll}>
             <GitHubMark size={18} />
             Star on GitHub
             <ArrowUpRight size={16} aria-hidden="true" />
@@ -623,16 +386,8 @@ export function SiteHeader() {
         </nav>
       </div>
 
-      {/* Capsule ---------------------------------------------------------- */}
-      <div ref={capsuleRef} className="nav-capsule" data-scrolled={scrolled} data-sheet={sheetOpen}
-        onPointerLeave={() => {
-          if (openRef.current) moveGlow(triggerRefs.current[openRef.current])
-          else hideGlow()
-        }}
-      >
-        <span className="nav-glow" aria-hidden="true" style={glowStyle} data-visible={glow.visible} data-instant={glow.instant} />
-
-        <Link href="/" className="nav-brand" onPointerEnter={(e) => moveGlow(e.currentTarget)} onClick={() => setSheetOpen(false)}>
+      <div ref={barRef} className="nav-bar" data-sheet={sheetOpen}>
+        <Link href="/" className="nav-brand" onClick={() => setSheetOpen(false)}>
           <Logo size={19} />
           <span className="nav-sr"> home</span>
         </Link>
@@ -644,25 +399,23 @@ export function SiteHeader() {
               <ChevronDown className="nav-chevron" size={13} strokeWidth={2.25} aria-hidden="true" />
             </button>
           ))}
-          <Link href="/themes" className="nav-item" data-active={section === 'themes'} onPointerEnter={(e) => moveGlow(e.currentTarget)}>
-            Themes
+          <Link href="/docs/how-it-works" className="nav-item" data-active={section === 'how'}>
+            How it works
           </Link>
         </nav>
 
-        <div className="nav-right">
+        <div className="nav-tools">
           {search.enabled ? (
-            <button type="button" className="nav-item nav-search" onPointerEnter={(e) => moveGlow(e.currentTarget)} onClick={() => search.setOpenSearch(true)}>
+            <button type="button" className="nav-item nav-search" onClick={() => search.setOpenSearch(true)}>
               <Search size={15} strokeWidth={2} aria-hidden="true" />
               <span className="nav-search-label">Search</span>
               <kbd aria-hidden="true">⌘K</kbd>
             </button>
           ) : null}
-          <a href={githubUrl} target="_blank" rel="noreferrer" className="nav-item nav-icon nav-gh" aria-label="GitHub" onPointerEnter={(e) => moveGlow(e.currentTarget)}>
+          <a href={githubUrl} target="_blank" rel="noreferrer" className="nav-item nav-icon nav-gh" aria-label="GitHub">
             <GitHubMark size={17} />
           </a>
-          <span className="nav-theme" onPointerEnter={(e) => moveGlow(e.currentTarget.firstElementChild as HTMLElement)}>
-            <ThemeToggle className="nav-item nav-icon" />
-          </span>
+          <ThemeToggle className="nav-item nav-icon" />
           <button
             type="button"
             className="nav-item nav-icon nav-burger"
@@ -679,48 +432,31 @@ export function SiteHeader() {
         </div>
       </div>
 
-      {/* The one morphing panel ------------------------------------------ */}
-      <div
-        ref={panelRef}
-        className="mm"
-        data-state={open ? 'open' : 'closed'}
-        data-instant={instant}
-        style={panelStyle}
-        inert={!open}
-        onPointerEnter={(e) => {
-          if (e.pointerType === 'mouse') clearCloseTimer()
-        }}
-        onPointerLeave={(e) => {
-          if (e.pointerType === 'mouse') closeSoon()
-        }}
-        onKeyDown={onPanelKeyDown}
-        onBlur={onPanelBlur}
-      >
-        <div className="mm-pop">
-          <span className="mm-caret" aria-hidden="true" />
-          <div className="mm-panel">
-            {MENUS.map((id, i) => {
-              const pos = i === shownIndex ? 'active' : i < shownIndex ? 'before' : 'after'
-              return (
-                <div
-                  key={id}
-                  id={menuDomId(id)}
-                  ref={(el) => {
-                    contentRefs.current[id] = el
-                  }}
-                  role="region"
-                  aria-label={MENU_LABEL[id]}
-                  className="mm-content"
-                  data-pos={pos}
-                  inert={pos !== 'active'}
-                >
-                  {contents[id]}
-                </div>
-              )
-            })}
-          </div>
+      {MENUS.map((id) => (
+        <div
+          key={id}
+          ref={(el) => {
+            panelRefs.current[id] = el
+          }}
+          id={menuDomId(id)}
+          role="region"
+          aria-label={MENU_LABEL[id]}
+          className="mm"
+          data-menu={id}
+          data-state={open === id ? 'open' : 'closed'}
+          style={{ '--mm-anchor': `${anchor[id]}px` } as CSSProperties}
+          inert={open !== id}
+          onPointerEnter={(e) => {
+            if (e.pointerType === 'mouse') clearCloseTimer()
+          }}
+          onPointerLeave={(e) => {
+            if (e.pointerType === 'mouse') closeSoon()
+          }}
+          onKeyDown={onPanelKey(id)}
+        >
+          <div className="mm-panel">{id === 'docs' ? <DocsMenu onNavigate={closeAll} /> : <ComponentsMenu onNavigate={closeAll} />}</div>
         </div>
-      </div>
+      ))}
     </header>
   )
 }

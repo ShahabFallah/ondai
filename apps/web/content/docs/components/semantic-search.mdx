@@ -1,5 +1,5 @@
 ---
-title: "SemanticSearch"
+title: "Semantic search"
 description: "Search by meaning over the app's own records with a local vector index and hybrid keyword matching, showing why each result matched."
 ---
 
@@ -7,7 +7,7 @@ description: "Search by meaning over the app's own records with a local vector i
 
 ## Install
 
-```bash
+```npm
 npx ondai add semantic-search
 ```
 
@@ -26,23 +26,43 @@ import { openDatabaseAsync } from 'expo-sqlite'
 />
 ```
 
-- Embeddings come from Apple NLContextualEmbedding (512 dims, iOS 17+) or a llama embedding model; without them, keyword search still works.
+- Embeddings come from Apple NLContextualEmbedding (512 dims, iOS 17+) or a cloud embedding model; without them, keyword search still works.
 - Hybrid scoring blends cosine similarity and keyword overlap; "why it matched" shows the terms.
+
+## Customize
+
+Every AI component takes the same look and customization props, so it fits your app rather than ours.
+
+```tsx
+<SemanticSearch
+  variant="pop"
+  tint="#FF5A5F"
+  size="lg"
+  radius={12}
+  icons={{ search: Search, clear: null }}
+  labels={{ placeholder: '…', title: '…' }}
+/>
+```
+
+| Prop | What it does |
+| --- | --- |
+| `variant` | The look of the whole component: `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `size` | `sm`, `md`, `lg`; type, rows, icons and keys scale together |
+| `tint` | Any colour; the variant paints its keys, tiles and glow in it |
+| `radius` | Corner radius of the container |
+| `icons` | Replace any icon (a lucide component, an element, or `null` to hide it): `search`, `clear`, `result`, `recent`, `empty`, `error` |
+| `labels` | Every visible and spoken string; defaults are exported as `semanticSearchLabels`: `placeholder`, `title`, `recent`, `searching`, `indexing`, `of`, `items`, `emptyTitle`, `emptyHint`, `matches`, `similar`, `result`, `results`, `byMeaning`, `keywordsOnly`, `other`, `clear`, `inputLabel` |
+| Slots | Draw a part yourself: `renderIcon`, `renderItem`, `renderResult`, `renderEmpty`, `renderFooter` |
+| `styles` | Style any named part |
 
 ## Variants
 
 | Prop | Options |
 | --- | --- |
 | `presentation` | `bar`, `spotlight`, `header` |
+| `variant` | `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
 | `resultStyle` | `list`, `cards`, `grouped` |
-
-Every variant is live in the [playground](/playground/semantic-search).
-
-## Runs on
-
-| Capability | Apple FM | Gemini Nano | Llama | Cloud |
-| --- | --- | --- | --- | --- |
-| embeddings | ✅ | No | ✅ | ✅ |
+| `size` | `sm`, `md`, `lg` |
 
 ## Token budget
 
@@ -58,6 +78,6 @@ No model-driven fixtures for this component.
 
 ## Files
 
-Registry dependencies: [chip](/docs/components/chip), [field](/docs/components/field), [model-download](/docs/components/model-download), [on-device-badge](/docs/components/on-device-badge), [sheet](/docs/components/sheet), [skeleton](/docs/components/skeleton)
+Registry dependencies: [model-download](/docs/components/model-download), [on-device-badge](/docs/components/on-device-badge), [sheet](/docs/components/sheet), [shimmer-text](/docs/components/shimmer-text), [surface](/docs/components/surface), [skeleton](/docs/components/skeleton)
 
 npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-haptics`, `lucide-react-native`, `react-native-reanimated`

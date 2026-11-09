@@ -7,13 +7,13 @@ description: "createOndai, the capability router, availability, hooks and small-
 
 ```ts
 const ai = createOndai({
-  providers: { apple, nano, llama, cloud },
-  policy: { order: ['apple', 'nano', 'llama', 'cloud'], allowCloud: false, prewarm: 'on-focus', tokenBudget: 4096 },
+  providers: { apple, nano, cloud },
+  policy: { order: ['apple', 'nano', 'cloud'], allowCloud: false, prewarm: 'on-focus', tokenBudget: 4096 },
   onMetric: (m) => console.log(m), // local only; Ondai never sends anything
 })
 ```
 
-Requests declare a **capability** (`text`, `structured`, `tools`, `vision`, `embeddings`, `transcription`, `speech`). The router picks the first provider in `policy.order` that is ready and supports it, and returns its id so the UI can show `ON DEVICE · APPLE`. Cloud runs only when `allowCloud` is true and a cloud model is configured. Components can be marked `localOnly`.
+Requests declare a **capability** (`text`, `structured`, `tools`, `vision`, `embeddings`, `transcription`, `speech`). The router picks the first provider in `policy.order` that is ready and supports it, and returns its id so the UI can show `ON DEVICE · APPLE`. Cloud runs only when `allowCloud` is true and a cloud model is configured. Components can be marked `localOnly`. If the chosen provider fails before it has answered (unavailable, busy, an unknown error), the call moves on to the next ready provider; refusals, overflows and bad replies are not retried elsewhere, and nothing falls back once text is on screen.
 
 ## Availability
 

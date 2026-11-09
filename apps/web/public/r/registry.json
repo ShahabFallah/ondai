@@ -8,24 +8,23 @@
       "name": "agent-avatar",
       "type": "registry:component",
       "title": "AgentAvatar",
-      "description": "A living face for the on-device assistant: a soft, lit body whose eyes glance and blink. Idle, thinking, speaking and sleeping; blob, square, pill or drop.",
-      "dependencies": [
-        "@ondai/tokens",
-        "react-native-reanimated",
-        "react-native-svg"
+      "description": "The assistant's face in your app's AI states (idle, thinking, speaking, sleeping), drawn by BotAvatar from libraries.dev.",
+      "dependencies": [],
+      "registryDependencies": [
+        "bot-avatar"
       ],
-      "registryDependencies": [],
       "categories": [
-        "primitive"
+        "fx"
       ],
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "8b9a53774570f1a1",
+          "hash": "4502ca7f5e7e4f61",
           "priority": "P1",
           "capabilities": [],
           "variants": {
             "shape": [
+              "chip",
               "blob",
               "square",
               "pill",
@@ -36,10 +35,6 @@
               "thinking",
               "speaking",
               "sleeping"
-            ],
-            "eyes": [
-              "dots",
-              "ovals"
             ]
           }
         }
@@ -59,6 +54,238 @@
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "agent-run",
+      "type": "registry:component",
+      "title": "AgentRun",
+      "description": "An agent doing a job on the device, step by step: each tool call with its time, approval before anything risky runs, and the answer at the end.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens",
+        "lucide-react-native",
+        "react-native-reanimated"
+      ],
+      "registryDependencies": [
+        "button",
+        "on-device-badge",
+        "shimmer-text",
+        "surface",
+        "tool-confirm-card"
+      ],
+      "categories": [
+        "agentic"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "9dc76800070ef161",
+          "priority": "P0",
+          "capabilities": [
+            "tools"
+          ],
+          "variants": {
+            "variant": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
+            ],
+            "presentation": [
+              "card",
+              "plain"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
+            ]
+          },
+          "runsOn": [
+            "apple",
+            "cloud"
+          ],
+          "limits": [
+            "Tool calling runs on Apple's model or a cloud model. Gemini Nano's tool calling is still an alpha preview, so Ondai does not route tools to it yet."
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/agent-run/agent-run.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/agent-run/agent-run.tsx"
+        },
+        {
+          "path": "registry/components/agent-run/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/agent-run/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "ask-page",
+      "type": "registry:component",
+      "title": "AskPage",
+      "description": "Ask about the page on screen. The answer streams in grounded in its text, with tap-to-jump quotes and follow-ups, and says when the page does not hold it.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens",
+        "expo-haptics",
+        "lucide-react-native",
+        "react-native-reanimated"
+      ],
+      "registryDependencies": [
+        "button",
+        "chip",
+        "model-download",
+        "on-device-badge",
+        "sheet",
+        "shimmer-text",
+        "skeleton",
+        "streaming-text",
+        "surface"
+      ],
+      "categories": [
+        "search"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "4223163031ad0e84",
+          "priority": "P1",
+          "capabilities": [
+            "text"
+          ],
+          "variants": {
+            "variant": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
+            ],
+            "presentation": [
+              "card",
+              "inline",
+              "sheet"
+            ],
+            "quoteStyle": [
+              "cards",
+              "rule",
+              "chips"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
+            ]
+          },
+          "budget": {
+            "input": 3400,
+            "strategy": "The whole page in one streamed pass when it fits; otherwise the chunks that best match the question, in page order. Quotes are checked against the page and dropped when they are not in it."
+          },
+          "runsOn": [
+            "apple",
+            "nano",
+            "cloud"
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/ask-page/ask-page.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/ask-page/ask-page.tsx"
+        },
+        {
+          "path": "registry/components/ask-page/use-ask-page.ts",
+          "type": "registry:hook",
+          "target": "components/ondai/ask-page/use-ask-page.ts"
+        },
+        {
+          "path": "registry/components/ask-page/prompts.ts",
+          "type": "registry:component",
+          "target": "components/ondai/ask-page/prompts.ts"
+        },
+        {
+          "path": "registry/components/ask-page/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/ask-page/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "assistant-message",
+      "type": "registry:component",
+      "title": "AssistantMessage",
+      "description": "One reply from the on-device model: a trace of what it did, the answer streaming in, its sources, and copy or retry. Includes UserMessage for the person's turns.",
+      "dependencies": [
+        "@ondai/tokens",
+        "expo-clipboard",
+        "lucide-react-native",
+        "react-native-reanimated"
+      ],
+      "registryDependencies": [
+        "button",
+        "shimmer-text",
+        "streaming-text",
+        "surface"
+      ],
+      "categories": [
+        "chat"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "d29188932cc9d027",
+          "priority": "P0",
+          "capabilities": [],
+          "variants": {
+            "variant": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
+            ],
+            "presentation": [
+              "plain",
+              "card"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
+            ]
+          }
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/assistant-message/assistant-message.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/assistant-message/assistant-message.tsx"
+        },
+        {
+          "path": "registry/components/assistant-message/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/assistant-message/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "auto-tag",
       "type": "registry:component",
       "title": "AutoTag",
@@ -72,8 +299,11 @@
         "zod"
       ],
       "registryDependencies": [
+        "button",
         "chip",
         "on-device-badge",
+        "shimmer-text",
+        "surface",
         "skeleton"
       ],
       "categories": [
@@ -82,7 +312,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "c7d5df0a070df8bf",
+          "hash": "7fab0fb862488a12",
           "priority": "P0",
           "capabilities": [
             "structured"
@@ -92,6 +322,21 @@
               "chips",
               "inlineGhost",
               "dropdown"
+            ],
+            "variant": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
             ]
           },
           "budget": {
@@ -101,7 +346,6 @@
           "runsOn": [
             "apple",
             "nano",
-            "llama",
             "cloud"
           ]
         }
@@ -139,15 +383,17 @@
       "name": "availability-gate",
       "type": "registry:component",
       "title": "AvailabilityGate",
-      "description": "Renders children only when the on-device model is ready; otherwise an elegant empty state with a way to enable it.",
+      "description": "Renders children only when the on-device model is ready; otherwise a quiet empty state with a way to turn it on.",
       "dependencies": [
         "@ondai/core",
         "@ondai/tokens",
         "lucide-react-native"
       ],
       "registryDependencies": [
+        "button",
         "model-download",
-        "skeleton"
+        "skeleton",
+        "surface"
       ],
       "categories": [
         "primitive"
@@ -155,7 +401,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "e133e0dfa0a5c6ff",
+          "hash": "07f8ab8c0060b36e",
           "priority": "P0",
           "capabilities": [
             "text"
@@ -184,26 +430,272 @@
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "border-beam",
+      "type": "registry:component",
+      "title": "BorderBeam",
+      "description": "A light that travels around a card's border while the model works. libraries.dev's border beam (MIT): Skia shader on iOS and Android, its CSS version on web.",
+      "dependencies": [
+        "@ondai/tokens",
+        "@shopify/react-native-skia",
+        "border-beam",
+        "react-native-reanimated"
+      ],
+      "registryDependencies": [],
+      "categories": [
+        "fx"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "bb37f26cddac6c39",
+          "priority": "P1",
+          "capabilities": [],
+          "variants": {
+            "tone": [
+              "mono",
+              "colorful",
+              "ocean",
+              "sunset"
+            ],
+            "size": [
+              "md",
+              "sm",
+              "line",
+              "pulse-inner",
+              "pulse-outside"
+            ]
+          }
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/border-beam/border-beam.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/border-beam/border-beam.tsx"
+        },
+        {
+          "path": "registry/components/border-beam/border-beam.web.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/border-beam/border-beam.web.tsx"
+        },
+        {
+          "path": "registry/components/border-beam/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/border-beam/index.ts"
+        },
+        {
+          "path": "registry/components/border-beam/engine.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/border-beam/engine.tsx"
+        },
+        {
+          "path": "registry/components/border-beam/RotateBeam.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/border-beam/RotateBeam.tsx"
+        },
+        {
+          "path": "registry/components/border-beam/LineBeam.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/border-beam/LineBeam.tsx"
+        },
+        {
+          "path": "registry/components/border-beam/PulseBeam.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/border-beam/PulseBeam.tsx"
+        },
+        {
+          "path": "registry/components/border-beam/rotateShader.ts",
+          "type": "registry:component",
+          "target": "components/ondai/border-beam/rotateShader.ts"
+        },
+        {
+          "path": "registry/components/border-beam/blobShader.ts",
+          "type": "registry:component",
+          "target": "components/ondai/border-beam/blobShader.ts"
+        },
+        {
+          "path": "registry/components/border-beam/colorMatrix.ts",
+          "type": "registry:component",
+          "target": "components/ondai/border-beam/colorMatrix.ts"
+        },
+        {
+          "path": "registry/components/border-beam/lineDriver.ts",
+          "type": "registry:component",
+          "target": "components/ondai/border-beam/lineDriver.ts"
+        },
+        {
+          "path": "registry/components/border-beam/pulseDriver.ts",
+          "type": "registry:component",
+          "target": "components/ondai/border-beam/pulseDriver.ts"
+        },
+        {
+          "path": "registry/components/border-beam/spec.ts",
+          "type": "registry:component",
+          "target": "components/ondai/border-beam/spec.ts"
+        },
+        {
+          "path": "registry/components/border-beam/tuning.ts",
+          "type": "registry:component",
+          "target": "components/ondai/border-beam/tuning.ts"
+        },
+        {
+          "path": "registry/components/border-beam/types.ts",
+          "type": "registry:component",
+          "target": "components/ondai/border-beam/types.ts"
+        },
+        {
+          "path": "registry/components/border-beam/beam-spec.json",
+          "type": "registry:component",
+          "target": "components/ondai/border-beam/beam-spec.json"
+        },
+        {
+          "path": "registry/components/border-beam/LICENSE",
+          "type": "registry:component",
+          "target": "components/ondai/border-beam/LICENSE"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "bot-avatar",
+      "type": "registry:component",
+      "title": "BotAvatar",
+      "description": "A glossy little body with eyes that blinks, glances, hops while the model works and sleeps when idle. libraries.dev's bot avatars (MIT): Skia on iOS and Android, canvas on web.",
+      "dependencies": [
+        "@ondai/tokens",
+        "@shopify/react-native-skia",
+        "bot-avatars",
+        "react-native-reanimated"
+      ],
+      "registryDependencies": [],
+      "categories": [
+        "fx"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "394c730d07f77980",
+          "priority": "P1",
+          "capabilities": [],
+          "variants": {
+            "type": [
+              "chip",
+              "clover",
+              "blob",
+              "square",
+              "pill",
+              "drop",
+              "ghost",
+              "droid"
+            ],
+            "state": [
+              "default",
+              "working",
+              "sleeping"
+            ]
+          }
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/bot-avatar/bot-avatar.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/bot-avatar/bot-avatar.tsx"
+        },
+        {
+          "path": "registry/components/bot-avatar/bot-avatar.web.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/bot-avatar/bot-avatar.web.tsx"
+        },
+        {
+          "path": "registry/components/bot-avatar/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/bot-avatar/index.ts"
+        },
+        {
+          "path": "registry/components/bot-avatar/engine.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/bot-avatar/engine.tsx"
+        },
+        {
+          "path": "registry/components/bot-avatar/draw.ts",
+          "type": "registry:component",
+          "target": "components/ondai/bot-avatar/draw.ts"
+        },
+        {
+          "path": "registry/components/bot-avatar/forms.ts",
+          "type": "registry:component",
+          "target": "components/ondai/bot-avatar/forms.ts"
+        },
+        {
+          "path": "registry/components/bot-avatar/light.ts",
+          "type": "registry:component",
+          "target": "components/ondai/bot-avatar/light.ts"
+        },
+        {
+          "path": "registry/components/bot-avatar/packet.ts",
+          "type": "registry:component",
+          "target": "components/ondai/bot-avatar/packet.ts"
+        },
+        {
+          "path": "registry/components/bot-avatar/palette.ts",
+          "type": "registry:component",
+          "target": "components/ondai/bot-avatar/palette.ts"
+        },
+        {
+          "path": "registry/components/bot-avatar/sheet.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/bot-avatar/sheet.tsx"
+        },
+        {
+          "path": "registry/components/bot-avatar/still.ts",
+          "type": "registry:component",
+          "target": "components/ondai/bot-avatar/still.ts"
+        },
+        {
+          "path": "registry/components/bot-avatar/ticker.ts",
+          "type": "registry:component",
+          "target": "components/ondai/bot-avatar/ticker.ts"
+        },
+        {
+          "path": "registry/components/bot-avatar/types.ts",
+          "type": "registry:component",
+          "target": "components/ondai/bot-avatar/types.ts"
+        },
+        {
+          "path": "registry/components/bot-avatar/LICENSE",
+          "type": "registry:component",
+          "target": "components/ondai/bot-avatar/LICENSE"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "button",
       "type": "registry:component",
       "title": "Button",
-      "description": "Minimal button with solid, soft, outline, ghost, accent and danger variants.",
+      "description": "Minimal button: ink solid, a soft raised key, and secondary variants that take the theme material (glass, Liquid Glass).",
       "dependencies": [
-        "@ondai/tokens"
+        "@ondai/tokens",
+        "react-native-reanimated",
+        "react-native-svg"
       ],
-      "registryDependencies": [],
+      "registryDependencies": [
+        "surface"
+      ],
       "categories": [
         "primitive"
       ],
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "2ec978187a9a0946",
+          "hash": "c44469cd8daf8173",
           "priority": "P0",
           "capabilities": [],
           "variants": {
             "variant": [
               "solid",
+              "raised",
               "soft",
               "outline",
               "ghost",
@@ -214,6 +706,16 @@
               "sm",
               "md",
               "lg"
+            ],
+            "skin": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
             ]
           }
         }
@@ -233,6 +735,74 @@
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "chat",
+      "type": "registry:component",
+      "title": "Chat",
+      "description": "A complete on-device conversation: streamed turns with their trace, stop mid-reply, retry, and history trimmed to the model's context.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens",
+        "lucide-react-native"
+      ],
+      "registryDependencies": [
+        "assistant-message",
+        "prompt-composer",
+        "surface"
+      ],
+      "categories": [
+        "chat"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "c3af45fd1a7c5c34",
+          "priority": "P0",
+          "capabilities": [
+            "text"
+          ],
+          "variants": {
+            "variant": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
+            ],
+            "replies": [
+              "plain",
+              "card"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
+            ]
+          },
+          "runsOn": [
+            "apple",
+            "nano",
+            "cloud"
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/chat/chat.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/chat/chat.tsx"
+        },
+        {
+          "path": "registry/components/chat/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/chat/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "chip",
       "type": "registry:component",
       "title": "Chip",
@@ -241,14 +811,16 @@
         "@ondai/tokens",
         "lucide-react-native"
       ],
-      "registryDependencies": [],
+      "registryDependencies": [
+        "surface"
+      ],
       "categories": [
         "primitive"
       ],
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "f06250fa709d038d",
+          "hash": "1108cff94c939073",
           "priority": "P0",
           "capabilities": [],
           "variants": {
@@ -261,6 +833,16 @@
             "size": [
               "sm",
               "md"
+            ],
+            "skin": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
             ]
           }
         }
@@ -293,13 +875,14 @@
         "zod"
       ],
       "registryDependencies": [
-        "ion-border",
+        "button",
         "key-hint",
         "on-device-badge",
         "sheet",
+        "shimmer-text",
+        "skeleton",
         "streaming-text",
-        "thinking-indicator",
-        "tool-confirm-card"
+        "surface"
       ],
       "docs": "Register actions with defineActions(); risky actions (risk: 'high') ask before running.",
       "categories": [
@@ -308,7 +891,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "b00f27cb17791fbc",
+          "hash": "756ebb5bf68b1e6e",
           "priority": "P0",
           "capabilities": [
             "tools",
@@ -324,9 +907,14 @@
               "fullscreen"
             ],
             "variant": [
+              "clean",
+              "minimal",
               "glass",
-              "solid",
-              "minimal"
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
             ],
             "size": [
               "sm",
@@ -341,8 +929,10 @@
           "runsOn": [
             "apple",
             "nano",
-            "llama",
             "cloud"
+          ],
+          "limits": [
+            "On Gemini Nano it picks the action from structured output instead of tool calls."
           ]
         }
       },
@@ -397,7 +987,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "05557a1f78d1f66d",
+          "hash": "38bc88726504b6f3",
           "priority": "P0",
           "capabilities": [],
           "variants": {
@@ -432,11 +1022,10 @@
       "name": "image-reveal",
       "type": "registry:component",
       "title": "ImageReveal",
-      "description": "An image that resolves out of a churning mosaic or an ASCII field as progress rises. The loader for anything the model draws or reads.",
+      "description": "An image arriving the way a diffusion model makes it: grain over a blurred field, resolved step by step.",
       "dependencies": [
         "@ondai/tokens",
-        "react-native-reanimated",
-        "react-native-svg"
+        "react-native-reanimated"
       ],
       "registryDependencies": [],
       "docs": "Pass `progress` (0–1) from your own pipeline, or `progress=\"auto\"` to loop while you wait. `mode=\"ascii\"` suits scans and documents; `mosaic` suits generated pictures.",
@@ -446,15 +1035,10 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "d6d609d0623c2029",
+          "hash": "acdc42769fb16349",
           "priority": "P1",
           "capabilities": [],
-          "variants": {
-            "mode": [
-              "mosaic",
-              "ascii"
-            ]
-          }
+          "variants": {}
         }
       },
       "files": [
@@ -464,9 +1048,81 @@
           "target": "components/ondai/image-reveal/image-reveal.tsx"
         },
         {
+          "path": "registry/components/image-reveal/grain.ts",
+          "type": "registry:component",
+          "target": "components/ondai/image-reveal/grain.ts"
+        },
+        {
           "path": "registry/components/image-reveal/index.ts",
           "type": "registry:lib",
           "target": "components/ondai/image-reveal/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "inline-suggest",
+      "type": "registry:component",
+      "title": "InlineSuggest",
+      "description": "A text field that offers the rest of the sentence as ghost text while the person types, from the on-device model. Tab or the Add key takes it.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens",
+        "lucide-react-native",
+        "react-native-reanimated"
+      ],
+      "registryDependencies": [
+        "button",
+        "key-hint",
+        "on-device-badge",
+        "shimmer-text",
+        "surface"
+      ],
+      "categories": [
+        "input"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "34d14c8e5d45e8e2",
+          "priority": "P0",
+          "capabilities": [
+            "text"
+          ],
+          "variants": {
+            "variant": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
+            ]
+          },
+          "runsOn": [
+            "apple",
+            "nano",
+            "cloud"
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/inline-suggest/inline-suggest.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/inline-suggest/inline-suggest.tsx"
+        },
+        {
+          "path": "registry/components/inline-suggest/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/inline-suggest/index.ts"
         }
       ]
     },
@@ -488,7 +1144,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "6f71be147ad62ffc",
+          "hash": "e04bb5fb6243ec64",
           "priority": "P0",
           "capabilities": [],
           "variants": {
@@ -537,7 +1193,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "42504405bdcc1de3",
+          "hash": "1fecd07ff1ecc560",
           "priority": "P0",
           "capabilities": [],
           "variants": {
@@ -582,7 +1238,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "14da3c96ca54c7cf",
+          "hash": "44e2fff6da24357c",
           "priority": "P0",
           "capabilities": [],
           "variants": {
@@ -608,23 +1264,130 @@
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "liquid-metal",
+      "type": "registry:component",
+      "title": "LiquidMetal",
+      "description": "A ring of liquid metal around a button, a mic or an avatar, glowing while the model works. libraries.dev's metal-fx (MIT, shader from Paper Shaders, Apache-2.0): Skia on iOS and Android, WebGL on web.",
+      "dependencies": [
+        "@ondai/tokens",
+        "@shopify/react-native-skia",
+        "metal-fx",
+        "react-native-reanimated"
+      ],
+      "registryDependencies": [],
+      "categories": [
+        "fx"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "1b8897d4252e3bf5",
+          "priority": "P1",
+          "capabilities": [],
+          "variants": {
+            "shape": [
+              "button",
+              "circle"
+            ],
+            "preset": [
+              "chromatic",
+              "silver",
+              "gold"
+            ]
+          }
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/liquid-metal/liquid-metal.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/liquid-metal/liquid-metal.tsx"
+        },
+        {
+          "path": "registry/components/liquid-metal/liquid-metal.web.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/liquid-metal/liquid-metal.web.tsx"
+        },
+        {
+          "path": "registry/components/liquid-metal/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/liquid-metal/index.ts"
+        },
+        {
+          "path": "registry/components/liquid-metal/engine.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/liquid-metal/engine.tsx"
+        },
+        {
+          "path": "registry/components/liquid-metal/shader.ts",
+          "type": "registry:component",
+          "target": "components/ondai/liquid-metal/shader.ts"
+        },
+        {
+          "path": "registry/components/liquid-metal/material.ts",
+          "type": "registry:component",
+          "target": "components/ondai/liquid-metal/material.ts"
+        },
+        {
+          "path": "registry/components/liquid-metal/geometry.ts",
+          "type": "registry:component",
+          "target": "components/ondai/liquid-metal/geometry.ts"
+        },
+        {
+          "path": "registry/components/liquid-metal/bend.ts",
+          "type": "registry:component",
+          "target": "components/ondai/liquid-metal/bend.ts"
+        },
+        {
+          "path": "registry/components/liquid-metal/glow.ts",
+          "type": "registry:component",
+          "target": "components/ondai/liquid-metal/glow.ts"
+        },
+        {
+          "path": "registry/components/liquid-metal/registry.ts",
+          "type": "registry:component",
+          "target": "components/ondai/liquid-metal/registry.ts"
+        },
+        {
+          "path": "registry/components/liquid-metal/LICENSE",
+          "type": "registry:component",
+          "target": "components/ondai/liquid-metal/LICENSE"
+        },
+        {
+          "path": "registry/components/liquid-metal/LICENSE-APACHE",
+          "type": "registry:component",
+          "target": "components/ondai/liquid-metal/LICENSE-APACHE"
+        },
+        {
+          "path": "registry/components/liquid-metal/NOTICE",
+          "type": "registry:component",
+          "target": "components/ondai/liquid-metal/NOTICE"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "model-download",
       "type": "registry:component",
       "title": "ModelDownload",
-      "description": "Ion progress line, ring or card with a mono percentage while a model downloads.",
+      "description": "A thin progress line, ring or card with a tabular percentage while a model downloads.",
       "dependencies": [
         "@ondai/tokens",
+        "lucide-react-native",
         "react-native-reanimated",
         "react-native-svg"
       ],
-      "registryDependencies": [],
+      "registryDependencies": [
+        "button",
+        "surface"
+      ],
       "categories": [
         "primitive"
       ],
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "3a71358660c4d67b",
+          "hash": "bd4fc95e48bfc640",
           "priority": "P0",
           "capabilities": [],
           "variants": {
@@ -671,9 +1434,10 @@
       "registryDependencies": [
         "button",
         "chip",
-        "field",
         "on-device-badge",
         "sheet",
+        "shimmer-text",
+        "surface",
         "skeleton"
       ],
       "categories": [
@@ -682,7 +1446,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "53166dba254782bd",
+          "hash": "fc0bbeb3d02a74aa",
           "priority": "P0",
           "capabilities": [
             "structured"
@@ -692,6 +1456,21 @@
               "bar",
               "sheet",
               "inline"
+            ],
+            "variant": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
             ],
             "chipStyle": [
               "soft",
@@ -705,7 +1484,6 @@
           "runsOn": [
             "apple",
             "nano",
-            "llama",
             "cloud"
           ]
         }
@@ -751,7 +1529,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "881f71cb1fffb6d9",
+          "hash": "974b18e0b8e3ef97",
           "priority": "P0",
           "capabilities": [],
           "variants": {
@@ -783,6 +1561,160 @@
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "photo-caption",
+      "type": "registry:component",
+      "title": "PhotoCaption",
+      "description": "A photo in; a caption and accessibility alt text out, written by the on-device vision model. Streamed, editable, copyable, and handed back as alt text.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens",
+        "expo-clipboard",
+        "expo-haptics",
+        "expo-image-picker",
+        "lucide-react-native",
+        "react-native-reanimated"
+      ],
+      "registryDependencies": [
+        "button",
+        "model-download",
+        "on-device-badge",
+        "shimmer-text",
+        "skeleton",
+        "streaming-text",
+        "surface"
+      ],
+      "docs": "Needs a provider with the `vision` capability. Pass `image` (uri, or base64 from expo-image-picker) or let the user take or choose one; `onUseAlt` receives the edited alt text.",
+      "categories": [
+        "vision"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "0bfa72aed30f1d6f",
+          "priority": "P1",
+          "capabilities": [
+            "vision"
+          ],
+          "variants": {
+            "variant": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
+            ],
+            "presentation": [
+              "stacked",
+              "tabs"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
+            ],
+            "tone": [
+              "plain",
+              "warm",
+              "playful"
+            ]
+          },
+          "budget": {
+            "input": 1200,
+            "strategy": "One image plus a short instruction; a single streamed reply of two labelled lines (caption, alt) parsed as it arrives."
+          },
+          "runsOn": [
+            "nano",
+            "cloud"
+          ],
+          "limits": [
+            "Not on iPhone yet: Apple's model takes images from iOS 27, and the provider package Ondai uses does not pass them on yet. Runs on Gemini Nano (Prompt API, beta) or a cloud model."
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/photo-caption/photo-caption.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/photo-caption/photo-caption.tsx"
+        },
+        {
+          "path": "registry/components/photo-caption/use-photo-caption.ts",
+          "type": "registry:hook",
+          "target": "components/ondai/photo-caption/use-photo-caption.ts"
+        },
+        {
+          "path": "registry/components/photo-caption/prompts.ts",
+          "type": "registry:component",
+          "target": "components/ondai/photo-caption/prompts.ts"
+        },
+        {
+          "path": "registry/components/photo-caption/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/photo-caption/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "prompt-composer",
+      "type": "registry:component",
+      "title": "PromptComposer",
+      "description": "Where a person writes to the on-device model: a growing field, attachments, the model badge and a send key that becomes stop while it answers.",
+      "dependencies": [
+        "@ondai/tokens",
+        "lucide-react-native"
+      ],
+      "registryDependencies": [
+        "button",
+        "on-device-badge",
+        "surface"
+      ],
+      "categories": [
+        "chat"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "7f72a5276a29cc97",
+          "priority": "P0",
+          "capabilities": [],
+          "variants": {
+            "variant": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
+            ]
+          }
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/prompt-composer/prompt-composer.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/prompt-composer/prompt-composer.tsx"
+        },
+        {
+          "path": "registry/components/prompt-composer/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/prompt-composer/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "rewrite",
       "type": "registry:component",
       "title": "Rewrite",
@@ -792,15 +1724,18 @@
         "@ondai/tokens",
         "expo-haptics",
         "lucide-react-native",
-        "react-native-reanimated"
+        "react-native-reanimated",
+        "react-native-svg"
       ],
       "registryDependencies": [
         "button",
         "chip",
-        "ion-border",
         "on-device-badge",
         "sheet",
-        "streaming-text"
+        "shimmer-text",
+        "skeleton",
+        "streaming-text",
+        "surface"
       ],
       "categories": [
         "text"
@@ -808,12 +1743,22 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "0574f9d06a16f84a",
+          "hash": "ee7f9afe073909c6",
           "priority": "P0",
           "capabilities": [
             "text"
           ],
           "variants": {
+            "variant": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
+            ],
             "presentation": [
               "toolbar",
               "menu",
@@ -823,6 +1768,11 @@
               "replace",
               "diff",
               "sideBySide"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
             ]
           },
           "budget": {
@@ -832,7 +1782,6 @@
           "runsOn": [
             "apple",
             "nano",
-            "llama",
             "cloud"
           ]
         }
@@ -878,15 +1827,14 @@
         "expo-image-picker",
         "lucide-react-native",
         "react-native-reanimated",
+        "react-native-svg",
         "zod"
       ],
       "registryDependencies": [
         "button",
-        "field",
-        "image-reveal",
-        "ion-border",
         "on-device-badge",
-        "skeleton"
+        "shimmer-text",
+        "surface"
       ],
       "docs": "Pass `ocr` (e.g. @react-native-ml-kit/text-recognition or Apple Vision) to read photos; without it the component explains that OCR is not configured.",
       "categories": [
@@ -895,17 +1843,31 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "f8b6a7689b117631",
+          "hash": "3852d8952ed29278",
           "priority": "P0",
           "capabilities": [
-            "structured",
-            "vision"
+            "structured"
           ],
           "variants": {
+            "variant": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
+            ],
             "presentation": [
               "camera",
               "picker",
               "card"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
             ],
             "preset": [
               "receipt",
@@ -921,8 +1883,10 @@
           "runsOn": [
             "apple",
             "nano",
-            "llama",
             "cloud"
+          ],
+          "limits": [
+            "The text in the photo comes from an OCR you pass in as `ocr` (Apple Vision or ML Kit Text Recognition). The model only turns that text into fields."
           ]
         }
       },
@@ -968,11 +1932,11 @@
         "react-native-reanimated"
       ],
       "registryDependencies": [
-        "chip",
-        "field",
         "model-download",
         "on-device-badge",
         "sheet",
+        "shimmer-text",
+        "surface",
         "skeleton"
       ],
       "categories": [
@@ -981,7 +1945,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "17da0ae70379392f",
+          "hash": "65a336a115b3bf74",
           "priority": "P0",
           "capabilities": [
             "embeddings"
@@ -992,10 +1956,25 @@
               "spotlight",
               "header"
             ],
+            "variant": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
+            ],
             "resultStyle": [
               "list",
               "cards",
               "grouped"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
             ]
           },
           "budget": {
@@ -1004,8 +1983,10 @@
           },
           "runsOn": [
             "apple",
-            "llama",
             "cloud"
+          ],
+          "limits": [
+            "Embeddings come from Apple (NLContextualEmbedding) or a cloud model. Without them it falls back to keyword search."
           ]
         }
       },
@@ -1038,14 +2019,16 @@
         "expo-blur",
         "react-native-reanimated"
       ],
-      "registryDependencies": [],
+      "registryDependencies": [
+        "surface"
+      ],
       "categories": [
         "primitive"
       ],
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "608803615c024377",
+          "hash": "8a158c871fe93723",
           "priority": "P0",
           "capabilities": [],
           "variants": {
@@ -1076,6 +2059,49 @@
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "shimmer-text",
+      "type": "registry:component",
+      "title": "ShimmerText",
+      "description": "Text with a soft light running across it while the model works.",
+      "dependencies": [
+        "@ondai/tokens",
+        "react-native-reanimated"
+      ],
+      "registryDependencies": [],
+      "categories": [
+        "primitive"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "d14a2c3f647bf271",
+          "priority": "P0",
+          "capabilities": [],
+          "variants": {
+            "size": [
+              "xs",
+              "sm",
+              "md",
+              "lg"
+            ]
+          }
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/shimmer-text/shimmer-text.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/shimmer-text/shimmer-text.tsx"
+        },
+        {
+          "path": "registry/components/shimmer-text/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/shimmer-text/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "skeleton",
       "type": "registry:component",
       "title": "Skeleton",
@@ -1092,7 +2118,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "c2925ba9572db399",
+          "hash": "96a253c714e329c2",
           "priority": "P0",
           "capabilities": [],
           "variants": {
@@ -1135,9 +2161,11 @@
       "registryDependencies": [
         "button",
         "chip",
-        "field",
         "ion-border",
-        "on-device-badge"
+        "on-device-badge",
+        "shimmer-text",
+        "skeleton",
+        "surface"
       ],
       "categories": [
         "input"
@@ -1145,17 +2173,32 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "6f957eede3de9dc8",
+          "hash": "bdac0621260866e8",
           "priority": "P0",
           "capabilities": [
             "structured"
           ],
           "variants": {
+            "variant": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
+            ],
             "presentation": [
               "field",
               "composer",
               "overlay",
               "card"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
             ],
             "confidenceStyle": [
               "highlight",
@@ -1170,7 +2213,6 @@
           "runsOn": [
             "apple",
             "nano",
-            "llama",
             "cloud"
           ]
         }
@@ -1213,9 +2255,12 @@
         "zod"
       ],
       "registryDependencies": [
+        "button",
         "chip",
         "on-device-badge",
-        "skeleton"
+        "shimmer-text",
+        "skeleton",
+        "surface"
       ],
       "categories": [
         "text"
@@ -1223,17 +2268,32 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "65be941ff3942ab3",
+          "hash": "6a46328e2132a027",
           "priority": "P0",
           "capabilities": [
             "structured",
             "text"
           ],
           "variants": {
+            "variant": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
+            ],
             "presentation": [
               "chips",
               "stack",
               "ghost"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
             ],
             "tone": [
               "neutral",
@@ -1249,7 +2309,6 @@
           "runsOn": [
             "apple",
             "nano",
-            "llama",
             "cloud"
           ]
         }
@@ -1299,7 +2358,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "7502e4c89f9401db",
+          "hash": "9a54916a1d55d51c",
           "priority": "P0",
           "capabilities": [],
           "variants": {
@@ -1331,22 +2390,24 @@
       "name": "summarize",
       "type": "registry:component",
       "title": "Summarize",
-      "description": "A TL;DR for long text: card, inline, sheet or tooltip. Streams, and map-reduces input that does not fit the on-device context.",
+      "description": "The gist of long text: card, inline, sheet or tooltip. Streams, and map-reduces input that does not fit the on-device context.",
       "dependencies": [
         "@ondai/core",
         "@ondai/tokens",
+        "expo-clipboard",
         "expo-haptics",
         "lucide-react-native",
         "react-native-reanimated"
       ],
       "registryDependencies": [
         "button",
-        "ion-border",
         "model-download",
         "on-device-badge",
         "sheet",
+        "shimmer-text",
         "skeleton",
-        "streaming-text"
+        "streaming-text",
+        "surface"
       ],
       "categories": [
         "text"
@@ -1354,24 +2415,39 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "e06a6bd98d157b85",
+          "hash": "fbece35d4ec73989",
           "priority": "P0",
           "capabilities": [
             "text"
           ],
           "variants": {
+            "variant": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
+            ],
             "presentation": [
               "card",
               "inline",
               "sheet",
               "tooltip"
             ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
+            ],
             "length": [
               "oneLine",
               "bullets",
               "paragraph"
             ],
-            "style": [
+            "emphasis": [
               "plain",
               "quote",
               "highlighted"
@@ -1384,7 +2460,6 @@
           "runsOn": [
             "apple",
             "nano",
-            "llama",
             "cloud"
           ]
         }
@@ -1414,27 +2489,184 @@
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-      "name": "thinking-indicator",
+      "name": "surface",
       "type": "registry:component",
-      "title": "ThinkingIndicator",
-      "description": "Dots, a metallic orb, line or sweep: calm indicators that the on-device model is working.",
+      "title": "Surface",
+      "description": "The container every card-shaped component draws with: solid, blurred glass, or the platform's own material (Liquid Glass on iOS 26, Material 3 on Android).",
       "dependencies": [
         "@ondai/tokens",
+        "expo-blur",
+        "expo-glass-effect",
         "react-native-reanimated",
         "react-native-svg"
       ],
-      "registryDependencies": [],
+      "registryDependencies": [
+        "ion-border"
+      ],
       "categories": [
         "primitive"
       ],
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "c6e429b7ae538dd7",
+          "hash": "cd5487478bd93cd2",
+          "priority": "P0",
+          "capabilities": [],
+          "variants": {
+            "material": [
+              "auto",
+              "solid",
+              "glass",
+              "native"
+            ],
+            "elevation": [
+              "inset",
+              "card",
+              "floating"
+            ],
+            "skin": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
+            ]
+          }
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/surface/surface.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/surface/surface.tsx"
+        },
+        {
+          "path": "registry/components/surface/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/surface/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "text-to-event",
+      "type": "registry:component",
+      "title": "TextToEvent",
+      "description": "A pasted or selected message becomes a calendar event: title, date, time, place and people fill in one by one with per-field confidence, stay editable, then go to the calendar.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens",
+        "expo-haptics",
+        "lucide-react-native",
+        "react-native-reanimated",
+        "zod"
+      ],
+      "registryDependencies": [
+        "button",
+        "chip",
+        "field",
+        "model-download",
+        "on-device-badge",
+        "shimmer-text",
+        "skeleton",
+        "surface"
+      ],
+      "docs": "Pass `onAdd` and write the event with expo-calendar (or your API). An unclear date (\"next Friday\" said on a Monday, \"Thursday or Friday\", 05/06) is highlighted with the days it could mean, and the add key waits until one is chosen.",
+      "categories": [
+        "organize"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "8e9b0000ab644c1f",
+          "priority": "P1",
+          "capabilities": [
+            "structured"
+          ],
+          "variants": {
+            "variant": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
+            ],
+            "presentation": [
+              "card",
+              "message"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
+            ]
+          },
+          "budget": {
+            "input": 800,
+            "strategy": "One structured call on the message; the model copies words, then dates, times and names are resolved and checked against the message on device."
+          },
+          "runsOn": [
+            "apple",
+            "nano",
+            "cloud"
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/text-to-event/text-to-event.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/text-to-event/text-to-event.tsx"
+        },
+        {
+          "path": "registry/components/text-to-event/use-text-to-event.ts",
+          "type": "registry:hook",
+          "target": "components/ondai/text-to-event/use-text-to-event.ts"
+        },
+        {
+          "path": "registry/components/text-to-event/prompts.ts",
+          "type": "registry:component",
+          "target": "components/ondai/text-to-event/prompts.ts"
+        },
+        {
+          "path": "registry/components/text-to-event/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/text-to-event/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "thinking-indicator",
+      "type": "registry:component",
+      "title": "ThinkingIndicator",
+      "description": "A shimmering sentence, a chrome orb, dots, line or sweep: calm signs that the on-device model is working.",
+      "dependencies": [
+        "@ondai/tokens",
+        "react-native-reanimated",
+        "react-native-svg"
+      ],
+      "registryDependencies": [
+        "shimmer-text"
+      ],
+      "categories": [
+        "primitive"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "996593d60d1e66fd",
           "priority": "P0",
           "capabilities": [],
           "variants": {
             "variant": [
+              "shimmer",
               "dots",
               "orb",
               "line",
@@ -1468,10 +2700,104 @@
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "tone-check",
+      "type": "registry:component",
+      "title": "ToneCheck",
+      "description": "Reads the tone of a draft as you type (friendly, neutral, blunt or tense, casual to formal) and offers a one-tap softer rewrite when it reads off.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens",
+        "expo-haptics",
+        "lucide-react-native",
+        "react-native-reanimated",
+        "zod"
+      ],
+      "registryDependencies": [
+        "button",
+        "model-download",
+        "on-device-badge",
+        "shimmer-text",
+        "streaming-text",
+        "surface"
+      ],
+      "categories": [
+        "text"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "e466c603ae5caf2f",
+          "priority": "P1",
+          "capabilities": [
+            "structured",
+            "text"
+          ],
+          "variants": {
+            "variant": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
+            ],
+            "presentation": [
+              "card",
+              "pill"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
+            ]
+          },
+          "budget": {
+            "input": 1800,
+            "strategy": "The draft is truncated to half the window so the softer rewrite fits in the rest; the reading is a small JSON object."
+          },
+          "runsOn": [
+            "apple",
+            "nano",
+            "cloud"
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/tone-check/tone-check.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/tone-check/tone-check.tsx"
+        },
+        {
+          "path": "registry/components/tone-check/use-tone-check.ts",
+          "type": "registry:hook",
+          "target": "components/ondai/tone-check/use-tone-check.ts"
+        },
+        {
+          "path": "registry/components/tone-check/prompts.ts",
+          "type": "registry:component",
+          "target": "components/ondai/tone-check/prompts.ts"
+        },
+        {
+          "path": "registry/components/tone-check/schema.ts",
+          "type": "registry:component",
+          "target": "components/ondai/tone-check/schema.ts"
+        },
+        {
+          "path": "registry/components/tone-check/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/tone-check/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "tool-confirm-card",
       "type": "registry:component",
       "title": "ToolConfirmCard",
-      "description": "Approval for any tool call: action, parameters and risk level, with approve / edit / cancel.",
+      "description": "Approval for any tool call: the call as a trace line, then a card with its parameters and deny or confirm.",
       "dependencies": [
         "@ondai/core",
         "@ondai/tokens",
@@ -1480,7 +2806,9 @@
       ],
       "registryDependencies": [
         "button",
-        "sheet"
+        "sheet",
+        "shimmer-text",
+        "surface"
       ],
       "categories": [
         "agentic"
@@ -1488,24 +2816,32 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "9b6b255e5433eb62",
+          "hash": "ba92fcd1ccb08340",
           "priority": "P0",
-          "capabilities": [
-            "tools"
-          ],
+          "capabilities": [],
           "variants": {
+            "variant": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
+            ],
             "presentation": [
               "card",
               "sheet",
-              "banner"
+              "banner",
+              "inline"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
             ]
-          },
-          "runsOn": [
-            "apple",
-            "nano",
-            "llama",
-            "cloud"
-          ]
+          }
         }
       },
       "files": [
@@ -1523,10 +2859,103 @@
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "translate",
+      "type": "registry:component",
+      "title": "Translate",
+      "description": "Live translation on device: the original, a row of target languages, the translation streaming in, with copy and an instant swap.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens",
+        "expo-clipboard",
+        "expo-haptics",
+        "lucide-react-native",
+        "react-native-reanimated"
+      ],
+      "registryDependencies": [
+        "button",
+        "chip",
+        "model-download",
+        "on-device-badge",
+        "shimmer-text",
+        "skeleton",
+        "streaming-text",
+        "surface"
+      ],
+      "categories": [
+        "text"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "87d412c0c373e8ef",
+          "priority": "P1",
+          "capabilities": [
+            "text"
+          ],
+          "variants": {
+            "variant": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
+            ],
+            "to": [
+              "it",
+              "es",
+              "de",
+              "fr",
+              "ja"
+            ]
+          },
+          "budget": {
+            "input": 1800,
+            "strategy": "Input is truncated to half the window so the translation, which can run longer, fits in the rest."
+          },
+          "runsOn": [
+            "apple",
+            "nano",
+            "cloud"
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/translate/translate.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/translate/translate.tsx"
+        },
+        {
+          "path": "registry/components/translate/use-translate.ts",
+          "type": "registry:hook",
+          "target": "components/ondai/translate/use-translate.ts"
+        },
+        {
+          "path": "registry/components/translate/prompts.ts",
+          "type": "registry:component",
+          "target": "components/ondai/translate/prompts.ts"
+        },
+        {
+          "path": "registry/components/translate/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/translate/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "voice-input",
       "type": "registry:component",
       "title": "VoiceInput",
-      "description": "Push-to-talk that transcribes on device: a round mic, a level-driven waveform or glow, then the transcript with Use and Retry.",
+      "description": "Push-to-talk that transcribes on device: the mic is the variant's key, a waveform drawn in the variant, then the transcript with Use and Retry.",
       "dependencies": [
         "@ondai/core",
         "@ondai/tokens",
@@ -1537,7 +2966,9 @@
       ],
       "registryDependencies": [
         "button",
-        "streaming-text"
+        "shimmer-text",
+        "streaming-text",
+        "surface"
       ],
       "docs": "Audio capture is not bundled: pass `recorder` (expo-audio, react-native-audio-record or your own module) with `start()`, `stop()` → WAV/PCM bytes and `onLevel()`. Without one a simulated recorder runs, so the mock and the playground just work.",
       "categories": [
@@ -1546,12 +2977,22 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "f988fb38875b9a2d",
+          "hash": "1f60cad561d57d16",
           "priority": "P1",
           "capabilities": [
             "transcription"
           ],
           "variants": {
+            "variant": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
+            ],
             "presentation": [
               "pill",
               "card"
@@ -1559,10 +3000,18 @@
             "visual": [
               "bars",
               "glow"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
             ]
           },
           "runsOn": [
             "apple"
+          ],
+          "limits": [
+            "iPhone only for now (Apple SpeechAnalyzer). The app passes in the recorder (for example expo-audio); without one nothing is recorded."
           ]
         }
       },
@@ -1581,6 +3030,76 @@
           "path": "registry/components/voice-input/index.ts",
           "type": "registry:lib",
           "target": "components/ondai/voice-input/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "voice-memo",
+      "type": "registry:component",
+      "title": "VoiceMemo",
+      "description": "Talk, and get the memo back as something to act on: a title, a two-line summary and the to-dos you mentioned, ticked and ready to add. All on device.",
+      "dependencies": [
+        "@ondai/core",
+        "@ondai/tokens",
+        "lucide-react-native",
+        "react-native-reanimated",
+        "zod"
+      ],
+      "registryDependencies": [
+        "button",
+        "on-device-badge",
+        "shimmer-text",
+        "surface",
+        "voice-input"
+      ],
+      "categories": [
+        "voice"
+      ],
+      "meta": {
+        "ondai": {
+          "registryVersion": 1,
+          "hash": "5994b376a65105f4",
+          "priority": "P0",
+          "capabilities": [
+            "transcription",
+            "structured"
+          ],
+          "variants": {
+            "variant": [
+              "clean",
+              "minimal",
+              "glass",
+              "pop",
+              "candy",
+              "metal",
+              "shine",
+              "bevel"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
+            ]
+          },
+          "runsOn": [
+            "apple"
+          ],
+          "limits": [
+            "iPhone only for now: it records through VoiceInput (Apple SpeechAnalyzer), with the recorder passed in by the app."
+          ]
+        }
+      },
+      "files": [
+        {
+          "path": "registry/components/voice-memo/voice-memo.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/voice-memo/voice-memo.tsx"
+        },
+        {
+          "path": "registry/components/voice-memo/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/voice-memo/index.ts"
         }
       ]
     }

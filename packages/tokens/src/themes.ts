@@ -3,8 +3,14 @@ import { elevationLevels, radii, spacing, touchTarget } from './layout'
 import { durations, springs } from './motion'
 import { fontFamilies, fontSizes, fontWeights, lineHeights } from './typography'
 
+/** `void` is dark, `paper` is light, `system` follows the OS. `glass` is kept as an alias for dark + glass material. */
 export type ThemeName = 'void' | 'paper' | 'glass' | 'system'
 export type ColorScheme = 'dark' | 'light'
+/**
+ * How containers are drawn. `solid`: opaque cards. `glass`: blurred translucent panels on every platform.
+ * `native`: the platform's own material (Liquid Glass on iOS 26, Material 3 tonal surfaces on Android), glass elsewhere.
+ */
+export type Material = 'solid' | 'glass' | 'native'
 
 export interface ThemeInput {
   /** `system` resolves with `scheme`. */
@@ -14,6 +20,8 @@ export interface ThemeInput {
   accent?: AccentName
   /** Three stops when `accent` is `custom`. */
   customAccent?: AccentStops
+  /** Container material. Defaults to `solid` (`glass` for the `glass` theme name). */
+  material?: Material
 }
 
 export interface ThemeColors {
@@ -21,6 +29,9 @@ export interface ThemeColors {
   surface: string
   elevated: string
   elevatedHover: string
+  /** Quiet secondary fill: tracks, skeletons, secondary buttons, code spans. */
+  muted: string
+  /** Text field fill. Fields read as surface + border, never as a gray slab. */
   input: string
   hairline: string
   hairlineStrong: string
@@ -52,8 +63,25 @@ export interface ThemeColors {
   /** Glass surfaces: translucent fill over app content. */
   glassFill: string
   glassStroke: string
+  /** 1px specular line along the top inside edge of glass and raised surfaces. */
+  glassHighlight: string
+  /** Material 3 tonal containers (Android `native`). */
+  tonal: string
+  tonalHigh: string
   overlay: string
   gray: readonly string[]
+}
+
+/** CSS-syntax box shadows; React Native 0.76+ and react-native-web both take them as `boxShadow`. */
+export interface ThemeShadows {
+  /** A 1px edge drawn as a shadow, so a card has one edge and no border box. */
+  ring: string
+  /** Resting card. */
+  sm: string
+  /** Raised card, popover. */
+  md: string
+  /** Floating panel, sheet, command bar. */
+  lg: string
 }
 
 export interface Theme {
@@ -61,6 +89,7 @@ export interface Theme {
   scheme: ColorScheme
   accentName: AccentName
   colors: ThemeColors
+  shadows: ThemeShadows
   spacing: typeof spacing
   radii: typeof radii
   touchTarget: number
@@ -71,7 +100,8 @@ export interface Theme {
   springs: typeof springs
   durations: typeof durations
   elevation: typeof elevationLevels
-  /** True for `glass`: components use blur + translucent fills. */
+  material: Material
+  /** True when the material is translucent (`glass`, or `native` off Android). Components use blur + translucent fills. */
   glass: boolean
 }
 
@@ -92,21 +122,23 @@ export function resolveTheme(input: ThemeInput = {}): Theme {
   const dark = scheme === 'dark'
   const g = dark ? grayDark : grayLight
   const solid = accentName === 'mono' ? stops.a : stops.b
-  const isGlass = name === 'glass'
+  const material: Material = input.material ?? (themeName === 'glass' ? 'glass' : 'solid')
+  const isGlass = material !== 'solid'
 
   const colors: ThemeColors = {
     bg: g[0],
-    surface: isGlass ? (dark ? alpha('#0E1013', 0.72) : alpha('#FFFFFF', 0.72)) : g[1],
-    elevated: isGlass ? (dark ? alpha('#15181C', 0.8) : alpha('#FFFFFF', 0.84)) : g[2],
-    elevatedHover: g[3],
-    input: isGlass ? (dark ? alpha('#FFFFFF', 0.06) : alpha('#000000', 0.04)) : g[4],
+    surface: isGlass ? (dark ? alpha('#1C1C20', 0.52) : alpha('#FFFFFF', 0.56)) : dark ? '#121214' : '#FFFFFF',
+    elevated: isGlass ? (dark ? alpha('#26262B', 0.6) : alpha('#FFFFFF', 0.72)) : g[2],
+    elevatedHover: isGlass ? (dark ? alpha('#FFFFFF', 0.1) : alpha('#000000', 0.06)) : g[3],
+    muted: isGlass ? (dark ? alpha('#FFFFFF', 0.08) : alpha('#000000', 0.05)) : g[2],
+    input: isGlass ? (dark ? alpha('#000000', 0.18) : alpha('#FFFFFF', 0.6)) : dark ? '#0E0E10' : '#FFFFFF',
     hairline: dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
-    hairlineStrong: dark ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.14)',
+    hairlineStrong: dark ? 'rgba(255,255,255,0.14)' : 'rgba(0,0,0,0.13)',
     text: g[11],
     textSecondary: g[10],
     textTertiary: g[8],
     textDisabled: g[6],
-    onAccent: accentName === 'mono' ? (dark ? '#07080A' : '#FFFFFF') : '#07080A',
+    onAccent: accentName === 'mono' ? (dark ? '#09090B' : '#FFFFFF') : '#09090B',
     accent: {
       ...stops,
       solid,
@@ -123,17 +155,35 @@ export function resolveTheme(input: ThemeInput = {}): Theme {
     dangerSoft: alpha(semantic.danger, 0.14),
     info: semantic.info,
     infoSoft: alpha(semantic.info, 0.14),
-    glassFill: dark ? 'rgba(14,16,19,0.6)' : 'rgba(255,255,255,0.6)',
-    glassStroke: dark ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.1)',
+    glassFill: dark ? 'rgba(30,30,34,0.5)' : 'rgba(255,255,255,0.55)',
+    glassStroke: dark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.8)',
+    glassHighlight: dark ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.95)',
+    tonal: dark ? '#1D1D21' : '#F1F1F4',
+    tonalHigh: dark ? '#26262B' : '#E8E8EC',
     overlay: dark ? 'rgba(0,0,0,0.55)' : 'rgba(10,12,14,0.35)',
     gray: g,
   }
+
+  const shadows: ThemeShadows = dark
+    ? {
+        ring: isGlass ? '0 0 0 1px rgba(255,255,255,0.1)' : '0 0 0 1px rgba(255,255,255,0.07)',
+        sm: '0 1px 2px rgba(0,0,0,0.5)',
+        md: '0 1px 2px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.35)',
+        lg: '0 2px 6px rgba(0,0,0,0.5), 0 24px 48px rgba(0,0,0,0.5)',
+      }
+    : {
+        ring: isGlass ? '0 0 0 1px rgba(0,0,0,0.06)' : '0 0 0 1px rgba(0,0,0,0.07)',
+        sm: '0 1px 2px rgba(16,16,20,0.05)',
+        md: '0 1px 2px rgba(16,16,20,0.05), 0 6px 20px rgba(16,16,20,0.06)',
+        lg: '0 2px 6px rgba(16,16,20,0.05), 0 20px 48px rgba(16,16,20,0.12)',
+      }
 
   return {
     name,
     scheme,
     accentName,
     colors,
+    shadows,
     spacing,
     radii,
     touchTarget,
@@ -144,6 +194,7 @@ export function resolveTheme(input: ThemeInput = {}): Theme {
     springs,
     durations,
     elevation: elevationLevels,
+    material,
     glass: isGlass,
   }
 }
@@ -153,6 +204,8 @@ export const themes = {
   paper: resolveTheme({ theme: 'paper' }),
   glass: resolveTheme({ theme: 'glass' }),
 } as const
+
+export const materials: readonly Material[] = ['solid', 'glass', 'native']
 
 export const themeNames: readonly ThemeName[] = ['void', 'paper', 'glass', 'system']
 export const accentNames: readonly AccentName[] = ['ion', 'mono', 'aurora', 'ember', 'custom']

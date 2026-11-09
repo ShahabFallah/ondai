@@ -1,4 +1,4 @@
-export const sampleThread = `Hi team — quick update before Friday. Sam confirmed the venue for Friday at noon; parking is limited so please carpool if you can. Priya sent the revised Q4 budget this morning: marketing is down 8%, headcount stays flat, and the hardware line moved to Q1. The venue needs a final headcount by Wednesday, so reply to this thread with a yes or no. Lastly, the design review moved from Tuesday to Thursday 3pm because Jordan is out. Thanks, Alex.`
+export const sampleThread = `Hi team, quick update before Friday. Sam confirmed the venue for Friday at noon; parking is limited so please carpool if you can. Priya sent the revised Q4 budget this morning: marketing is down 8%, headcount stays flat, and the hardware line moved to Q1. The venue needs a final headcount by Wednesday, so reply to this thread with a yes or no. Lastly, the design review moved from Tuesday to Thursday 3pm because Jordan is out. Thanks, Alex.`
 
 export const sampleSummaryBullets = `- Venue confirmed for Friday at noon; carpool, parking is limited
 - Priya's revised Q4 budget: marketing down 8%, headcount flat, hardware moved to Q1

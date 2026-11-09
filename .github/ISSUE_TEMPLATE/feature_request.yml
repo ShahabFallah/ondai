@@ -1,0 +1,20 @@
+name: Feature or component request
+description: A new component, a variant, or a change to an existing one.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What should the user be able to do?
+      description: Describe the job, not the solution. "Turn a pasted address into a map pin" beats "add a geocoder".
+    validations:
+      required: true
+  - type: textarea
+    id: model
+    attributes:
+      label: What would the model do?
+      description: Text, structured output, tools, images, speech? It has to fit a small on-device model (about 4,000 tokens).
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you have tried

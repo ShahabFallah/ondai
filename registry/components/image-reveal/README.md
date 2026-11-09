@@ -1,6 +1,6 @@
 # ImageReveal
 
-An image that resolves out of a churning mosaic or an ASCII field as progress rises. The loader for anything the model draws or reads.
+An image arriving the way a diffusion model makes it: grain over a blurred field, resolved step by step.
 
 ```bash
 npx ondai add image-reveal

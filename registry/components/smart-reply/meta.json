@@ -5,9 +5,24 @@
   "category": "text",
   "priority": "P0",
   "capabilities": ["structured", "text"],
-  "variants": { "presentation": ["chips", "stack", "ghost"], "tone": ["neutral", "friendly", "formal", "brief"] },
-  "registryDependencies": ["chip", "on-device-badge", "skeleton"],
+  "variants": {
+    "variant": ["clean", "minimal", "glass", "pop", "candy", "metal", "shine", "bevel"],
+    "presentation": ["chips", "stack", "ghost"],
+    "size": ["sm", "md", "lg"],
+    "tone": ["neutral", "friendly", "formal", "brief"]
+  },
+  "registryDependencies": [
+    "button",
+    "chip",
+    "on-device-badge",
+    "shimmer-text",
+    "skeleton",
+    "surface"
+  ],
   "files": ["smart-reply.tsx", "use-smart-reply.ts", "prompts.ts", "schema.ts", "index.ts"],
-  "budget": { "input": 1200, "strategy": "Only the last 6 messages are sent, trimmed from the start." },
-  "runsOn": ["apple", "nano", "llama", "cloud"]
+  "budget": {
+    "input": 1200,
+    "strategy": "Only the last 6 messages are sent, trimmed from the start."
+  },
+  "runsOn": ["apple", "nano", "cloud"]
 }

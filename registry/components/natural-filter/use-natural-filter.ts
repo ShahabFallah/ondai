@@ -17,7 +17,8 @@ export interface UseNaturalFilterOptions<S extends z.ZodObject<z.ZodRawShape>> {
   schema: S
   instructions?: string
   aliases?: Record<string, Record<string, string[]>>
-  labels?: Partial<Record<keyof z.infer<S> & string, string>>
+  /** Display names for the schema's fields ("maxDistanceKm" → "Within"). Defaults to the humanized key. */
+  fieldLabels?: Partial<Record<keyof z.infer<S> & string, string>>
   /** Format a value for its chip. */
   format?: (key: string, value: unknown) => string
   onChange?: (filter: Partial<z.infer<S>>) => void
@@ -37,7 +38,7 @@ export interface NaturalFilterState<S extends z.ZodObject<z.ZodRawShape>> extend
 
 /** "cheap Italian open now" becomes a typed filter object. Chips are editable and removable. */
 export function useNaturalFilter<S extends z.ZodObject<z.ZodRawShape>>(options: UseNaturalFilterOptions<S>): NaturalFilterState<S> {
-  const { schema, instructions, aliases, labels, format, onChange, component = 'natural-filter', localOnly } = options
+  const { schema, instructions, aliases, fieldLabels, format, onChange, component = 'natural-filter', localOnly } = options
   const fieldInfo = useMemo(() => describeSchema(schema), [schema])
   const [filter, setFilter] = useState<Partial<z.infer<S>>>({})
   const [conf, setConf] = useState<Record<string, number>>({})
@@ -84,9 +85,9 @@ export function useNaturalFilter<S extends z.ZodObject<z.ZodRawShape>>(options: 
         .map((f) => {
           const v = (filter as Record<string, unknown>)[f.name]
           const display = format?.(f.name, v) ?? (typeof v === 'boolean' ? (v ? 'yes' : 'no') : String(v))
-          return { key: f.name, label: labels?.[f.name as never] ?? humanize(f.name), value: v, display, confidence: conf[f.name] ?? 1, options: f.options }
+          return { key: f.name, label: fieldLabels?.[f.name as never] ?? humanize(f.name), value: v, display, confidence: conf[f.name] ?? 1, options: f.options }
         }),
-    [fieldInfo, filter, conf, labels, format],
+    [fieldInfo, filter, conf, fieldLabels, format],
   )
   return {
     ...structured,

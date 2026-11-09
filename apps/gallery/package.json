@@ -17,7 +17,9 @@
   "dependencies": {
     "@expo-google-fonts/geist": "^0.4.2",
     "@expo-google-fonts/geist-mono": "^0.4.3",
+    "@expo-google-fonts/inter": "^0.4.2",
     "@ondai/core": "workspace:*",
+    "@ondai/evals": "workspace:*",
     "@ondai/playground": "workspace:*",
     "@ondai/registry": "workspace:*",
     "@ondai/tokens": "workspace:*",
@@ -29,11 +31,15 @@
     "ai": "catalog:",
     "expo": "~58.0.19",
     "expo-blur": "catalog:",
+    "expo-glass-effect": "catalog:",
+    "bot-avatars": "catalog:",
+    "@shopify/react-native-skia": "catalog:",
     "expo-build-properties": "~58.0.11",
     "expo-camera": "~58.0.12",
     "expo-clipboard": "catalog:",
     "expo-constants": "~58.0.13",
     "expo-dev-client": "~58.0.15",
+    "expo-device": "~8.0.0",
     "expo-file-system": "~58.0.11",
     "expo-font": "~58.0.10",
     "expo-haptics": "catalog:",
@@ -57,15 +63,13 @@
     "react-native-svg": "catalog:",
     "react-native-web": "catalog:",
     "react-native-worklets": "catalog:",
-    "zod": "catalog:",
-    "@ondai/evals": "workspace:*",
-    "expo-device": "~8.0.0"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
     "@ondai/config": "workspace:*",
     "@types/react": "catalog:",
-    "typescript": "catalog:",
-    "eslint": "^10.13.0"
+    "eslint": "^10.13.0",
+    "typescript": "catalog:"
   }
 }

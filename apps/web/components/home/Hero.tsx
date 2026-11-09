@@ -2,8 +2,8 @@ import Link from 'next/link'
 import type { CSSProperties, ReactNode } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { OrbFrame, TypeFrame } from './hero/InlineFrames'
-import { ProductStage } from './hero/ProductStage'
-import { Tiles } from './hero/Tiles'
+import { ModelMarks } from './hero/ModelMarks'
+import { HeroStill } from './HeroStill'
 import './hero.css'
 
 /** One headline word that rises and unblurs in the entrance sequence. */
@@ -27,7 +27,7 @@ function SplitCta() {
     </>
   )
   return (
-    <Link href="/docs/installation" className="hx-cta">
+    <Link href="/docs/installation" className="btn btn-primary hx-cta">
       <span className="hx-cta-roll">
         <span className="hx-cta-face">{face}</span>
         <span className="hx-cta-face" aria-hidden>
@@ -42,11 +42,6 @@ export function Hero() {
   return (
     <section className="hx" aria-labelledby="hero-title">
       <div className="hx-intro">
-        <p className="hx-label hx-in" style={{ '--i': 0 } as CSSProperties}>
-          Twenty-six components. Zero servers.
-        </p>
-        <Tiles />
-
         <h1 id="hero-title" className="hx-title" aria-label="Your app thinks on the phone.">
           <span className="hx-line">
             <W i={3}>Your</W>
@@ -69,18 +64,18 @@ export function Hero() {
 
         <div className="hx-actions hx-in" style={{ '--i': 12 } as CSSProperties}>
           <SplitCta />
-          <Link href="/playground" className="hx-secondary">
+          <Link href="/docs/components" className="btn btn-secondary hx-secondary">
             Browse components
           </Link>
         </div>
 
         <p className="hx-proof hx-in" style={{ '--i': 13 } as CSSProperties}>
-          <span className="hx-live-dot" aria-hidden />
-          Runs on iPhone 15 Pro, Pixel 9, and anything with Llama
+          <ModelMarks />
+          Runs on iPhone 15 Pro and Pixel 9, and newer
         </p>
       </div>
 
-      <ProductStage />
+      <HeroStill />
     </section>
   )
 }

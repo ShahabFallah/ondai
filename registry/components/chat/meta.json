@@ -1,0 +1,16 @@
+{
+  "name": "chat",
+  "title": "Chat",
+  "description": "A complete on-device conversation: streamed turns with their trace, stop mid-reply, retry, and history trimmed to the model's context.",
+  "category": "chat",
+  "priority": "P0",
+  "capabilities": ["text"],
+  "variants": {
+    "variant": ["clean", "minimal", "glass", "pop", "candy", "metal", "shine", "bevel"],
+    "replies": ["plain", "card"],
+    "size": ["sm", "md", "lg"]
+  },
+  "registryDependencies": ["assistant-message", "prompt-composer", "surface"],
+  "files": ["chat.tsx", "index.ts"],
+  "runsOn": ["apple", "nano", "cloud"]
+}

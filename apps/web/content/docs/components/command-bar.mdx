@@ -1,5 +1,5 @@
 ---
-title: "CommandBar"
+title: "Command bar"
 description: "Spotlight for your app: natural language becomes one of your registered actions or routes, chosen by on-device tool calling, with preview and confirmation."
 ---
 
@@ -7,7 +7,7 @@ description: "Spotlight for your app: natural language becomes one of your regis
 
 ## Install
 
-```bash
+```npm
 npx ondai add command-bar
 ```
 
@@ -34,21 +34,39 @@ const actions = defineActions([
 - Actions with `risk: "high"` pause in a ToolConfirmCard before running.
 - Use `routesToActions(routes, router.push)` to expose expo-router screens.
 
+## Customize
+
+Every AI component takes the same look and customization props, so it fits your app rather than ours.
+
+```tsx
+<CommandBar
+  variant="pop"
+  tint="#FF5A5F"
+  size="lg"
+  radius={12}
+  icons={{ search: Search, voice: null }}
+  labels={{ placeholder: '…', thinking: '…' }}
+/>
+```
+
+| Prop | What it does |
+| --- | --- |
+| `variant` | The look of the whole component: `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `size` | `sm`, `md`, `lg`; type, rows, icons and keys scale together |
+| `tint` | Any colour; the variant paints its keys, tiles and glow in it |
+| `radius` | Corner radius of the container |
+| `icons` | Replace any icon (a lucide component, an element, or `null` to hide it): `search`, `voice`, `thinking`, `action`, `screen`, `item`, `stepDone`, `error`, `confirm`, `result`, `resultTrailing`, `open` |
+| `labels` | Every visible and spoken string; defaults are exported as `commandBarLabels`: `placeholder`, `thinking`, `retry`, `cancel`, `approve`, `needsApproval`, `run`, `close`, `recent`, `suggestions`, `groupActions`, `groupScreens`, `groupItems`, `empty`, `openButton`, `closeButton`, `inputLabel`, `voiceLabel` |
+| Slots | Draw a part yourself: `renderIcon`, `renderAction`, `renderResult`, `renderConfirm`, `renderEmpty`, `renderFooter` |
+| `styles` | Style any named part |
+
 ## Variants
 
 | Prop | Options |
 | --- | --- |
 | `presentation` | `spotlight`, `sheet`, `inline`, `pill`, `fullscreen` |
-| `variant` | `glass`, `solid`, `minimal` |
+| `variant` | `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
 | `size` | `sm`, `md`, `lg` |
-
-Every variant is live in the [playground](/playground/command-bar).
-
-## Runs on
-
-| Capability | Apple FM | Gemini Nano | Llama | Cloud |
-| --- | --- | --- | --- | --- |
-| tools, structured, text | ✅ | ✅ | ✅ | ✅ |
 
 ## Token budget
 
@@ -64,6 +82,6 @@ Fixtures: `evals/command-bar/fixtures.json`.
 
 ## Files
 
-Registry dependencies: [ion-border](/docs/components/ion-border), [key-hint](/docs/components/key-hint), [on-device-badge](/docs/components/on-device-badge), [sheet](/docs/components/sheet), [streaming-text](/docs/components/streaming-text), [thinking-indicator](/docs/components/thinking-indicator), [tool-confirm-card](/docs/components/tool-confirm-card)
+Registry dependencies: [button](/docs/components/button), [key-hint](/docs/components/key-hint), [on-device-badge](/docs/components/on-device-badge), [sheet](/docs/components/sheet), [shimmer-text](/docs/components/shimmer-text), [skeleton](/docs/components/skeleton), [streaming-text](/docs/components/streaming-text), [surface](/docs/components/surface)
 
 npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-haptics`, `lucide-react-native`, `react-native-reanimated`, `zod`

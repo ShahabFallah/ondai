@@ -1,14 +1,29 @@
 {
   "name": "@ondai/playground",
   "version": "0.1.0",
+  "private": true,
   "description": "definePlayground: one controls + mock-script definition that drives the web playground, on-device stories and visual tests.",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
-  "exports": { ".": "./src/index.ts", "./host": "./src/host.tsx" },
-  "scripts": { "typecheck": "tsc --noEmit", "test": "vitest run", "lint": "eslint src" },
-  "dependencies": { "@ondai/core": "workspace:*", "@ondai/tokens": "workspace:*" },
-  "peerDependencies": { "react": ">=19", "react-native": ">=0.76", "react-native-reanimated": ">=4" },
+  "exports": {
+    ".": "./src/index.ts",
+    "./host": "./src/host.tsx"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@ondai/core": "workspace:*",
+    "@ondai/tokens": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": ">=19",
+    "react-native": ">=0.76",
+    "react-native-reanimated": ">=4"
+  },
   "devDependencies": {
     "@ondai/config": "workspace:*",
     "@types/react": "catalog:",

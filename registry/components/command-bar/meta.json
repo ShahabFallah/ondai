@@ -5,10 +5,34 @@
   "category": "agentic",
   "priority": "P0",
   "capabilities": ["tools", "structured", "text"],
-  "variants": { "presentation": ["spotlight", "sheet", "inline", "pill", "fullscreen"], "variant": ["glass", "solid", "minimal"], "size": ["sm", "md", "lg"] },
-  "registryDependencies": ["ion-border", "key-hint", "on-device-badge", "sheet", "streaming-text", "thinking-indicator", "tool-confirm-card"],
-  "files": ["command-bar.tsx", "use-command-bar.ts", "actions.ts", "prompts.ts", "schema.ts", "index.ts"],
-  "budget": { "input": 1200, "strategy": "Top 5 tools preselected by keyword relevance; the query is truncated to the budget." },
-  "runsOn": ["apple", "nano", "llama", "cloud"],
-  "docs": "Register actions with defineActions(); risky actions (risk: 'high') ask before running."
+  "variants": {
+    "presentation": ["spotlight", "sheet", "inline", "pill", "fullscreen"],
+    "variant": ["clean", "minimal", "glass", "pop", "candy", "metal", "shine", "bevel"],
+    "size": ["sm", "md", "lg"]
+  },
+  "registryDependencies": [
+    "button",
+    "key-hint",
+    "on-device-badge",
+    "sheet",
+    "shimmer-text",
+    "skeleton",
+    "streaming-text",
+    "surface"
+  ],
+  "files": [
+    "command-bar.tsx",
+    "use-command-bar.ts",
+    "actions.ts",
+    "prompts.ts",
+    "schema.ts",
+    "index.ts"
+  ],
+  "budget": {
+    "input": 1200,
+    "strategy": "Top 5 tools preselected by keyword relevance; the query is truncated to the budget."
+  },
+  "runsOn": ["apple", "nano", "cloud"],
+  "docs": "Register actions with defineActions(); risky actions (risk: 'high') ask before running.",
+  "limits": ["On Gemini Nano it picks the action from structured output instead of tool calls."]
 }

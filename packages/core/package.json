@@ -3,6 +3,26 @@
   "version": "0.1.0",
   "description": "On-device AI runtime for React Native: capability router, availability, hooks, small-model helpers and a scripted mock provider.",
   "license": "MIT",
+  "author": "Shahab Fallah",
+  "homepage": "https://ondai.dev",
+  "bugs": {
+    "url": "https://github.com/ShahabFallah/ondai/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShahabFallah/ondai.git",
+    "directory": "packages/core"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "on-device-ai",
+    "apple-intelligence",
+    "foundation-models",
+    "gemini-nano",
+    "llm",
+    "ai-sdk"
+  ],
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -58,7 +78,8 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsdown",

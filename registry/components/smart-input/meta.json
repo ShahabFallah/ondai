@@ -5,9 +5,25 @@
   "category": "input",
   "priority": "P0",
   "capabilities": ["structured"],
-  "variants": { "presentation": ["field", "composer", "overlay", "card"], "confidenceStyle": ["highlight", "badge", "underline"] },
-  "registryDependencies": ["button", "chip", "field", "ion-border", "on-device-badge"],
+  "variants": {
+    "variant": ["clean", "minimal", "glass", "pop", "candy", "metal", "shine", "bevel"],
+    "presentation": ["field", "composer", "overlay", "card"],
+    "size": ["sm", "md", "lg"],
+    "confidenceStyle": ["highlight", "badge", "underline"]
+  },
+  "registryDependencies": [
+    "button",
+    "chip",
+    "ion-border",
+    "on-device-badge",
+    "shimmer-text",
+    "skeleton",
+    "surface"
+  ],
   "files": ["smart-input.tsx", "use-smart-form.ts", "prompts.ts", "index.ts"],
-  "budget": { "input": 1500, "strategy": "One structured call; enum/number/date fields are refined deterministically after parsing." },
-  "runsOn": ["apple", "nano", "llama", "cloud"]
+  "budget": {
+    "input": 1500,
+    "strategy": "One structured call; enum/number/date fields are refined deterministically after parsing."
+  },
+  "runsOn": ["apple", "nano", "cloud"]
 }

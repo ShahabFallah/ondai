@@ -1,13 +1,21 @@
 {
   "name": "voice-input",
   "title": "VoiceInput",
-  "description": "Push-to-talk that transcribes on device: a round mic, a level-driven waveform or glow, then the transcript with Use and Retry.",
+  "description": "Push-to-talk that transcribes on device: the mic is the variant's key, a waveform drawn in the variant, then the transcript with Use and Retry.",
   "category": "voice",
   "priority": "P1",
   "capabilities": ["transcription"],
-  "variants": { "presentation": ["pill", "card"], "visual": ["bars", "glow"] },
-  "registryDependencies": ["button", "streaming-text"],
+  "variants": {
+    "variant": ["clean", "minimal", "glass", "pop", "candy", "metal", "shine", "bevel"],
+    "presentation": ["pill", "card"],
+    "visual": ["bars", "glow"],
+    "size": ["sm", "md", "lg"]
+  },
+  "registryDependencies": ["button", "shimmer-text", "streaming-text", "surface"],
   "files": ["voice-input.tsx", "use-voice-input.ts", "index.ts"],
   "runsOn": ["apple"],
-  "docs": "Audio capture is not bundled: pass `recorder` (expo-audio, react-native-audio-record or your own module) with `start()`, `stop()` → WAV/PCM bytes and `onLevel()`. Without one a simulated recorder runs, so the mock and the playground just work."
+  "docs": "Audio capture is not bundled: pass `recorder` (expo-audio, react-native-audio-record or your own module) with `start()`, `stop()` → WAV/PCM bytes and `onLevel()`. Without one a simulated recorder runs, so the mock and the playground just work.",
+  "limits": [
+    "iPhone only for now (Apple SpeechAnalyzer). The app passes in the recorder (for example expo-audio); without one nothing is recorded."
+  ]
 }

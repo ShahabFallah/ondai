@@ -1,5 +1,5 @@
 ---
-title: "ScanToData"
+title: "Scan to data"
 description: "Camera or photo becomes structured data (receipt, business card, event, or your own schema) via on-device OCR and the local model."
 ---
 
@@ -7,7 +7,7 @@ description: "Camera or photo becomes structured data (receipt, business card, e
 
 ## Install
 
-```bash
+```npm
 npx ondai add scan-to-data
 ```
 
@@ -27,20 +27,40 @@ import TextRecognition from '@react-native-ml-kit/text-recognition'
 - OCR runs on device through the `ocr` function you pass (ML Kit, Apple Vision). The model only sees text, which also keeps the request inside the 4K budget.
 - Presets: `receipt`, `businessCard`, `event`; or `preset="custom"` with your own zod schema.
 
+## Customize
+
+Every AI component takes the same look and customization props, so it fits your app rather than ours.
+
+```tsx
+<ScanToData
+  variant="pop"
+  tint="#FF5A5F"
+  size="lg"
+  radius={12}
+  icons={{ scan: Search, camera: null }}
+  labels={{ subject: '…', scan: '…' }}
+/>
+```
+
+| Prop | What it does |
+| --- | --- |
+| `variant` | The look of the whole component: `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `size` | `sm`, `md`, `lg`; type, rows, icons and keys scale together |
+| `tint` | Any colour; the variant paints its keys, tiles and glow in it |
+| `radius` | Corner radius of the container |
+| `icons` | Replace any icon (a lucide component, an element, or `null` to hide it): `scan`, `camera`, `library`, `reading`, `finding`, `done`, `error`, `retake` |
+| `labels` | Every visible and spoken string; defaults are exported as `scanToDataLabels`: `subject`, `scan`, `scanHint`, `takePhoto`, `choosePhoto`, `noOcr`, `reading`, `read`, `gotText`, `lines`, `finding`, `findingMany`, `andMore`, `found`, `foundOne`, `fromYour`, `check`, `scanAgain`, `use`, `retake`, `error`, `scanning`, `scanAnother` |
+| Slots | Draw a part yourself: `renderEmpty`, `renderRow`, `renderResult`, `renderUse` |
+| `styles` | Style any named part |
+
 ## Variants
 
 | Prop | Options |
 | --- | --- |
+| `variant` | `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
 | `presentation` | `camera`, `picker`, `card` |
+| `size` | `sm`, `md`, `lg` |
 | `preset` | `receipt`, `businessCard`, `event`, `custom` |
-
-Every variant is live in the [playground](/playground/scan-to-data).
-
-## Runs on
-
-| Capability | Apple FM | Gemini Nano | Llama | Cloud |
-| --- | --- | --- | --- | --- |
-| structured, vision | ✅ | ✅ | ✅ | ✅ |
 
 ## Token budget
 
@@ -56,6 +76,6 @@ Fixtures: `evals/scan-to-data/fixtures.json`.
 
 ## Files
 
-Registry dependencies: [button](/docs/components/button), [field](/docs/components/field), [image-reveal](/docs/components/image-reveal), [ion-border](/docs/components/ion-border), [on-device-badge](/docs/components/on-device-badge), [skeleton](/docs/components/skeleton)
+Registry dependencies: [button](/docs/components/button), [on-device-badge](/docs/components/on-device-badge), [shimmer-text](/docs/components/shimmer-text), [surface](/docs/components/surface)
 
-npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-haptics`, `expo-image-picker`, `lucide-react-native`, `react-native-reanimated`, `zod`
+npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-haptics`, `expo-image-picker`, `lucide-react-native`, `react-native-reanimated`, `react-native-svg`, `zod`

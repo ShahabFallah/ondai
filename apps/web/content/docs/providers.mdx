@@ -1,15 +1,16 @@
 ---
 title: "Providers"
-description: "Apple Foundation Models, Gemini Nano, llama.rn and cloud, through the Callstack react-native-ai providers."
+description: "Apple Foundation Models, Gemini Nano and cloud, through the Callstack react-native-ai providers. Llama is not supported yet."
 ---
 
 Ondai reaches models only through `@ondai/core` adapters, which wrap the [Callstack react-native-ai](https://github.com/callstackincubator/ai) packages (0.12, Vercel AI SDK v6).
 
+
 | Provider | Package | Capabilities | Notes |
 | --- | --- | --- | --- |
-| Apple Foundation Models | `@react-native-ai/apple` | text, structured (constrained decoding), tools, embeddings, transcription, speech | iOS 26+, Apple Intelligence on. 4,096-token context on iOS 26. No image input in 0.12. |
-| Gemini Nano | `@react-native-ai/adk` | text, structured (JSON, no schema enforcement), tools, vision | Android 14+ physical device with AICore, foreground only, per-app quotas. |
-| Llama | `@react-native-ai/llama` | text, structured (prompted), embeddings | Opt-in GGUF download (~1 GB). Requires `llama.rn`. |
+| Apple Foundation Models | `@react-native-ai/apple` | text, structured (constrained decoding), tools, embeddings, transcription, speech | iOS 26+, Apple Intelligence on. 4,096-token context. No image input: Apple's model takes images from iOS 27, but the 0.12 package does not pass them on. |
+| Gemini Nano | `@react-native-ai/adk` | text, structured (schema in the prompt, validated by Ondai), vision | Android 14+ physical device with AICore, foreground only, per-app quotas. Image input is in beta. Tool calling is an alpha preview, so Ondai does not route tools to Nano. |
+| Llama (not supported yet) | `@react-native-ai/llama` | text, structured (schema in the prompt), embeddings | The adapter exists, but `llama.rn` does not support the React Native version Ondai targets yet. Opt-in GGUF download (~1 GB). |
 | Cloud | any AI SDK model | whatever the model supports | Only with `allowCloud: true`. |
 
 ```ts
@@ -28,8 +29,13 @@ import { cloudAdapter } from '@ondai/core'
 
 ## Gemini Nano specifics
 
+`@react-native-ai/adk` 0.12 rejects a response schema, so the Nano adapter sets `structuredOutput: 'prompt'`: Ondai puts the JSON Schema in the instructions, parses the reply and validates it with zod (any provider that rejects a schema falls back the same way on its own).
+
 `isNanoSupported()` says whether the device can ever run Nano; `isAvailable('genai-nano')` says whether it is ready now (downloading shows as `preparing`). Add `minSdkVersion 26` and the packaging excludes from the ADK README through `expo-build-properties`.
 
-## Llama specifics
+## Llama specifics (not supported yet)
+
+`llama.rn` does not support the React Native version Ondai targets yet.
+
 
 `llamaAdapter({ modelId: 'owner/repo/file.gguf', autoDownload: 'wifi-only' })` reports `unavailable: model-downloading` until the app calls `download()`. Keep it opt-in and show `ModelDownload`.

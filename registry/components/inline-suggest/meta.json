@@ -1,0 +1,15 @@
+{
+  "name": "inline-suggest",
+  "title": "InlineSuggest",
+  "description": "A text field that offers the rest of the sentence as ghost text while the person types, from the on-device model. Tab or the Add key takes it.",
+  "category": "input",
+  "priority": "P0",
+  "capabilities": ["text"],
+  "variants": {
+    "variant": ["clean", "minimal", "glass", "pop", "candy", "metal", "shine", "bevel"],
+    "size": ["sm", "md", "lg"]
+  },
+  "registryDependencies": ["button", "key-hint", "on-device-badge", "shimmer-text", "surface"],
+  "files": ["inline-suggest.tsx", "index.ts"],
+  "runsOn": ["apple", "nano", "cloud"]
+}

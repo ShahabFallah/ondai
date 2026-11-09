@@ -3,9 +3,37 @@
   "version": "0.1.0",
   "description": "Add beautiful on-device AI components to your React Native app. npx ondai add command-bar",
   "license": "MIT",
+  "author": "Shahab Fallah",
+  "homepage": "https://ondai.dev",
+  "bugs": {
+    "url": "https://github.com/ShahabFallah/ondai/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShahabFallah/ondai.git",
+    "directory": "packages/cli"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "cli",
+    "components",
+    "registry",
+    "on-device-ai",
+    "shadcn"
+  ],
+  "engines": {
+    "node": ">=20.19"
+  },
   "type": "module",
-  "bin": { "ondai": "./dist/index.js" },
-  "files": ["dist", "README.md"],
+  "bin": {
+    "ondai": "./dist/index.mjs"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsdown",
     "dev": "tsx src/index.ts",

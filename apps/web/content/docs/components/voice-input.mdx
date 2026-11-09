@@ -1,13 +1,13 @@
 ---
-title: "VoiceInput"
-description: "Push-to-talk that transcribes on device: a round mic, a level-driven waveform or glow, then the transcript with Use and Retry."
+title: "Voice input"
+description: "Push-to-talk that transcribes on device: the mic is the variant's key, a waveform drawn in the variant, then the transcript with Use and Retry."
 ---
 
 <ComponentPreview name="voice-input" state="listening" height={320} />
 
 ## Install
 
-```bash
+```npm
 npx ondai add voice-input
 ```
 
@@ -29,20 +29,40 @@ const recorder: Recorder = {
 - Transcription runs on device through `useTranscribe` (Apple SpeechAnalyzer on iOS 26). Without a `recorder` a simulated one runs, so the mock and the playground work out of the box.
 - `mode="hold"` is push-to-talk; `mode="tap"` toggles. `visual` is `bars` (a rippling waveform) or `glow` (a bloom rising from the bottom edge).
 
+## Customize
+
+Every AI component takes the same look and customization props, so it fits your app rather than ours.
+
+```tsx
+<VoiceInput
+  variant="pop"
+  tint="#FF5A5F"
+  size="lg"
+  radius={12}
+  icons={{ mic: Search, stop: null }}
+  labels={{ holdHint: '…', tapHint: '…' }}
+/>
+```
+
+| Prop | What it does |
+| --- | --- |
+| `variant` | The look of the whole component: `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `size` | `sm`, `md`, `lg`; type, rows, icons and keys scale together |
+| `tint` | Any colour; the variant paints its keys, tiles and glow in it |
+| `radius` | Corner radius of the container |
+| `icons` | Replace any icon (a lucide component, an element, or `null` to hide it): `mic`, `stop`, `unavailable`, `retry`, `use` |
+| `labels` | Every visible and spoken string; defaults are exported as `voiceInputLabels`: `holdHint`, `tapHint`, `listening`, `transcribing`, `releaseToStop`, `tapToStop`, `prompt`, `voice`, `transcript`, `use`, `retry`, `unavailable`, `error`, `start`, `stop`, `holding`, `unavailableKey` |
+| Slots | Draw a part yourself: `renderMic`, `renderTranscript`, `renderActions` |
+| `styles` | Style any named part |
+
 ## Variants
 
 | Prop | Options |
 | --- | --- |
+| `variant` | `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
 | `presentation` | `pill`, `card` |
 | `visual` | `bars`, `glow` |
-
-Every variant is live in the [playground](/playground/voice-input).
-
-## Runs on
-
-| Capability | Apple FM | Gemini Nano | Llama | Cloud |
-| --- | --- | --- | --- | --- |
-| transcription | ✅ | No | No | No |
+| `size` | `sm`, `md`, `lg` |
 
 ## Fallback
 
@@ -54,6 +74,6 @@ No model-driven fixtures for this component.
 
 ## Files
 
-Registry dependencies: [button](/docs/components/button), [streaming-text](/docs/components/streaming-text)
+Registry dependencies: [button](/docs/components/button), [shimmer-text](/docs/components/shimmer-text), [streaming-text](/docs/components/streaming-text), [surface](/docs/components/surface)
 
 npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-haptics`, `lucide-react-native`, `react-native-reanimated`, `react-native-svg`

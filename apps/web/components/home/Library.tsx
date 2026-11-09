@@ -1,28 +1,30 @@
 import Link from 'next/link'
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
-import { Download, Smartphone } from 'lucide-react'
-import { manifest, type ManifestEntry } from '@ondai/registry/manifest'
+import { Smartphone } from 'lucide-react'
+import type { ManifestEntry } from '@ondai/registry/manifest'
+import { aiComponents, displayTitle } from '@/lib/ai-components'
+import { LoopShot } from '@/components/site/LoopShot'
 import { Reveal } from './Reveal'
 
 const thumbsDir = [join(process.cwd(), 'public', 'thumbs'), join(process.cwd(), 'apps', 'web', 'public', 'thumbs')].find((d) => existsSync(d))
-const withThumb = manifest.filter((m) => m.hasPlayground && !!thumbsDir && existsSync(join(thumbsDir, `${m.name}.png`)))
+const withThumb = aiComponents.filter((m) => !!thumbsDir && existsSync(join(thumbsDir, 'light', `${m.name}.webp`)))
+const hasLoop = (name: string) => !!thumbsDir && existsSync(join(thumbsDir, '..', 'loops', 'light', `${name}.mp4`)) && existsSync(join(thumbsDir, '..', 'loops', 'dark', `${name}.mp4`))
 const half = Math.ceil(withThumb.length / 2)
 const rows = [withThumb.slice(0, half), withThumb.slice(half)]
 
 const devices = [
   { icon: Smartphone, text: 'iPhone 15 Pro and newer' },
   { icon: Smartphone, text: 'Pixel 9 and newer' },
-  { icon: Download, text: 'Any phone, with Llama' },
 ]
 
 function Tile({ m, ghost }: { m: ManifestEntry; ghost?: boolean }) {
   return (
-    <Link href={`/playground/${m.name}`} className="wall-tile" tabIndex={ghost ? -1 : undefined} aria-hidden={ghost || undefined}>
+    <Link href={`/docs/components/${m.name}`} className="wall-tile" tabIndex={ghost ? -1 : undefined} aria-hidden={ghost || undefined}>
       <span className="wall-shot">
-        <img src={`/thumbs/${m.name}.png`} alt="" width={960} height={600} loading="lazy" decoding="async" />
+        <LoopShot name={m.name} loop={!ghost && hasLoop(m.name)} />
       </span>
-      <span className="wall-name">{m.title}</span>
+      <span className="wall-name">{displayTitle(m.title)}</span>
     </Link>
   )
 }
@@ -33,7 +35,7 @@ export function Library() {
       <div className="wrap">
         <header className="home-head">
           <h2 id="library" className="home-h2">
-            {withThumb.length} components. All yours.
+            Every component is yours.
           </h2>
           <p className="home-sub">Copy the source. Change anything.</p>
         </header>

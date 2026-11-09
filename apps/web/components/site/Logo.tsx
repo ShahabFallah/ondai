@@ -8,8 +8,8 @@ import './logo.css'
  * Stroke contrast follows the type: the die's sides are 20 units and its top and bottom 17.5 units of
  * 100, matching Inter SemiBold's stems and bowls at the display optical size.
  *
- * Hover (on the logo or any ancestor link): the core turns a quarter on a spring and lights up violet,
- * while one ion glint sweeps across the die. 600 ms. Under reduced motion only the light changes.
+ * Hover (on the logo or any ancestor link): the core turns a quarter on a spring and dims,
+ * while one grey glint sweeps across the die. 600 ms. Under reduced motion only the light changes.
  */
 
 // Generated once (superellipse sampled at 72 points, 1 decimal) and kept literal so SSR and the client agree.
@@ -20,6 +20,10 @@ const INNER =
 const CORE =
   'M60.5 50L60.4 54.2L60.2 55.8L59.9 57.1L59.4 58.1L58.8 58.8L58.1 59.4L57.1 59.9L55.8 60.2L54.2 60.4L50 60.5L45.8 60.4L44.2 60.2L42.9 59.9L41.9 59.4L41.2 58.8L40.6 58.1L40.1 57.1L39.8 55.8L39.6 54.2L39.5 50L39.6 45.8L39.8 44.2L40.1 42.9L40.6 41.9L41.2 41.2L41.9 40.6L42.9 40.1L44.2 39.8L45.8 39.6L50 39.5L54.2 39.6L55.8 39.8L57.1 40.1L58.1 40.6L58.8 41.2L59.4 41.9L59.9 42.9L60.2 44.2L60.4 45.8Z'
 const RING = OUTER + INNER
+
+/** The chip in its 100-unit box, for drawings that rebuild the logo (the ring fills even-odd). */
+export const CHIP_RING = RING
+export const CHIP_CORE = CORE
 
 function Chip({ className, style }: { className: string; style?: CSSProperties }) {
   const uid = useId().replace(/[^a-zA-Z0-9_-]/g, '')
@@ -32,11 +36,9 @@ function Chip({ className, style }: { className: string; style?: CSSProperties }
           <path d={RING} clipRule="evenodd" />
         </clipPath>
         <linearGradient id={glint} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#7cf7ff" stopOpacity="0" />
-          <stop offset="0.35" stopColor="#7cf7ff" />
-          <stop offset="0.6" stopColor="#8b7cff" />
-          <stop offset="0.85" stopColor="#ff7ce5" />
-          <stop offset="1" stopColor="#ff7ce5" stopOpacity="0" />
+          <stop offset="0" stopColor="currentColor" stopOpacity="0" />
+          <stop offset="0.5" stopColor="#9a9aa2" />
+          <stop offset="1" stopColor="currentColor" stopOpacity="0" />
         </linearGradient>
       </defs>
       <path className="ondai-chip-ring" d={RING} fillRule="evenodd" fill="currentColor" />

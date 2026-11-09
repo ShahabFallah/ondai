@@ -1,0 +1,1 @@
+export { InlineSuggest, inlineSuggestLabels, joinSuggestion, type InlineSuggestIcons, type InlineSuggestLabels, type InlineSuggestProps, type InlineSuggestStyles, type SuggestSlotProps } from './inline-suggest'

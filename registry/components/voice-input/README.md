@@ -1,6 +1,6 @@
 # VoiceInput
 
-Push-to-talk that transcribes on device: a round mic, a level-driven waveform or glow, then the transcript with Use and Retry.
+Push-to-talk that transcribes on device: the mic is the variant's key, a waveform drawn in the variant, then the transcript with Use and Retry.
 
 ```bash
 npx ondai add voice-input

@@ -25,6 +25,8 @@ export interface Ondai {
   adapter(id: ProviderId): ProviderAdapter | undefined
   /** First provider that is ready and supports the capability. Throws OndaiError('unavailable'). */
   resolve(capability: Capability, options?: ResolveOptions): Promise<Resolved>
+  /** Every ready provider for the capability, in policy order: the first, then the fallbacks. Throws like `resolve`. */
+  resolveAll(capability: Capability, options?: ResolveOptions): Promise<Resolved[]>
   /** Overall availability for a capability (the best candidate's state, or unavailable). */
   availability(capability?: Capability, options?: ResolveOptions): Promise<Availability>
   /** Cached availability per provider, refreshed with `refresh()`. */
@@ -115,6 +117,15 @@ export function createOndai(config: OndaiConfig): Ondai {
       }
       const reason = best?.status === 'preparing' ? 'model-downloading' : best?.status === 'unavailable' ? best.reason : 'no-provider'
       throw new OndaiError('unavailable', errorMessages.unavailable, { raw: best ?? reason })
+    },
+    async resolveAll(capability, options) {
+      const ready: Resolved[] = []
+      for (const a of candidates(capability, options)) {
+        const av = await availabilityOf(a.id)
+        if (av.status === 'ready') ready.push({ adapter: a, provider: a.id, locality: a.locality })
+      }
+      if (ready.length) return ready
+      return [await ondai.resolve(capability, options)]
     },
     async availability(capability = 'text', options) {
       const list = candidates(capability, options)

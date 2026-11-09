@@ -2,6 +2,7 @@ import { coerceValue, serializeValue, type ControlValues, type Controls } from '
 import type { PlaygroundDef } from './define'
 
 export type PlaygroundTheme = 'void' | 'paper' | 'glass'
+export type PlaygroundMaterial = 'solid' | 'glass' | 'native'
 export type PlaygroundAccent = 'ion' | 'mono' | 'aurora' | 'ember'
 export type PlaygroundDevice = 'apple' | 'nano' | 'llama' | 'unavailable'
 
@@ -9,6 +10,8 @@ export interface PlaygroundQuery<CS extends Controls = Controls> {
   props: ControlValues<CS>
   state: string
   theme: PlaygroundTheme
+  /** Container material: solid cards, blurred glass, or the platform's own (glass on web). */
+  material: PlaygroundMaterial
   accent: PlaygroundAccent
   /** `off` freezes animation (review + visual tests). */
   motion: 'system' | 'off'
@@ -25,10 +28,11 @@ export interface PlaygroundQuery<CS extends Controls = Controls> {
   frame: 'iphone' | 'android' | 'none'
 }
 
-export const reservedKeys = ['state', 'theme', 'accent', 'motion', 'clock', 't', 'tps', 'device', 'embed', 'frame'] as const
+export const reservedKeys = ['state', 'theme', 'material', 'accent', 'motion', 'clock', 't', 'tps', 'device', 'embed', 'frame'] as const
 
 export const queryDefaults: Omit<PlaygroundQuery, 'props' | 'state'> = {
   theme: 'void',
+  material: 'solid',
   accent: 'ion',
   motion: 'system',
   clock: 'real',
@@ -55,6 +59,7 @@ export function decodeQuery<CS extends Controls>(def: PlaygroundDef<CS>, params:
     props: props as ControlValues<CS>,
     state,
     theme: pick(params.get('theme'), ['void', 'paper', 'glass'], queryDefaults.theme),
+    material: pick(params.get('material'), ['solid', 'glass', 'native'], params.get('theme') === 'glass' ? 'glass' : queryDefaults.material),
     accent: pick(params.get('accent'), ['ion', 'mono', 'aurora', 'ember'], queryDefaults.accent),
     motion: pick(params.get('motion'), ['system', 'off'], queryDefaults.motion),
     clock: pick(params.get('clock'), ['real', 'manual'], queryDefaults.clock),
@@ -74,7 +79,7 @@ export function encodeQuery<CS extends Controls>(def: PlaygroundDef<CS>, q: Play
     if (v !== undefined && v !== c.default) sp.set(k, serializeValue(c, v))
   }
   if (q.state !== def.defaultState) sp.set('state', q.state)
-  for (const k of ['theme', 'accent', 'motion', 'clock', 'device', 'frame'] as const) {
+  for (const k of ['theme', 'material', 'accent', 'motion', 'clock', 'device', 'frame'] as const) {
     if (q[k] !== queryDefaults[k]) sp.set(k, String(q[k]))
   }
   if (q.t !== queryDefaults.t) sp.set('t', String(q.t))

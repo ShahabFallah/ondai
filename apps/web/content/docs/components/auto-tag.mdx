@@ -1,5 +1,5 @@
 ---
-title: "AutoTag"
+title: "Auto tag"
 description: "Tag and category suggestions constrained to the app's own list, fuzzy-matched after the model answers."
 ---
 
@@ -7,7 +7,7 @@ description: "Tag and category suggestions constrained to the app's own list, fu
 
 ## Install
 
-```bash
+```npm
 npx ondai add auto-tag
 ```
 
@@ -21,19 +21,39 @@ import { AutoTag } from '@/components/ondai/auto-tag'
 
 - The model can only pick from your list; results are fuzzy-matched back to it, so "Travel" becomes `travel`.
 
+## Customize
+
+Every AI component takes the same look and customization props, so it fits your app rather than ours.
+
+```tsx
+<AutoTag
+  variant="pop"
+  tint="#FF5A5F"
+  size="lg"
+  radius={12}
+  icons={{ header: Search, add: null }}
+  labels={{ title: '…', thinking: '…' }}
+/>
+```
+
+| Prop | What it does |
+| --- | --- |
+| `variant` | The look of the whole component: `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `size` | `sm`, `md`, `lg`; type, rows, icons and keys scale together |
+| `tint` | Any colour; the variant paints its keys, tiles and glow in it |
+| `radius` | Corner radius of the container |
+| `icons` | Replace any icon (a lucide component, an element, or `null` to hide it): `header`, `add`, `accepted`, `tag`, `addAll`, `empty`, `error` |
+| `labels` | Every visible and spoken string; defaults are exported as `autoTagLabels`: `title`, `thinking`, `suggested`, `pending`, `addAll`, `empty`, `add`, `remove` |
+| Slots | Draw a part yourself: `renderTag`, `renderEmpty`, `renderAddAll` |
+| `styles` | Style any named part |
+
 ## Variants
 
 | Prop | Options |
 | --- | --- |
 | `presentation` | `chips`, `inlineGhost`, `dropdown` |
-
-Every variant is live in the [playground](/playground/auto-tag).
-
-## Runs on
-
-| Capability | Apple FM | Gemini Nano | Llama | Cloud |
-| --- | --- | --- | --- | --- |
-| structured | ✅ | ✅ | ✅ | ✅ |
+| `variant` | `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
+| `size` | `sm`, `md`, `lg` |
 
 ## Token budget
 
@@ -49,6 +69,6 @@ Fixtures: `evals/auto-tag/fixtures.json`.
 
 ## Files
 
-Registry dependencies: [chip](/docs/components/chip), [on-device-badge](/docs/components/on-device-badge), [skeleton](/docs/components/skeleton)
+Registry dependencies: [button](/docs/components/button), [chip](/docs/components/chip), [on-device-badge](/docs/components/on-device-badge), [shimmer-text](/docs/components/shimmer-text), [surface](/docs/components/surface), [skeleton](/docs/components/skeleton)
 
 npm dependencies: `@ondai/core`, `@ondai/tokens`, `expo-haptics`, `lucide-react-native`, `react-native-reanimated`, `zod`

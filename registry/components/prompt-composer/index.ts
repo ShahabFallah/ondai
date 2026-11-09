@@ -1,0 +1,1 @@
+export { PromptComposer, promptComposerLabels, type ComposerAttachment, type ComposerSendProps, type PromptComposerIcons, type PromptComposerLabels, type PromptComposerProps, type PromptComposerStyles } from './prompt-composer'

@@ -20,3 +20,18 @@ apps/web/.source/
 
 # Internal working notes, never committed
 HANDOFF-*.md
+
+# Mac bridge binary (pnpm bridge)
+apps/gallery/bridge/.build/
+
+# Personal and tooling files: kept locally, never published
+.claude/
+.cursor/
+.windsurf/
+.agents/
+skills-lock.json
+CLAUDE.md
+apps/web/AGENTS.md
+insp/
+# Internal project docs (design records, notes, contact sheets): kept locally
+/docs/

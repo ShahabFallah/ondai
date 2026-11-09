@@ -5,7 +5,7 @@ export default definePlayground({
   name: 'availability-gate',
   title: 'AvailabilityGate',
   category: 'primitive',
-  description: 'Renders children only when the on-device model is ready; otherwise an elegant empty state or download progress.',
+  description: 'Renders children only when the on-device model is ready; otherwise a quiet empty state or download progress.',
   component: AvailabilityGateDemo,
   controls: { variant: select(['card', 'inline', 'fullscreen'], 'card', 'Variant') },
   variantKeys: ['variant'],

@@ -49,7 +49,7 @@ const commandBar: ScriptSource = (call: MockCallInfo) => {
   const p = call.prompt.trim()
   const q = p.toLowerCase()
   if (turn(p) % 2 === 1) return mockScript.text('Done.')
-  const think = mockScript.thinking(650)
+  const think = mockScript.thinking(480)
   if (/\b(e-?mail|mail|message|write to|tell)\b/.test(q)) {
     const to = q.match(/\b(?:e-?mail|mail|message|tell|to)\s+([a-z]+)/)?.[1]
     const subject = cap(clean(p.replace(/\b(e-?mail|mail|message|write to|tell)\b\s*\w*\s*(that|about)?/i, ''))) || 'Quick note'
@@ -69,13 +69,12 @@ const commandBar: ScriptSource = (call: MockCallInfo) => {
 const smartInput: ScriptSource = (call: MockCallInfo) => {
   const p = call.prompt.trim()
   const q = p.toLowerCase()
-  return mockScript.thinking(650).object({
+  return mockScript.thinking(480).object({
     merchant: merchant(p) ?? cap(q.split(/\s+/).find((w) => w.length > 3) ?? 'Somewhere'),
     amount: money(q) ?? 0,
     currency: currency(q),
     category: category(q),
     date: due(q) ?? (/yesterday/.test(q) ? 'yesterday' : undefined),
-    note: p,
   })
 }
 
@@ -97,15 +96,25 @@ const rewrites = {
   shorter: 'Hi Priya, thanks for the budget. Marketing looks low. Can we talk tomorrow before the review? Venue confirmed for Friday noon.',
   longer:
     "Hey Priya, thank you for sending over the budget. Overall it looks good to me, though the marketing line seems a little low for what we have planned. Could we find fifteen minutes tomorrow, before the review, to go through it together? Also, good news: the venue is confirmed for Friday at noon.",
-  friendlier: 'Hey Priya! Thanks so much for the budget, it looks great overall. Marketing feels a bit low though. Could we chat tomorrow before the review? Also, the venue is confirmed for Friday at noon. 🎉',
+  friendlier: 'Hey Priya! Thanks so much for the budget, it looks great overall. Marketing feels a bit low though. Could we chat tomorrow before the review? Also, the venue is confirmed for Friday at noon.',
   formal: 'Hi Priya, thank you for sending the budget. It looks good overall, though the marketing line seems low. Could we discuss it tomorrow before the review? The venue is confirmed for Friday at noon.',
   fixed: 'Hey Priya, got your budget. It looks good mostly, but marketing seems low. Can we talk tomorrow before the review? Also, the venue is confirmed for Friday at noon.',
 }
 
+// The short draft typed in the landing page reel, rewritten per mode.
+const reelDraft: typeof rewrites = {
+  shorter: 'Got the budget. Marketing looks low. Talk tomorrow?',
+  longer: 'Thanks for sending the budget over. The marketing line looks a little low to me. Could we find some time tomorrow to talk it through?',
+  friendlier: 'Thanks so much for the budget! Marketing looks a little low though. Could we chat tomorrow?',
+  formal: 'Thank you for the budget. The marketing line looks low. Could we discuss it tomorrow?',
+  fixed: 'Got your budget. Marketing looks low. Can we talk tomorrow?',
+}
+
 const rewrite: ScriptSource = (call: MockCallInfo) => {
   const s = (call.system ?? '').toLowerCase()
-  const text = s.includes('half as long') ? rewrites.shorter : s.includes('more detail') ? rewrites.longer : s.includes('friendly') ? rewrites.friendlier : s.includes('professional') ? rewrites.formal : rewrites.fixed
-  return mockScript.thinking(350).stream(text, 48)
+  const set = /marketing looks low/i.test(call.prompt) ? reelDraft : rewrites
+  const text = s.includes('half as long') ? set.shorter : s.includes('more detail') ? set.longer : s.includes('friendly') ? set.friendlier : s.includes('professional') ? set.formal : set.fixed
+  return mockScript.thinking(260).stream(text, 64)
 }
 
 const naturalFilter: ScriptSource = (call: MockCallInfo) => {
@@ -117,18 +126,19 @@ const naturalFilter: ScriptSource = (call: MockCallInfo) => {
   else if (/fancy|expensive|upscale|nice/.test(q)) out.price = 'expensive'
   if (/open/.test(q)) out.openNow = true
   const km = q.match(/(\d+(?:\.\d+)?)\s?(km|kilomet)/)?.[1]
-  if (km) out.maxDistanceKm = `${km}km`
+  if (km) out.maxDistanceKm = Number(km)
   else if (/near|nearby|close|walk/.test(q)) out.maxDistanceKm = 1
   const rating = q.match(/(\d(?:\.\d)?)\s?(stars?|\+)/)?.[1]
   if (rating) out.minRating = Number(rating)
+  // Sort only when the visitor asked for an order.
   if (/best|top|rated|rating/.test(q)) out.sort = 'rating'
-  else if (/near|close|distance/.test(q)) out.sort = 'distance'
-  else if (/cheap/.test(q)) out.sort = 'price'
-  return mockScript.thinking(520).object(out)
+  else if (/closest|nearest|by distance/.test(q)) out.sort = 'distance'
+  else if (/cheapest first|by price/.test(q)) out.sort = 'price'
+  return mockScript.thinking(420).object(out)
 }
 
 const replies = ["Yes, I'll bring it. A ride would be great, thanks!", "I'll bring the printout, but I'll drive myself.", 'Sure. What time would you pick me up?']
-const smartReply: ScriptSource = () => mockScript.thinking(700).object({ replies })
+const smartReply: ScriptSource = () => mockScript.thinking(520).object({ replies })
 
 const tagRules: Array<[RegExp, string]> = [
   [/train|flight|trip|hotel|lyon|paris|travel|airport/, 'Travel'],
@@ -142,7 +152,7 @@ const tagRules: Array<[RegExp, string]> = [
 const autoTag: ScriptSource = (call: MockCallInfo) => {
   const q = call.prompt.toLowerCase()
   const tags = tagRules.filter(([re]) => re.test(q)).map(([, t]) => t)
-  return mockScript.thinking(500).object({ tags: tags.length ? tags.slice(0, 3) : ['personal'] })
+  return mockScript.thinking(380).object({ tags: tags.length ? tags.slice(0, 3) : ['personal'] })
 }
 
 // Embeddings come from the mock's pseudo-embedding model; no script step is needed.
@@ -158,12 +168,32 @@ export const demos = {
   'auto-tag': { script: autoTag, props: { presentation: 'chips' } },
   'semantic-search': { script: semanticSearch, props: { presentation: 'bar', resultStyle: 'list', initialQuery: 'trips and tickets', autoRun: true } },
 
-  // Primitives on the "Primitives, alive" row. Props follow decision 0007; the last three land with the registry build.
+  // Primitives on the "Primitives, alive" row. The last three land with the registry build.
   'thinking-indicator': { props: { variant: 'orb', size: 'lg', state: 'thinking', label: '' } },
   'ion-border': { props: { variant: 'beam', active: true, glow: true, radius: 'lg' } },
   'agent-avatar': { props: { state: 'idle', interactive: true } },
   'voice-input': { props: { visual: 'bars', stage: 'listening' } },
-  'image-reveal': { props: { progress: 'auto' } },
+  'image-reveal': { props: { progress: 'auto', showSteps: true } },
+  'shimmer-text': { props: { size: 'lg', active: true } },
+  'border-beam': { props: { active: true } },
+  'liquid-metal': { props: { active: true, preset: 'chromatic' } },
+  'bot-avatar': { props: { state: 'default', size: 88 } },
 } satisfies Record<string, Demo>
 
 export type DemoName = keyof typeof demos
+
+/** Stage settings for the landing page reels (app/capture, scripts/record-reels.mjs). */
+export interface Reel {
+  props?: Record<string, unknown>
+  /** Pin the component to the top of the stage (it grows downward as the answer arrives). */
+  align?: 'top' | 'center'
+  top?: number
+}
+export const reels: Partial<Record<DemoName, Reel>> = {
+  'command-bar': { props: { showKeyHints: false, showBadge: false, autoFocus: false }, align: 'top', top: 96 },
+  'smart-input': { props: { presentation: 'field', showBadge: false, voice: false, camera: false, placeholder: 'Describe the expense' }, align: 'top', top: 48 },
+  'natural-filter': { props: { presentation: 'bar', showBadge: false, placeholder: 'Search in your own words' }, align: 'top', top: 22 },
+  'smart-reply': { props: { presentation: 'chips', showBadge: false, testID: 'reel-replies' }, align: 'top', top: 64 },
+  rewrite: { props: { presentation: 'toolbar', resultView: 'diff', showBadge: false, value: '', modes: ['shorten', 'friendlier', 'formal'], testID: 'reel-rewrite' }, align: 'top', top: 40 },
+  'auto-tag': { props: { presentation: 'chips', showBadge: false, testID: 'reel-tags' }, align: 'top', top: 64 },
+}

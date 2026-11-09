@@ -1,0 +1,42 @@
+---
+title: "Bot avatar"
+description: "A glossy little body with eyes that blinks, glances, hops while the model works and sleeps when idle. libraries.dev's bot avatars (MIT): Skia on iOS and Android, canvas on web."
+---
+
+<ComponentPreview name="bot-avatar" state="family" height={260} />
+
+## Install
+
+```npm
+npx ondai add bot-avatar
+```
+
+## Usage
+
+```tsx
+import { BotAvatar } from '@/components/ondai/bot-avatar'
+
+<BotAvatar state={isWorking ? 'working' : 'default'} size={64} />
+```
+
+- libraries.dev’s bot avatars (MIT): 18 bodies plus Ondai’s chrome chip.
+- Needs `@shopify/react-native-skia` (included in Expo Go).
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `type` | `chip`, `clover`, `blob`, `square`, `pill`, `drop`, `ghost`, `droid` |
+| `state` | `default`, `working`, `sleeping` |
+
+## Fallback
+
+Pure UI: no model required.
+
+## Eval score
+
+No model-driven fixtures for this component.
+
+## Files
+
+npm dependencies: `@ondai/tokens`, `@shopify/react-native-skia`, `bot-avatars`, `react-native-reanimated`

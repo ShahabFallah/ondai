@@ -1,26 +1,14 @@
 /* ------------------------------------------------------------------ */
-/* Site footer (SiteFooter). One inset panel that ends every page:      */
-/* brand + links + meta, then the fitted wordmark cut by its bottom.     */
+/* Site footer (SiteFooter). Full width on the page's ground: brand,    */
+/* links, a meta row, then the wordmark in ink across the width.       */
 /* Tokens only, so light and dark both hold.                            */
 /* ------------------------------------------------------------------ */
 
 .footer {
-  padding: clamp(72px, 9vw, 128px) 16px 16px;
-}
-
-.footer-panel {
+  --footer-gut: clamp(16px, 3.4vw, 48px);
   position: relative;
-  max-width: 1200px;
-  margin-inline: auto;
-  padding: clamp(28px, 4vw, 52px) clamp(20px, 4vw, 52px) 0;
-  border-radius: var(--r-lg);
-  background: var(--surface);
-  box-shadow:
-    inset 0 0 0 1px var(--line),
-    inset 0 1px 0 var(--edge),
-    var(--shadow-card);
+  padding: clamp(96px, 12vw, 168px) var(--footer-gut) 0;
   overflow: hidden;
-  isolation: isolate;
 }
 
 /* ---------- Top: brand left, columns right ---------- */
@@ -28,7 +16,7 @@
 .footer-top {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 48px 64px;
+  gap: 56px 64px;
 }
 
 .footer-brand {
@@ -43,7 +31,7 @@
   color: var(--fg);
 }
 .footer-line {
-  margin: 14px 0 0;
+  margin: 16px 0 0;
   max-width: 30ch;
   font-size: 15px;
   line-height: 1.5;
@@ -68,11 +56,6 @@
     color 0.2s,
     fill 0.2s;
 }
-.footer-star:hover .footer-star-icon {
-  color: var(--fg);
-  fill: currentColor;
-  transform: rotate(72deg) scale(1.08);
-}
 
 .footer-install {
   display: inline-flex;
@@ -81,20 +64,14 @@
   height: 32px;
   padding-inline: 12px 8px;
   border-radius: var(--r-btn);
-  background: var(--elevated);
-  box-shadow: inset 0 0 0 1px var(--line);
+  background: var(--hover);
   font-family: var(--font-mono);
   font-size: 12.5px;
   color: var(--fg);
   white-space: nowrap;
   transition:
     background-color 0.18s,
-    box-shadow 0.18s,
     scale 0.12s;
-}
-.footer-install:hover {
-  background: var(--surface-hover);
-  box-shadow: inset 0 0 0 1px var(--line-strong);
 }
 .footer-install:active {
   scale: 0.97;
@@ -111,9 +88,6 @@
   border-radius: var(--r-xs);
   color: var(--fg-3);
   transition: color 0.18s;
-}
-.footer-install:hover .footer-install-icon {
-  color: var(--fg-2);
 }
 .footer-install-icon > svg {
   position: absolute;
@@ -138,8 +112,8 @@
 /* Columns */
 .footer-cols {
   display: grid;
-  grid-template-columns: repeat(4, auto);
-  gap: 32px clamp(32px, 4vw, 56px);
+  grid-template-columns: repeat(3, minmax(140px, auto));
+  gap: 32px clamp(40px, 5vw, 88px);
 }
 .footer-col-title {
   margin: 0 0 14px;
@@ -159,19 +133,19 @@
 }
 .footer-link {
   display: inline-block;
-  padding-bottom: 1px;
   font-size: 14px;
   line-height: 1.4;
   color: var(--fg-2);
-  background: linear-gradient(currentColor, currentColor) no-repeat right bottom / 0 1px;
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
   transition:
     color 0.18s,
-    background-size 0.4s var(--ease-out);
+    text-decoration-color 0.18s;
 }
-.footer-link:hover {
+.footer-link:focus-visible {
   color: var(--fg);
-  background-position: left bottom;
-  background-size: 100% 1px;
 }
 
 /* ---------- Meta row ---------- */
@@ -179,140 +153,60 @@
 .footer-meta {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 10px 12px;
-  margin-top: clamp(40px, 5vw, 64px);
-  padding-top: 20px;
-  border-top: 1px solid var(--line);
+  justify-content: space-between;
+  gap: 8px 24px;
+  margin-top: clamp(56px, 7vw, 96px);
   font-size: 13px;
   line-height: 1.4;
-  color: var(--fg-2);
-}
-.footer-meta-dot {
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: var(--fg-3);
-}
-.footer-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: 24px;
-  margin-left: 8px;
-  padding-inline: 8px 10px;
-  border-radius: var(--r-sm);
-  background: var(--hover);
-  box-shadow: inset 0 0 0 1px var(--line);
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--fg-2);
-}
-.footer-status-dot {
-  position: relative;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--ondai-success);
-  box-shadow: 0 0 6px color-mix(in oklab, var(--ondai-success) 70%, transparent);
-  animation: footer-breathe 2.8s var(--ease-soft) infinite;
-}
-.footer-status-dot::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: var(--ondai-success);
-  animation: footer-ripple 2.8s var(--ease-out) infinite;
-}
-@keyframes footer-breathe {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.55;
-  }
-}
-@keyframes footer-ripple {
-  0% {
-    opacity: 0.45;
-    transform: scale(1);
-  }
-  70%,
-  100% {
-    opacity: 0;
-    transform: scale(3);
-  }
-}
-.footer-meta-end {
-  margin-left: auto;
+  color: var(--fg-3);
 }
 
 /* ---------- The wordmark ---------- */
 
+/* Cut by the bottom of the page on purpose: the footer ends on the letters. */
 .footer-mark {
-  margin-top: clamp(28px, 4vw, 44px);
+  position: relative;
+  width: 100%;
+  margin-top: clamp(24px, 3vw, 44px);
+  overflow: hidden;
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-weight: 600;
   user-select: none;
-  pointer-events: none;
 }
 .footer-mark-svg {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  fill: currentColor;
   overflow: hidden;
 }
 .footer-mark-text {
   font-family: var(--font-sans);
   font-size: 1000px;
   font-weight: 600;
-  font-optical-sizing: auto;
 }
-.footer-mark-stop-a {
-  stop-color: var(--fg);
-  stop-opacity: 0.2;
-}
-.footer-mark-stop-b {
-  stop-color: var(--fg);
-  stop-opacity: 0.11;
-}
-.footer-mark-faint {
-  opacity: 0.12;
-}
-.footer-mark-glow {
-  fill: var(--surface);
-}
-.footer-mark-img-dark {
-  display: none;
-}
-.footer-mark-core {
-  fill: #8b7cff;
-  opacity: 0;
-  filter: drop-shadow(0 0 10px rgba(139, 124, 255, 0.4));
-  transition: opacity 0.6s var(--ease-out);
-}
-.footer-mark[data-hot='true'] .footer-mark-core {
-  opacity: 0.9;
-  transition-duration: 0.3s;
-}
-.dark .footer-mark-img-dark {
-  display: inline;
-}
-.dark .footer-mark-img-light {
-  display: none;
-}
-.dark .footer-mark-stop-a {
-  stop-opacity: 0.11;
-}
-.dark .footer-mark-stop-b {
-  stop-opacity: 0.05;
-}
-.dark .footer-mark-faint {
-  opacity: 0.14;
-}
-.dark .footer-mark-glow {
-  fill: var(--fg);
-  opacity: 0.14;
+
+/* ---------- Hover, only where there is a real pointer ---------- */
+
+@media (hover: hover) and (pointer: fine) {
+  .footer-link:hover {
+    color: var(--fg);
+    text-decoration-color: currentColor;
+  }
+  .footer-star:hover .footer-star-icon {
+    color: var(--fg);
+    fill: currentColor;
+    transform: rotate(72deg) scale(1.08);
+  }
+  .footer-install:hover {
+    background: var(--hover-strong);
+  }
+  .footer-install:hover .footer-install-icon {
+    color: var(--fg-2);
+  }
 }
 
 /* ---------- Responsive ---------- */
@@ -322,32 +216,20 @@
     grid-template-columns: minmax(0, 1fr);
   }
   .footer-cols {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 @media (max-width: 640px) {
-  .footer {
-    padding-inline: 12px;
-    padding-bottom: 12px;
-  }
   .footer-cols {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 32px 20px;
+    gap: 36px 20px;
   }
-  .footer-status {
-    margin-left: 0;
-  }
-  .footer-meta-end {
-    flex-basis: 100%;
-    margin-left: 0;
+  .footer-meta {
+    flex-direction: column;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .footer-status-dot,
-  .footer-status-dot::after {
-    animation: none;
-  }
   .footer-link,
   .footer-star-icon,
   .footer-install-icon > svg {

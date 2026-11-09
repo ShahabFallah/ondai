@@ -12,11 +12,13 @@ description: "Add Ondai to an Expo or bare React Native app in a few minutes."
 
 ## 1. Initialize
 
-```bash
+```npm
 npx ondai init
 ```
 
 `init` detects Expo or bare React Native and your package manager. It installs `@ondai/core`, `@ondai/tokens`, `ai` (v6), `zod` and the Callstack providers, writes `ondai.json`, adds `components/ondai/provider.tsx` and prints the native steps.
+
+It works with npm, pnpm, yarn and bun (pick yours in the tabs). The CLI reads your lockfile, or the manager you ran it with in a new project, and in an Expo app installs through `expo install`, so native modules match your SDK. With pnpm, Expo works best with `node-linker=hoisted` in `.npmrc`.
 
 ## 2. Wrap your app
 
@@ -27,7 +29,7 @@ import * as apple from '@react-native-ai/apple'
 
 const ai = createOndai({
   providers: { apple: appleAdapter(apple) },
-  policy: { order: ['apple', 'nano', 'llama', 'cloud'], allowCloud: false, prewarm: 'on-focus' },
+  policy: { order: ['apple', 'nano', 'cloud'], allowCloud: false, prewarm: 'on-focus' },
 })
 
 export default function App() {
@@ -56,7 +58,7 @@ if (Platform.OS !== 'web') {
 
 ## 4. Add components
 
-```bash
+```npm
 npx ondai add command-bar summarize
 ```
 
@@ -64,7 +66,7 @@ Files land in `components/ondai/<name>/`. Dependencies, including other registry
 
 ## 5. Rebuild
 
-```bash
+```npm
 npx expo prebuild && npx expo run:ios
 ```
 

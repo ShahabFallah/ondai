@@ -1,0 +1,25 @@
+{
+  "name": "agent-run",
+  "title": "AgentRun",
+  "description": "An agent doing a job on the device, step by step: each tool call with its time, approval before anything risky runs, and the answer at the end.",
+  "category": "agentic",
+  "priority": "P0",
+  "capabilities": ["tools"],
+  "variants": {
+    "variant": ["clean", "minimal", "glass", "pop", "candy", "metal", "shine", "bevel"],
+    "presentation": ["card", "plain"],
+    "size": ["sm", "md", "lg"]
+  },
+  "registryDependencies": [
+    "button",
+    "on-device-badge",
+    "shimmer-text",
+    "surface",
+    "tool-confirm-card"
+  ],
+  "files": ["agent-run.tsx", "index.ts"],
+  "runsOn": ["apple", "cloud"],
+  "limits": [
+    "Tool calling runs on Apple's model or a cloud model. Gemini Nano's tool calling is still an alpha preview, so Ondai does not route tools to it yet."
+  ]
+}

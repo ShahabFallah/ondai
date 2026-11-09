@@ -1,8 +1,8 @@
 'use client'
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
 import { Check, Cpu, WifiOff } from 'lucide-react'
-import { ThinkingOrb, type OrbState } from '@/components/fx'
-import { useBoxHeight, useReducedMotion } from './hooks'
+import { ModelChip } from './ModelChip'
+import { useReducedMotion } from './hooks'
 
 /**
  * The small screens that sit inside the headline, each with a floating tag on a corner.
@@ -34,36 +34,18 @@ function Frame({
   )
 }
 
-const ORB_CYCLE: [OrbState, number][] = [
-  ['idle', 1400],
-  ['listening', 1800],
-  ['thinking', 2600],
-  ['done', 1600],
-]
-
-/** "thinks": the ThinkingOrb walking through its states. */
+/** "thinks": the model on the phone's chip, a wave of signal running through its layers. */
 export function OrbFrame({ i }: { i: number }) {
-  const box = useRef<HTMLSpanElement>(null)
-  const h = useBoxHeight(box)
   const reduced = useReducedMotion()
-  const [step, setStep] = useState(2)
-  useEffect(() => {
-    if (reduced) return
-    const t = setTimeout(() => setStep((s) => (s + 1) % ORB_CYCLE.length), ORB_CYCLE[step]![1])
-    return () => clearTimeout(t)
-  }, [step, reduced])
-  const state = reduced ? 'idle' : ORB_CYCLE[step]![0]
   return (
     <Frame
       i={i}
       tag="On device"
       icon={<Cpu size={12} strokeWidth={1.75} />}
       corner="tr"
-      className="hx-frame-orb"
+      className="hx-frame-globe"
     >
-      <span ref={box} className="hx-frame-fill" data-state={state}>
-        {h > 0 ? <ThinkingOrb state={state} size={Math.round(h * 0.62)} /> : null}
-      </span>
+      <ModelChip reduced={reduced} />
     </Frame>
   )
 }

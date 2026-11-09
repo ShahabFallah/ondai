@@ -22,9 +22,9 @@ export interface OnDeviceBadgeProps {
 const variants = createVariants({
   variants: {
     size: {
-      sm: { height: 20, paddingHorizontal: 8, gap: 6 },
-      md: { height: 24, paddingHorizontal: 10, gap: 7 },
-      lg: { height: 28, paddingHorizontal: 12, gap: 8 },
+      sm: { height: 22, paddingHorizontal: 7, gap: 5, borderRadius: 6 },
+      md: { height: 24, paddingHorizontal: 8, gap: 6, borderRadius: 7 },
+      lg: { height: 28, paddingHorizontal: 10, gap: 7, borderRadius: 8 },
     },
     variant: {
       pill: {},
@@ -40,9 +40,9 @@ const variants = createVariants({
   defaults: { size: 'md', variant: 'pill' },
 })
 
-const dotSize = { sm: 5, md: 6, lg: 7 } as const
+const dotSize = { sm: 5, md: 6, lg: 6 } as const
 
-/** A quiet pill that says where inference runs: ON DEVICE · APPLE, LOCAL · LLAMA, CLOUD. The dot glows while thinking. */
+/** A quiet tag that says where inference runs: On device · Apple, Local · Llama, Cloud. The dot breathes while the model works. */
 export function OnDeviceBadge({ size = 'md', variant = 'pill', state = 'idle', provider, locality, label, style, testID }: OnDeviceBadgeProps) {
   const t = useTheme()
   const motion = useMotion()
@@ -65,27 +65,27 @@ export function OnDeviceBadge({ size = 'md', variant = 'pill', state = 'idle', p
   }, [active, motion.enabled, pulse, t.durations.pulse])
   const dotStyle = useAnimatedStyle(() => ({ opacity: pulse.value, transform: [{ scale: 0.85 + pulse.value * 0.15 }] }), [pulse])
 
-  const dotColor = loc === 'cloud' ? t.colors.warning : ready || active ? t.colors.accent.solid : t.colors.textTertiary
+  const dotColor = loc === 'cloud' ? t.colors.warning : active ? t.colors.accent.solid : ready ? t.colors.success : t.colors.textTertiary
   const d = dotSize[size]
   return (
     <View
       testID={testID}
       accessibilityRole="text"
-      accessibilityLabel={`${text.replace('·', ',').toLowerCase()}${active ? ', working' : ''}`}
+      accessibilityLabel={`${text.replace('·', ',')}${active ? ', working' : ''}`}
       style={[
-        { flexDirection: 'row', alignItems: 'center', borderRadius: t.radii.pill, borderWidth: hairlineWidth, borderColor: t.colors.hairline, backgroundColor: t.colors.surface, justifyContent: 'center' },
+        { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', borderWidth: hairlineWidth, borderColor: t.colors.hairline, backgroundColor: t.colors.muted, justifyContent: 'center' },
         ...variants({ size, variant }),
         style,
       ]}
     >
       {variant !== 'text' ? (
-        <View style={{ width: d * 2, height: d * 2, alignItems: 'center', justifyContent: 'center' }}>
-          {active ? <View style={{ position: 'absolute', width: d * 2, height: d * 2, borderRadius: d, backgroundColor: t.colors.accent.glow }} /> : null}
+        <View style={{ width: d * 2, height: d * 2, marginLeft: -2, alignItems: 'center', justifyContent: 'center' }}>
+          {active ? <View style={{ position: 'absolute', width: d * 2, height: d * 2, borderRadius: d, backgroundColor: t.colors.accent.soft }} /> : null}
           <Animated.View style={[{ width: d, height: d, borderRadius: d / 2, backgroundColor: dotColor }, dotStyle]} />
         </View>
       ) : null}
       {variant !== 'icon' ? (
-        <Text numberOfLines={1} style={[typeStyle(t, size === 'lg' ? 'sm' : 'xs', { mono: true, tag: true, weight: 'medium' }), { color: t.colors.textSecondary }]}>
+        <Text numberOfLines={1} style={[typeStyle(t, size === 'lg' ? 'sm' : 'xs', { weight: 'medium' }), { color: t.colors.textSecondary }]}>
           {text}
         </Text>
       ) : null}

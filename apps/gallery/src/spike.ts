@@ -1,4 +1,4 @@
-// M0 spike: exercises Apple Foundation Models step by step and logs raw results/errors for docs/ECOSYSTEM.md.
+// M0 spike: exercises Apple Foundation Models step by step and logs raw results and errors.
 import { generateText, streamText, Output, tool, stepCountIs } from 'ai'
 import { z } from 'zod'
 import { estimateTokens, type Ondai } from '@ondai/core'

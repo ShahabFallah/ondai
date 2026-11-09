@@ -1,4 +1,5 @@
 import { boolean, definePlayground, number, select } from '@ondai/playground'
+import { skinNames } from '@ondai/tokens'
 import { Skeleton } from './skeleton'
 
 export default definePlayground({
@@ -12,6 +13,8 @@ export default definePlayground({
     height: number(14, { min: 8, max: 64, step: 2, label: 'Height' }),
     radius: select(['sm', 'md', 'lg', 'pill'], 'sm', 'Radius'),
     shimmer: boolean(true, 'Shimmer'),
+    dashed: boolean(false, 'Dashed edge'),
+    skin: select(skinNames, 'clean', 'Skin'),
   },
   variantKeys: ['radius'],
   states: { loading: {}, static: { props: { shimmer: false } } },

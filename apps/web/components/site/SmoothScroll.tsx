@@ -5,8 +5,9 @@ import { usePathname } from 'next/navigation'
 /**
  * Wheel-driven smooth scrolling for the marketing pages.
  *
- * Each wheel event moves a target (clamped to the document range); a rAF loop lerps `window.scrollY`
- * toward it (factor 0.11, stops within 0.5 px). Anchor clicks (`a[href^="#"]`) animate with the same loop.
+ * Each wheel event moves a target (clamped to the document range); a rAF loop eases `window.scrollY`
+ * toward it with exponential damping measured in time, not frames, so it glides the same on 60 and 120 Hz
+ * screens (about 90% of the way in 0.45 s, stops within 0.5 px). Anchor clicks (`a[href^="#"]`) use the same loop.
  *
  * It steps aside whenever something else should scroll: an inner scrollable under the pointer that can
  * still move in the wheel direction, pinch-zoom (`ctrlKey`), horizontal wheels, keyboard or scrollbar
@@ -14,7 +15,8 @@ import { usePathname } from 'next/navigation'
  * (`body[data-scroll-locked]`), the `disabled` prop, docs routes, coarse pointers and reduced motion.
  */
 
-const FACTOR = 0.11
+/** Damping per second. Lower is slower and heavier; 5 reads as a glide without feeling late. */
+const DAMPING = 5
 const EPSILON = 0.5
 /** Anchor targets land this far below the top unless they set `scroll-margin-top`. The fixed nav is 68 px tall. */
 const NAV_OFFSET = 88
@@ -57,23 +59,28 @@ export function SmoothScroll({ disabled = false }: { disabled?: boolean }) {
     let current = target
     let raf = 0
     let lastSet = -1
+    let lastTime = 0
 
     const maxScroll = () => Math.max(0, doc.scrollHeight - window.innerHeight)
     const clamp = (v: number) => Math.min(Math.max(v, 0), maxScroll())
     const stop = () => {
       if (raf) cancelAnimationFrame(raf)
       raf = 0
+      lastTime = 0
     }
-    const step = () => {
+    const step = (now: number) => {
+      const dt = lastTime ? Math.min((now - lastTime) / 1000, 1 / 20) : 1 / 60
+      lastTime = now
       const diff = target - current
       if (Math.abs(diff) < EPSILON) {
         current = target
         lastSet = target
         window.scrollTo(0, target)
         raf = 0
+        lastTime = 0
         return
       }
-      current += diff * FACTOR
+      current += diff * (1 - Math.exp(-DAMPING * dt))
       lastSet = current
       window.scrollTo(0, current)
       raf = requestAnimationFrame(step)

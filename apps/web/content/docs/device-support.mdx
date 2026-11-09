@@ -5,6 +5,7 @@ description: "Which devices have a built-in model, and what happens on the ones 
 
 > Device lists grow with every launch; Apple and Google publish the current ones.
 
+
 ## Apple Foundation Models (iOS 26+, Apple Intelligence on)
 
 - iPhone 15 Pro / Pro Max; iPhone 16, 16 Plus, 16 Pro, 16 Pro Max, 16e; iPhone 17, 17e, 17 Pro, 17 Pro Max, Air.
@@ -22,4 +23,4 @@ description: "Which devices have a built-in model, and what happens on the ones 
 
 ## Everything else
 
-The router falls back in order: Apple → Nano → Llama (opt-in GGUF download) → cloud (only if you allow it). With no provider, `AvailabilityGate` shows a calm empty state with a "Learn how to enable" link. Components with a deterministic fallback (CommandBar keyword search, SemanticSearch keyword matching) keep working.
+The router tries, in order: Apple → Nano → cloud (only if you allow it). If a provider fails before it has answered (unavailable, busy, an unknown error), the call moves on to the next ready one; a refusal or a bad reply does not. Llama (llama.rn) is not supported yet. With no provider, `AvailabilityGate` shows a calm empty state with a "Learn how to enable" link. Components with a deterministic fallback (CommandBar keyword search, SemanticSearch keyword matching) keep working.

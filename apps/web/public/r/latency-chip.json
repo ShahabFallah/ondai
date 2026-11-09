@@ -14,7 +14,7 @@
       "path": "registry/components/latency-chip/latency-chip.tsx",
       "type": "registry:component",
       "target": "components/ondai/latency-chip/latency-chip.tsx",
-      "content": "import { Text, View, type StyleProp, type ViewStyle } from 'react-native'\nimport type { ProviderId } from '@ondai/core'\nimport { hairlineWidth, typeStyle, useTheme } from '@ondai/tokens/react'\n\nexport interface LatencyChipProps {\n  latencyMs?: number\n  tokensPerSecond?: number\n  ttftMs?: number\n  provider?: ProviderId | string\n  size?: 'sm' | 'md'\n  style?: StyleProp<ViewStyle>\n  testID?: string\n}\n\n/** Dev/gallery-only metrics pill: `142ms · 38 tok/s · apple`. Mono, muted, never in the way. */\nexport function LatencyChip({ latencyMs, tokensPerSecond, ttftMs, provider, size = 'sm', style, testID }: LatencyChipProps) {\n  const t = useTheme()\n  const parts: string[] = []\n  if (latencyMs !== undefined) parts.push(`${Math.round(latencyMs)}ms`)\n  if (ttftMs !== undefined) parts.push(`ttft ${Math.round(ttftMs)}ms`)\n  if (tokensPerSecond !== undefined) parts.push(`${Math.round(tokensPerSecond)} tok/s`)\n  if (provider) parts.push(String(provider))\n  if (!parts.length) parts.push('—')\n  return (\n    <View testID={testID} style={[{ alignSelf: 'flex-start', paddingHorizontal: size === 'sm' ? 8 : 10, height: size === 'sm' ? 20 : 24, borderRadius: t.radii.pill, borderWidth: hairlineWidth, borderColor: t.colors.hairline, backgroundColor: t.colors.surface, justifyContent: 'center' }, style]}>\n      <Text style={[typeStyle(t, size === 'sm' ? 'xs' : 'sm', { mono: true }), { color: t.colors.textTertiary }]}>{parts.join(' · ')}</Text>\n    </View>\n  )\n}\n\nexport default LatencyChip\n"
+      "content": "import { Text, View, type StyleProp, type ViewStyle } from 'react-native'\nimport type { ProviderId } from '@ondai/core'\nimport { hairlineWidth, typeStyle, useTheme } from '@ondai/tokens/react'\n\nexport interface LatencyChipProps {\n  latencyMs?: number\n  tokensPerSecond?: number\n  ttftMs?: number\n  provider?: ProviderId | string\n  size?: 'sm' | 'md'\n  style?: StyleProp<ViewStyle>\n  testID?: string\n}\n\n/** Dev/gallery-only metrics pill: `142ms · 38 tok/s · apple`. Mono, muted, never in the way. */\nexport function LatencyChip({ latencyMs, tokensPerSecond, ttftMs, provider, size = 'sm', style, testID }: LatencyChipProps) {\n  const t = useTheme()\n  const parts: string[] = []\n  if (latencyMs !== undefined) parts.push(`${Math.round(latencyMs)}ms`)\n  if (ttftMs !== undefined) parts.push(`ttft ${Math.round(ttftMs)}ms`)\n  if (tokensPerSecond !== undefined) parts.push(`${Math.round(tokensPerSecond)} tok/s`)\n  if (provider) parts.push(String(provider))\n  if (!parts.length) parts.push('no runs yet')\n  return (\n    <View testID={testID} style={[{ alignSelf: 'flex-start', paddingHorizontal: size === 'sm' ? 8 : 10, height: size === 'sm' ? 22 : 26, borderRadius: 6, borderWidth: hairlineWidth, borderColor: t.colors.hairline, backgroundColor: t.colors.muted, justifyContent: 'center' }, style]}>\n      <Text style={[typeStyle(t, size === 'sm' ? 'xs' : 'sm', { mono: true }), { color: t.colors.textSecondary, fontVariant: ['tabular-nums'] }]}>{parts.join(' · ')}</Text>\n    </View>\n  )\n}\n\nexport default LatencyChip\n"
     },
     {
       "path": "registry/components/latency-chip/index.ts",
@@ -29,7 +29,7 @@
   "meta": {
     "ondai": {
       "registryVersion": 1,
-      "hash": "14da3c96ca54c7cf",
+      "hash": "44e2fff6da24357c",
       "priority": "P0",
       "capabilities": [],
       "variants": {

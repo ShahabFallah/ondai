@@ -1,4 +1,7 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react-native'
+import { Text } from 'react-native'
+import { AudioLines } from 'lucide-react-native'
+import { skinNames } from '@ondai/tokens'
 import { renderWithOndai } from '../test-utils'
 import { VoiceInput } from './voice-input'
 import { simulatedRecorder, speechLevel } from './use-voice-input'
@@ -47,5 +50,42 @@ describe('VoiceInput', () => {
     expect(audio).toBeInstanceOf(Uint8Array)
     expect(speechLevel(0)).toBeGreaterThan(0)
     expect(speechLevel(1234, 2)).toBeLessThanOrEqual(1)
+  })
+
+  it('takes labels, icons and slots', async () => {
+    const onUse = jest.fn()
+    await renderWithOndai(
+      <VoiceInput
+        mode="tap"
+        onUse={onUse}
+        icons={{ mic: AudioLines, retry: null }}
+        labels={{ tapHint: 'Tocca per parlare', start: 'Inizia', stop: 'Ferma', use: 'Usa' }}
+        renderTranscript={(text) => <Text>{`heard:${text}`}</Text>}
+      />,
+      { transcript: 'Buy oat milk.' },
+    )
+    expect(screen.getByText('Tocca per parlare')).toBeTruthy()
+    fireEvent.press(await screen.findByLabelText('Inizia'))
+    await waitFor(() => expect(screen.getByLabelText('Ferma')).toBeTruthy())
+    fireEvent.press(screen.getByLabelText('Ferma'))
+    await waitFor(() => expect(screen.getByText('heard:Buy oat milk.')).toBeTruthy(), { timeout: 4000 })
+    expect(screen.queryByLabelText('Retry')).toBeNull()
+    fireEvent.press(screen.getByText('Usa'))
+    expect(onUse).toHaveBeenCalledWith('Buy oat milk.')
+  })
+
+  it('lets the app draw the mic key', async () => {
+    await renderWithOndai(<VoiceInput renderMic={({ listening }) => <Text>{listening ? 'live' : 'mic'}</Text>} />)
+    expect(screen.getByText('mic')).toBeTruthy()
+  })
+
+  it.each(skinNames)('renders the %s variant in both presentations', async (variant) => {
+    await renderWithOndai(
+      <>
+        <VoiceInput variant={variant} mode="tap" />
+        <VoiceInput variant={variant} presentation="card" mode="tap" tint="#FF5A5F" size="lg" />
+      </>,
+    )
+    expect(screen.getAllByLabelText('Start listening')).toHaveLength(2)
   })
 })

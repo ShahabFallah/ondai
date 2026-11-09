@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState, useSyncExternalStore, type RefObject } from 'react'
+import { useSyncExternalStore } from 'react'
 
 function subscribeDark(onChange: () => void) {
   const mo = new MutationObserver(onChange)
@@ -29,19 +29,4 @@ export function useReducedMotion(): boolean {
     () => window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     () => false,
   )
-}
-
-/** The element's content-box height in CSS px, rounded (0 before mount). */
-export function useBoxHeight<T extends HTMLElement>(ref: RefObject<T | null>): number {
-  const [h, setH] = useState(0)
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const ro = new ResizeObserver(([e]) => {
-      if (e) setH(Math.round(e.contentRect.height))
-    })
-    ro.observe(el)
-    return () => ro.disconnect()
-  }, [ref])
-  return h
 }

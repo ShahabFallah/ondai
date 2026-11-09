@@ -1,0 +1,44 @@
+---
+title: "Border beam"
+description: "A light that travels around a card's border while the model works. libraries.dev's border beam (MIT): Skia shader on iOS and Android, its CSS version on web."
+---
+
+<ComponentPreview name="border-beam" state="working" height={220} />
+
+## Install
+
+```npm
+npx ondai add border-beam
+```
+
+## Usage
+
+```tsx
+import { BorderBeam } from '@/components/ondai/border-beam'
+
+<BorderBeam active={isThinking} radius="lg">
+  <Card />
+</BorderBeam>
+```
+
+- libraries.dev’s border beam (MIT, Jakub Antalik): a Skia shader on iOS and Android, its CSS version on web.
+- Needs `@shopify/react-native-skia` (included in Expo Go).
+
+## Variants
+
+| Prop | Options |
+| --- | --- |
+| `tone` | `mono`, `colorful`, `ocean`, `sunset` |
+| `size` | `md`, `sm`, `line`, `pulse-inner`, `pulse-outside` |
+
+## Fallback
+
+Pure UI: no model required.
+
+## Eval score
+
+No model-driven fixtures for this component.
+
+## Files
+
+npm dependencies: `@ondai/tokens`, `@shopify/react-native-skia`, `border-beam`, `react-native-reanimated`

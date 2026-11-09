@@ -20,7 +20,7 @@ function Shell() {
   pushRef.current = metrics.push
   const ondai = useMemo(() => createGalleryOndai(prefs.useMock, (m) => pushRef.current(m)), [prefs.useMock])
   return (
-    <OndaiProvider value={ondai} theme={prefs.theme} accent={prefs.accent}>
+    <OndaiProvider value={ondai} theme={prefs.theme} material={prefs.material} accent={prefs.accent}>
       <Chrome />
     </OndaiProvider>
   )

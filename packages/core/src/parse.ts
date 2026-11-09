@@ -189,6 +189,8 @@ export interface ParseDateOptions {
   weekStartsOn?: 0 | 1
   /** Prefer future dates for bare weekdays/times (default true). */
   forward?: boolean
+  /** Read an ambiguous numeric date such as 05/10 as day then month (default false: month first). */
+  dayFirst?: boolean
 }
 
 export interface ParsedDate {
@@ -245,6 +247,14 @@ export function parseDate(input: string | null | undefined, options: ParseDateOp
   let matched = ''
   let precision: ParsedDate['precision'] = 'day'
 
+  // A full ISO timestamp with a zone ("…T22:00:00.000Z", what refineObject writes) is an exact instant: read it
+  // as one, so refining a refined value again gives the same value.
+  const zoned = text.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::\d{2}(?:\.\d+)?)?(Z|[+-]\d{2}:?\d{2})$/)
+  if (zoned) {
+    const at = new Date(zoned[6]!.length === 5 ? `${text.slice(0, -5)}${zoned[6]!.slice(0, 3)}:${zoned[6]!.slice(3)}` : text)
+    if (Number.isNaN(at.getTime())) return null
+    return { date: at, precision: at.getHours() || at.getMinutes() ? 'minute' : 'day', matched: text }
+  }
   // ISO / numeric
   const iso = text.match(/\b(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{2}):(\d{2}))?/)
   if (iso) {
@@ -252,11 +262,22 @@ export function parseDate(input: string | null | undefined, options: ParseDateOp
     matched = iso[0]
     if (iso[4]) precision = 'minute'
   }
-  const slash = !date && text.match(/\b(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?\b/)
-  if (slash) {
-    const y = slash[3] ? (slash[3].length === 2 ? 2000 + +slash[3] : +slash[3]) : now.getFullYear()
-    date = new Date(y, +slash[1]! - 1, +slash[2]!)
-    matched = slash[0]
+  // Numeric day and month: 10/31, 25/10/2026, 25.10.2026, 25-10-26. Whichever part is over 12 is the day;
+  // when both could be, `dayFirst` decides (default month first, as in 10/31).
+  const numeric = !date && (text.match(/\b(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?\b/) ?? text.match(/\b(\d{1,2})([.-])(\d{1,2})\2(\d{2,4})\b/)?.filter((_, i) => i !== 2))
+  if (numeric) {
+    const a = +numeric[1]!
+    const b = +numeric[2]!
+    const dayFirst = a > 12 ? true : b > 12 ? false : (options.dayFirst ?? false)
+    const [day, month] = dayFirst ? [a, b] : [b, a]
+    const yy = numeric[3]
+    const y = yy ? (yy.length === 2 ? 2000 + +yy : +yy) : now.getFullYear()
+    if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+      date = new Date(y, month - 1, day)
+      // Reject days the month does not have (31/02), rather than rolling into the next month.
+      if (date.getMonth() !== month - 1) date = null
+      else matched = numeric[0]!
+    }
   }
   // Month name day [year]  /  day month [year]
   const mn = months.map((m) => m.slice(0, 3)).join('|')

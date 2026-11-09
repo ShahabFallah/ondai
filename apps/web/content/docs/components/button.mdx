@@ -1,13 +1,13 @@
 ---
 title: "Button"
-description: "Minimal button with solid, soft, outline, ghost, accent and danger variants."
+description: "Minimal button: ink solid, a soft raised key, and secondary variants that take the theme material (glass, Liquid Glass)."
 ---
 
 <ComponentPreview name="button" state="idle" height={160} />
 
 ## Install
 
-```bash
+```npm
 npx ondai add button
 ```
 
@@ -23,16 +23,9 @@ import { Button } from '@/components/ondai/button'
 
 | Prop | Options |
 | --- | --- |
-| `variant` | `solid`, `soft`, `outline`, `ghost`, `accent`, `danger` |
+| `variant` | `solid`, `raised`, `soft`, `outline`, `ghost`, `accent`, `danger` |
 | `size` | `sm`, `md`, `lg` |
-
-Every variant is live in the [playground](/playground/button).
-
-## Runs on
-
-| Capability | Apple FM | Gemini Nano | Llama | Cloud |
-| --- | --- | --- | --- | --- |
-| none (pure UI) | ✅ | ✅ | ✅ | ✅ |
+| `skin` | `clean`, `minimal`, `glass`, `pop`, `candy`, `metal`, `shine` |
 
 ## Fallback
 
@@ -44,4 +37,6 @@ No model-driven fixtures for this component.
 
 ## Files
 
-npm dependencies: `@ondai/tokens`
+Registry dependencies: [surface](/docs/components/surface)
+
+npm dependencies: `@ondai/tokens`, `react-native-reanimated`, `react-native-svg`

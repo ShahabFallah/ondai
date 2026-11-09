@@ -1,0 +1,27 @@
+{
+  "name": "tone-check",
+  "title": "ToneCheck",
+  "description": "Reads the tone of a draft as you type (friendly, neutral, blunt or tense, casual to formal) and offers a one-tap softer rewrite when it reads off.",
+  "category": "text",
+  "priority": "P1",
+  "capabilities": ["structured", "text"],
+  "variants": {
+    "variant": ["clean", "minimal", "glass", "pop", "candy", "metal", "shine", "bevel"],
+    "presentation": ["card", "pill"],
+    "size": ["sm", "md", "lg"]
+  },
+  "registryDependencies": [
+    "button",
+    "model-download",
+    "on-device-badge",
+    "shimmer-text",
+    "streaming-text",
+    "surface"
+  ],
+  "files": ["tone-check.tsx", "use-tone-check.ts", "prompts.ts", "schema.ts", "index.ts"],
+  "budget": {
+    "input": 1800,
+    "strategy": "The draft is truncated to half the window so the softer rewrite fits in the rest; the reading is a small JSON object."
+  },
+  "runsOn": ["apple", "nano", "cloud"]
+}

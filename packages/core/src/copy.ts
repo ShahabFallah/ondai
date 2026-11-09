@@ -68,19 +68,20 @@ export function availabilityCopy(av: Availability | undefined): AvailabilityCopy
   return reasons[av.reason]
 }
 
-/** Badge label: `ON DEVICE · APPLE`, `LOCAL · LLAMA`, `CLOUD`, `SIMULATED · APPLE`. */
+/** Badge label: `On device · Apple`, `Local · Llama`, `Cloud`, `Simulated · Apple`. */
 export function badgeLabel(provider: ProviderId | undefined, locality: Locality | undefined, label?: string): string {
-  const name = (label ?? provider ?? '').toUpperCase()
+  const raw = label ?? provider ?? ''
+  const name = raw ? raw.charAt(0).toUpperCase() + raw.slice(1) : ''
   switch (locality) {
     case 'on-device':
-      return name ? `ON DEVICE · ${name}` : 'ON DEVICE'
+      return name ? `On device · ${name}` : 'On device'
     case 'local':
-      return name ? `LOCAL · ${name}` : 'LOCAL'
+      return name ? `Local · ${name}` : 'Local'
     case 'cloud':
-      return 'CLOUD'
+      return 'Cloud'
     case 'simulated':
-      return name ? `SIMULATED · ${name}` : 'SIMULATED'
+      return name ? `Simulated · ${name}` : 'Simulated'
     default:
-      return 'ON DEVICE'
+      return 'On device'
   }
 }
