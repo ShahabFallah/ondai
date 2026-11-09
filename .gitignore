@@ -35,3 +35,6 @@ apps/web/AGENTS.md
 insp/
 # Internal project docs (design records, notes, contact sheets): kept locally
 /docs/
+
+# Vercel CLI link (local)
+.vercel

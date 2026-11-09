@@ -1,0 +1,14 @@
+# Never upload personal or local-only files when deploying from a machine.
+/.claude
+/.cursor
+/.agents
+/insp
+/docs
+HANDOFF-*.md
+skills-lock.json
+**/node_modules
+**/.next
+**/.turbo
+**/.expo
+apps/gallery/ios
+apps/gallery/android
