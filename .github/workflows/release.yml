@@ -3,6 +3,7 @@ name: Release
 # On main: opens (or updates) a "Version packages" pull request from the pending changesets. Merging it
 # builds @ondai/core, @ondai/tokens and the CLI and publishes them with `pnpm publish` (provenance on).
 # Needs the NPM_TOKEN secret (an npm automation token with publish rights to `ondai` and `@ondai/*`).
+# Off until the repository variable NPM_PUBLISH is set to `true` (Settings → Secrets and variables → Actions → Variables).
 
 on:
   push:
@@ -18,6 +19,7 @@ permissions:
 jobs:
   release:
     name: Version or publish
+    if: vars.NPM_PUBLISH == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
