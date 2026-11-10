@@ -32,7 +32,9 @@ jobs:
       - run: pnpm --filter @ondai/web test:visual:update
         env:
           PLAYWRIGHT_BASE_URL: http://localhost:3000
+      # Upload whatever was rendered, even if a test failed, so one slow page does not cost the rest.
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: visual-baselines
           path: apps/web/tests/visual/__screenshots__

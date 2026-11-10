@@ -6,6 +6,7 @@ for (const theme of ['void', 'paper'] as const) {
     await page.goto(`/review?theme=${theme}&motion=off&clock=manual`)
     await page.waitForSelector('[data-ready="true"]', { timeout: 60_000 })
     await page.waitForTimeout(500)
-    await expect(page).toHaveScreenshot(`review-${theme}.png`, { fullPage: true })
+    // Every component's states on one tall page: a full-page capture needs well over the default 5 s.
+    await expect(page).toHaveScreenshot(`review-${theme}.png`, { fullPage: true, timeout: 60_000 })
   })
 }
