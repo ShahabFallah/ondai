@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "on-device-badge",
+  "type": "registry:component",
+  "title": "on-device-badge",
+  "description": "Fixture component on-device-badge.",
+  "dependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "registry/components/on-device-badge/on-device-badge.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/on-device-badge/on-device-badge.tsx",
+      "content": "export function OnDeviceBadge() {\n  return null\n}\n"
+    },
+    {
+      "path": "registry/components/on-device-badge/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/on-device-badge/index.ts",
+      "content": "export * from './on-device-badge'\n"
+    }
+  ]
+}

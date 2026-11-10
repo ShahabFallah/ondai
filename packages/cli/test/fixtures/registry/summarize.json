@@ -1,0 +1,26 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "summarize",
+  "type": "registry:component",
+  "title": "summarize",
+  "description": "Fixture component summarize.",
+  "dependencies": [],
+  "registryDependencies": [
+    "surface",
+    "streaming-text"
+  ],
+  "files": [
+    {
+      "path": "registry/components/summarize/summarize.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/summarize/summarize.tsx",
+      "content": "export function Summarize() {\n  return null\n}\n"
+    },
+    {
+      "path": "registry/components/summarize/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/summarize/index.ts",
+      "content": "export * from './summarize'\n"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "surface",
+  "type": "registry:component",
+  "title": "surface",
+  "description": "Fixture component surface.",
+  "dependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "registry/components/surface/surface.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/surface/surface.tsx",
+      "content": "export function Surface() {\n  return null\n}\n"
+    },
+    {
+      "path": "registry/components/surface/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/surface/index.ts",
+      "content": "export * from './surface'\n"
+    }
+  ]
+}

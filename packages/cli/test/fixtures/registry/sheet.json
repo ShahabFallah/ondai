@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "sheet",
+  "type": "registry:component",
+  "title": "sheet",
+  "description": "Fixture component sheet.",
+  "dependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "registry/components/sheet/sheet.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/sheet/sheet.tsx",
+      "content": "export function Sheet() {\n  return null\n}\n"
+    },
+    {
+      "path": "registry/components/sheet/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/sheet/index.ts",
+      "content": "export * from './sheet'\n"
+    }
+  ]
+}

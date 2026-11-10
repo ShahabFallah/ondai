@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "streaming-text",
+  "type": "registry:component",
+  "title": "streaming-text",
+  "description": "Fixture component streaming-text.",
+  "dependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "registry/components/streaming-text/streaming-text.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/streaming-text/streaming-text.tsx",
+      "content": "export function StreamingText() {\n  return null\n}\n"
+    },
+    {
+      "path": "registry/components/streaming-text/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/streaming-text/index.ts",
+      "content": "export * from './streaming-text'\n"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "key-hint",
+  "type": "registry:component",
+  "title": "key-hint",
+  "description": "Fixture component key-hint.",
+  "dependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "registry/components/key-hint/key-hint.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/key-hint/key-hint.tsx",
+      "content": "export function KeyHint() {\n  return null\n}\n"
+    },
+    {
+      "path": "registry/components/key-hint/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/key-hint/index.ts",
+      "content": "export * from './key-hint'\n"
+    }
+  ]
+}

@@ -1,0 +1,253 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "ondai-fixture",
+  "homepage": "https://ondai.dev",
+  "items": [
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "surface",
+      "type": "registry:component",
+      "title": "surface",
+      "description": "Fixture component surface.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/components/surface/surface.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/surface/surface.tsx"
+        },
+        {
+          "path": "registry/components/surface/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/surface/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "button",
+      "type": "registry:component",
+      "title": "button",
+      "description": "Fixture component button.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/components/button/button.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/button/button.tsx"
+        },
+        {
+          "path": "registry/components/button/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/button/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "key-hint",
+      "type": "registry:component",
+      "title": "key-hint",
+      "description": "Fixture component key-hint.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/components/key-hint/key-hint.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/key-hint/key-hint.tsx"
+        },
+        {
+          "path": "registry/components/key-hint/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/key-hint/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "on-device-badge",
+      "type": "registry:component",
+      "title": "on-device-badge",
+      "description": "Fixture component on-device-badge.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/components/on-device-badge/on-device-badge.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/on-device-badge/on-device-badge.tsx"
+        },
+        {
+          "path": "registry/components/on-device-badge/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/on-device-badge/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "skeleton",
+      "type": "registry:component",
+      "title": "skeleton",
+      "description": "Fixture component skeleton.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/components/skeleton/skeleton.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/skeleton/skeleton.tsx"
+        },
+        {
+          "path": "registry/components/skeleton/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/skeleton/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "shimmer-text",
+      "type": "registry:component",
+      "title": "shimmer-text",
+      "description": "Fixture component shimmer-text.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/components/shimmer-text/shimmer-text.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/shimmer-text/shimmer-text.tsx"
+        },
+        {
+          "path": "registry/components/shimmer-text/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/shimmer-text/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "streaming-text",
+      "type": "registry:component",
+      "title": "streaming-text",
+      "description": "Fixture component streaming-text.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/components/streaming-text/streaming-text.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/streaming-text/streaming-text.tsx"
+        },
+        {
+          "path": "registry/components/streaming-text/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/streaming-text/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "sheet",
+      "type": "registry:component",
+      "title": "sheet",
+      "description": "Fixture component sheet.",
+      "dependencies": [],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/components/sheet/sheet.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/sheet/sheet.tsx"
+        },
+        {
+          "path": "registry/components/sheet/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/sheet/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "chat",
+      "type": "registry:component",
+      "title": "chat",
+      "description": "Fixture component chat.",
+      "dependencies": [],
+      "registryDependencies": [
+        "surface",
+        "button"
+      ],
+      "files": [
+        {
+          "path": "registry/components/chat/chat.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/chat/chat.tsx"
+        },
+        {
+          "path": "registry/components/chat/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/chat/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "summarize",
+      "type": "registry:component",
+      "title": "summarize",
+      "description": "Fixture component summarize.",
+      "dependencies": [],
+      "registryDependencies": [
+        "surface",
+        "streaming-text"
+      ],
+      "files": [
+        {
+          "path": "registry/components/summarize/summarize.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/summarize/summarize.tsx"
+        },
+        {
+          "path": "registry/components/summarize/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/summarize/index.ts"
+        }
+      ]
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "command-bar",
+      "type": "registry:component",
+      "title": "command-bar",
+      "description": "Fixture component command-bar.",
+      "dependencies": [],
+      "registryDependencies": [
+        "button",
+        "key-hint",
+        "on-device-badge",
+        "sheet",
+        "shimmer-text",
+        "skeleton",
+        "streaming-text",
+        "surface"
+      ],
+      "files": [
+        {
+          "path": "registry/components/command-bar/command-bar.tsx",
+          "type": "registry:component",
+          "target": "components/ondai/command-bar/command-bar.tsx"
+        },
+        {
+          "path": "registry/components/command-bar/index.ts",
+          "type": "registry:lib",
+          "target": "components/ondai/command-bar/index.ts"
+        }
+      ]
+    }
+  ]
+}

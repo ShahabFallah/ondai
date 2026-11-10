@@ -1,0 +1,32 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "command-bar",
+  "type": "registry:component",
+  "title": "command-bar",
+  "description": "Fixture component command-bar.",
+  "dependencies": [],
+  "registryDependencies": [
+    "button",
+    "key-hint",
+    "on-device-badge",
+    "sheet",
+    "shimmer-text",
+    "skeleton",
+    "streaming-text",
+    "surface"
+  ],
+  "files": [
+    {
+      "path": "registry/components/command-bar/command-bar.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/command-bar/command-bar.tsx",
+      "content": "export function CommandBar() {\n  return null\n}\n"
+    },
+    {
+      "path": "registry/components/command-bar/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/command-bar/index.ts",
+      "content": "export * from './command-bar'\n"
+    }
+  ]
+}

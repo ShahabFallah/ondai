@@ -1,0 +1,26 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "chat",
+  "type": "registry:component",
+  "title": "chat",
+  "description": "Fixture component chat.",
+  "dependencies": [],
+  "registryDependencies": [
+    "surface",
+    "button"
+  ],
+  "files": [
+    {
+      "path": "registry/components/chat/chat.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/chat/chat.tsx",
+      "content": "export function Chat() {\n  return null\n}\n"
+    },
+    {
+      "path": "registry/components/chat/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/chat/index.ts",
+      "content": "export * from './chat'\n"
+    }
+  ]
+}

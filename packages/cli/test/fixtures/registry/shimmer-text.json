@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "shimmer-text",
+  "type": "registry:component",
+  "title": "shimmer-text",
+  "description": "Fixture component shimmer-text.",
+  "dependencies": [],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "registry/components/shimmer-text/shimmer-text.tsx",
+      "type": "registry:component",
+      "target": "components/ondai/shimmer-text/shimmer-text.tsx",
+      "content": "export function ShimmerText() {\n  return null\n}\n"
+    },
+    {
+      "path": "registry/components/shimmer-text/index.ts",
+      "type": "registry:lib",
+      "target": "components/ondai/shimmer-text/index.ts",
+      "content": "export * from './shimmer-text'\n"
+    }
+  ]
+}
