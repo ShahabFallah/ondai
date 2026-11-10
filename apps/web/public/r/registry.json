@@ -1843,7 +1843,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "3852d8952ed29278",
+          "hash": "26e3cb833a34b64f",
           "priority": "P0",
           "capabilities": [
             "structured"
@@ -1945,7 +1945,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "65a336a115b3bf74",
+          "hash": "4234df3a2976ffe4",
           "priority": "P0",
           "capabilities": [
             "embeddings"
@@ -2415,7 +2415,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "fbece35d4ec73989",
+          "hash": "1a1d8e9f6ff35f55",
           "priority": "P0",
           "capabilities": [
             "text"
@@ -2581,7 +2581,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "8e9b0000ab644c1f",
+          "hash": "3bd82309cd3d4a31",
           "priority": "P1",
           "capabilities": [
             "structured"
@@ -2661,7 +2661,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "996593d60d1e66fd",
+          "hash": "9b87ecf3571833e9",
           "priority": "P0",
           "capabilities": [],
           "variants": {
@@ -3059,7 +3059,7 @@
       "meta": {
         "ondai": {
           "registryVersion": 1,
-          "hash": "5994b376a65105f4",
+          "hash": "76940bd8159282d5",
           "priority": "P0",
           "capabilities": [
             "transcription",
