@@ -1,8 +1,8 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 
-/** axe on the review grid and the flagship playground page. Serious/critical issues fail the run. */
-for (const url of ['/review?theme=void&motion=off&clock=manual', '/playground/command-bar?state=idle&motion=off']) {
+/** axe on the review grid and the flagship component's embed (the standalone playground page now redirects to the docs). Serious/critical issues fail the run. */
+for (const url of ['/review?theme=void&motion=off&clock=manual', '/playground/command-bar?embed=1&state=idle&motion=off']) {
   test(`axe · ${url}`, async ({ page }) => {
     await page.goto(url)
     await page.waitForSelector('[data-ready="true"]', { timeout: 60_000 })

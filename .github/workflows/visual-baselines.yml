@@ -1,0 +1,39 @@
+name: Update visual baselines
+
+# Run by hand after a deliberate visual change. Renders new screenshots on the same macOS runner and
+# production build the Visual regression job compares against, and uploads them as an artifact
+# (`visual-baselines`). Review them, then commit them to apps/web/tests/visual/__screenshots__.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  baselines:
+    name: Render baselines
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm registry:build
+      - run: pnpm --filter @ondai/web exec playwright install chromium
+      - run: pnpm --filter @ondai/web build
+      - run: pnpm --filter @ondai/web start &
+      - run: npx wait-on http://localhost:3000/review?component=key-hint --timeout 180000
+      # Fresh baselines: drop the old ones so screenshots of removed states do not linger.
+      - run: rm -rf apps/web/tests/visual/__screenshots__
+      - run: pnpm --filter @ondai/web test:visual:update
+        env:
+          PLAYWRIGHT_BASE_URL: http://localhost:3000
+      - uses: actions/upload-artifact@v4
+        with:
+          name: visual-baselines
+          path: apps/web/tests/visual/__screenshots__
+          if-no-files-found: error

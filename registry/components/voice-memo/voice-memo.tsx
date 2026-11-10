@@ -197,7 +197,7 @@ function MemoView({ transcript: given, onAdd, initialOff, size = 'md', radius, a
 
   return (
     <View style={[{ gap: 12 }, style, styles.container]} testID={testID}>
-      <Pressable onPress={() => setShowAll((v) => !v)} accessibilityRole="button" accessibilityLabel={showAll ? labels.showLess : labels.showAll}>
+      <Pressable onPress={() => setShowAll((v) => !v)} accessibilityRole="button" accessibilityState={{ expanded: showAll }} accessibilityHint={showAll ? labels.showLess : labels.showAll}>
         <Text numberOfLines={showAll ? undefined : 2} style={[meta, { color: t.colors.textSecondary, paddingHorizontal: 2 }, styles.transcript]}>
           {`“${transcript.trim()}”`}
         </Text>
@@ -293,7 +293,7 @@ function TodoRow({ action, on, toggle, z, icons, styles }: { action: MemoAction;
     <View style={{ width: box, height: box, borderRadius: Math.round(box * 0.3), borderWidth: s.skin === 'pop' ? 1.5 : 1.25, borderColor: s.skin === 'pop' ? s.secondary.border : t.colors.hairlineStrong, backgroundColor: s.skin === 'pop' ? s.field.fill : 'transparent' }} />
   )
   return (
-    <Pressable onPress={toggle} accessibilityRole="checkbox" accessibilityState={{ checked: on }} accessibilityLabel={action.text} style={[{ flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: z.row, paddingHorizontal: 8, marginHorizontal: -8, paddingVertical: 6, borderRadius: r }, styles.row]}>
+    <Pressable onPress={toggle} accessibilityRole="checkbox" accessibilityState={{ checked: on }} aria-checked={on} accessibilityLabel={action.text} style={[{ flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: z.row, paddingHorizontal: 8, marginHorizontal: -8, paddingVertical: 6, borderRadius: r }, styles.row]}>
       {(st) => (
         <>
           {st.pressed || (st as { hovered?: boolean }).hovered ? <SkinRowFace radius={r} /> : null}

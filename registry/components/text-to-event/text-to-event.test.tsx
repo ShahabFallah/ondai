@@ -57,7 +57,8 @@ describe('TextToEvent', () => {
     const onAdd = jest.fn()
     await renderWithOndai(<TextToEvent message={sampleMessage} now={sampleNow} autoRun revealInterval={0} onAdd={onAdd} showBadge={false} />, { script: mockScript.object(sampleAnswer) })
     await waitFor(() => expect(screen.getByText('Dinner with Sara')).toBeTruthy(), { timeout: 5000 })
-    await fireEvent.press(screen.getByLabelText('Place: Nonna’s'))
+    // Rows are named by what they show ("Place Nonna’s"); press the place value itself.
+    await fireEvent.press(screen.getByText('Nonna’s'))
     await fireEvent(await screen.findByLabelText('Place'), 'submitEditing', { nativeEvent: { text: 'Trattoria Nonna' } })
     await waitFor(() => expect(screen.getByText('Trattoria Nonna')).toBeTruthy())
     fireEvent.press(screen.getByText('Add to calendar'))

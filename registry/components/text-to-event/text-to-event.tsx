@@ -363,7 +363,6 @@ function EventCard({
               onPress={edit}
               disabled={!editable || pending || added || isEditing}
               accessibilityRole={editable && !pending ? 'button' : undefined}
-              accessibilityLabel={`${label}: ${value || labels.add}`}
               accessibilityHint={editable && !pending ? labels.editHint : undefined}
               style={({ pressed }) => [
                 { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: z.row, paddingVertical: 6, paddingHorizontal: 8, marginHorizontal: -8, borderRadius: 8 },
@@ -544,7 +543,7 @@ function EventCard({
           </View>
         </Surface>
       ) : (
-        <Pressable onPress={busy ? undefined : startOver} accessibilityRole="button" accessibilityLabel={labels.again} style={{ flexDirection: 'row', gap: 10, paddingHorizontal: 4 }}>
+        <Pressable onPress={busy ? undefined : startOver} accessibilityRole="button" accessibilityHint={labels.again} style={{ flexDirection: 'row', gap: 10, paddingHorizontal: 4 }}>
           <View style={{ width: 2, borderRadius: 1, backgroundColor: t.colors.hairlineStrong }} />
           <Text style={[sm, { flex: 1, color: t.colors.textSecondary }]} numberOfLines={2}>
             {ev.source || text}

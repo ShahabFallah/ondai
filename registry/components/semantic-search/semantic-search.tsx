@@ -481,7 +481,7 @@ function ResultRow<M>({ hit, onPress, icon, why, similarity, active, z, s, label
   const titleStyle: StyleProp<TextStyle> = [typeStyle(t, z.title, { weight: 'medium' }), { color: t.colors.text }, styles.rowTitle]
   const text = hit.text ?? hit.id
   return (
-    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={text} style={[{ flexDirection: 'row', alignItems: cards ? 'flex-start' : 'center', gap: 12, minHeight: z.row, paddingHorizontal: cards ? 10 : 8, paddingVertical: cards ? 10 : 6, borderRadius: r }, styles.row]}>
+    <Pressable onPress={onPress} accessibilityRole="button" style={[{ flexDirection: 'row', alignItems: cards ? 'flex-start' : 'center', gap: 12, minHeight: z.row, paddingHorizontal: cards ? 10 : 8, paddingVertical: cards ? 10 : 6, borderRadius: r }, styles.row]}>
       {(st) => (
         <>
           {/* The hovered or pressed row becomes the variant's key: a keycap, a glossy pill, a steel plate. Cards keep their own face. */}

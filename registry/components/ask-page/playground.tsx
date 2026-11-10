@@ -68,7 +68,7 @@ function PageView({ text, title, focus, scrollRef, offsets }: { text: string; ti
   }
   return (
     <Surface elevation="inset" radius={14} style={{ padding: 0, overflow: 'hidden' }}>
-      <ScrollView ref={scrollRef} style={{ maxHeight: 170 }} contentContainerStyle={{ padding: 14, gap: 8 }}>
+      <ScrollView ref={scrollRef} focusable accessibilityLabel={title} style={{ maxHeight: 170 }} contentContainerStyle={{ padding: 14, gap: 8 }}>
         <Text style={[typeStyle(t, 'sm', { weight: 'semibold' }), { color: t.colors.text }]}>{title}</Text>
         {paragraphs.map(({ p, start }, i) => {
           const hit = focus && focus.start >= start && focus.start < start + p.length ? focus : null

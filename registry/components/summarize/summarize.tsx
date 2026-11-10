@@ -424,7 +424,7 @@ function SummarizeInner({
   return (
     <View style={[{ gap: 12 }, style]} testID={testID}>
       <Surface radius={panelRadius} style={[{ paddingHorizontal: z.pad, paddingTop: z.pad - 4, paddingBottom: open ? z.pad - 2 : z.pad - 4, gap: z.gap + 2 }, styles.container]}>
-        <Pressable onPress={() => setOpen((o) => !o)} accessibilityRole="button" accessibilityState={{ expanded: open }} accessibilityLabel={open ? labels.hide : labels.show} style={[{ flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 28 }, styles.header]}>
+        <Pressable onPress={() => setOpen((o) => !o)} accessibilityRole="button" accessibilityState={{ expanded: open }} accessibilityHint={open ? labels.hide : labels.show} style={[{ flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 28 }, styles.header]}>
           <Header
             z={z}
             icon={renderIcon(icons.title, ListCollapse, { size: z.icon, strokeWidth: 1.75, color: tileInk(s, t.colors.textTertiary) })}

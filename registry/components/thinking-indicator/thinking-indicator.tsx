@@ -38,7 +38,7 @@ export function ThinkingIndicator({ variant = 'shimmer', size = 'md', state = 't
     )
   }
   return (
-    <View testID={testID} accessibilityRole="progressbar" accessibilityLabel={label ?? stateLabel[state]} style={[{ flexDirection: 'row', alignItems: 'center', gap: 10 }, style]}>
+    <View testID={testID} accessibilityRole="progressbar" accessibilityLabel={label || stateLabel[state]} style={[{ flexDirection: 'row', alignItems: 'center', gap: 10 }, style]}>
       {variant === 'dots' ? <Dots size={size} /> : variant === 'orb' ? <Orb size={size} state={state} testID={testID ? `${testID}-orb` : undefined} /> : variant === 'line' ? <Line size={size} /> : <Sweep size={size} />}
       {label ? <Text style={[typeStyle(t, size === 'lg' ? 'md' : 'sm', { weight: 'medium' }), { color: t.colors.textSecondary }]}>{label}</Text> : null}
     </View>

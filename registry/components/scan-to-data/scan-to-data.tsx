@@ -363,7 +363,7 @@ function Scan<S extends z.ZodObject<z.ZodRawShape>>({
 
   const badge = showBadge ? <OnDeviceBadge size="sm" state={busy ? 'thinking' : sc.status} provider={sc.provider} locality={sc.locality as never} /> : null
   const photo = (height: number, retake: boolean) =>
-    image ? <ScanPhoto image={image} busy={busy} height={height} radius={r} retake={retake ? labels.retake : undefined} retakeIcon={icons.retake} line={tinted ? s.tint : undefined} style={styles.photo} a11y={busy ? say('scanning') : say('scanAnother')} /> : null
+    image ? <ScanPhoto image={image} busy={busy} height={height} radius={r} retake={retake ? labels.retake : undefined} retakeIcon={icons.retake} line={tinted ? s.tint : undefined} style={styles.photo} a11y={busy ? say('scanning') : retake ? `${labels.retake}: ${say('scanAnother')}` : say('scanAnother')} /> : null
 
   if (presentation === 'card') {
     return (
@@ -397,7 +397,7 @@ function Scan<S extends z.ZodObject<z.ZodRawShape>>({
     <View style={[{ gap: 14 }, style, styles.container]} testID={testID}>
       {showFrame ? (
         image ? (
-          <Pressable onPress={() => void pick(true)} disabled={busy} accessibilityRole="button" accessibilityLabel={busy ? say('scanning') : say('scanAnother')}>
+          <Pressable onPress={() => void pick(true)} disabled={busy} accessibilityRole="button" accessibilityLabel={busy ? say('scanning') : `${labels.retake}: ${say('scanAnother')}`}>
             {photo(sc.data ? z.done : z.frame, !busy)}
           </Pressable>
         ) : renderEmpty ? (
