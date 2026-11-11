@@ -1,3 +1,4 @@
+import { aiComponents } from '@/lib/ai-components';
 import { source } from '@/lib/source';
 import {
   DocsBody,
@@ -14,7 +15,7 @@ import { RunsOn } from '@/components/docs/RunsOn';
 import { ComponentIndex } from '@/components/docs/ComponentIndex';
 import type { Metadata } from 'next';
 import { createRelativeLink } from 'fumadocs-ui/mdx';
-import { getPageImageUrl, getPageMarkdownUrl } from '@/lib/shared';
+import { getPageMarkdownUrl } from '@/lib/shared';
 
 export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
   const params = await props.params;
@@ -24,8 +25,9 @@ export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
   const MDX = page.data.body;
   const markdownUrl = getPageMarkdownUrl(page).url;
 
+  // No mobile "On this page" bar: it sat under the nav and changed its label while scrolling.
   return (
-    <DocsPage toc={page.data.toc} full={page.data.full}>
+    <DocsPage toc={page.data.toc} full={page.data.full} tableOfContentPopover={{ enabled: false }}>
       <div className="md:hidden">
         <SidebarTrigger className="btn btn-secondary btn-sm">
           <Menu size={14} />
@@ -55,6 +57,11 @@ export async function generateStaticParams() {
   return source.generateParams();
 }
 
+function ogImageFor(slug: string[] | undefined) {
+  const name = slug?.[0] === 'components' ? slug[1] : undefined
+  return name && aiComponents.some((m) => m.name === name) ? `/og/${name}.jpg` : '/og/site.jpg'
+}
+
 export async function generateMetadata(props: PageProps<'/docs/[[...slug]]'>): Promise<Metadata> {
   const params = await props.params;
   const page = source.getPage(params.slug);
@@ -63,8 +70,8 @@ export async function generateMetadata(props: PageProps<'/docs/[[...slug]]'>): P
   return {
     title: page.data.title,
     description: page.data.description,
-    openGraph: {
-      images: getPageImageUrl(page).url,
-    },
+    // A component page previews with its own card (scripts/render-og.mjs); every other page with the site's.
+    openGraph: { images: [{ url: ogImageFor(params.slug), width: 1200, height: 630 }] },
+    twitter: { card: 'summary_large_image', images: [ogImageFor(params.slug)] },
   };
 }

@@ -5,7 +5,6 @@ description: "Apple Foundation Models, Gemini Nano and cloud, through the Callst
 
 Ondai reaches models only through `@ondai/core` adapters, which wrap the [Callstack react-native-ai](https://github.com/callstackincubator/ai) packages (0.12, Vercel AI SDK v6).
 
-
 | Provider | Package | Capabilities | Notes |
 | --- | --- | --- | --- |
 | Apple Foundation Models | `@react-native-ai/apple` | text, structured (constrained decoding), tools, embeddings, transcription, speech | iOS 26+, Apple Intelligence on. 4,096-token context. No image input: Apple's model takes images from iOS 27, but the 0.12 package does not pass them on. |
@@ -36,6 +35,5 @@ import { cloudAdapter } from '@ondai/core'
 ## Llama specifics (not supported yet)
 
 `llama.rn` does not support the React Native version Ondai targets yet.
-
 
 `llamaAdapter({ modelId: 'owner/repo/file.gguf', autoDownload: 'wifi-only' })` reports `unavailable: model-downloading` until the app calls `download()`. Keep it opt-in and show `ModelDownload`.

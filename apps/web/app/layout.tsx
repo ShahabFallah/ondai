@@ -22,7 +22,14 @@ const tokensCss = generateCss()
 export const metadata = {
   title: { default: 'Ondai · AI that lives on the phone', template: '%s · Ondai' },
   description: 'On-device AI components for React Native. Free, private, offline.',
-  openGraph: { images: ['/og.png'] },
+  // Absolute URLs for link previews, whichever deployment serves the page.
+  metadataBase: new URL('https://ondai.dev'),
+  openGraph: {
+    type: 'website',
+    siteName: 'Ondai',
+    images: [{ url: '/og/site.jpg', width: 1200, height: 630, alt: 'Ondai: AI components that run on the phone' }],
+  },
+  twitter: { card: 'summary_large_image', images: ['/og/site.jpg'] },
   icons: {
     icon: [
       { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },

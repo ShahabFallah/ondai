@@ -670,6 +670,8 @@ a.sbx-row:focus-visible .sbx-name {
 .docs-mock {
   position: relative;
   display: inline-flex;
+  flex: none;
+  white-space: nowrap;
   align-items: center;
   gap: 7px;
   height: 26px;
@@ -740,6 +742,7 @@ a.sbx-row:focus-visible .sbx-name {
   list-style: none;
 }
 .docs-preview-runs li {
+  flex: none;
   display: grid;
   place-items: center;
   width: 28px;
@@ -1001,5 +1004,23 @@ pre.shiki {
   .docs-preview-variant .seg-item {
     flex: none;
     white-space: nowrap;
+  }
+}
+
+/* Phones: the preview footer stays on one line. The mock tag drops its note (the tooltip keeps it), the
+   provider marks keep their size. */
+@media (max-width: 640px) {
+  .docs-preview-foot {
+    gap: 10px;
+  }
+  .docs-mock-note {
+    display: none;
+  }
+  .docs-preview-runs-wrap {
+    gap: 6px;
+    flex: none;
+  }
+  .docs-preview-runs {
+    gap: 0;
   }
 }

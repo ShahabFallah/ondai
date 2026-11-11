@@ -53,12 +53,12 @@ Each component page lists the platforms it runs on.
 
 ## Runs on
 
-| Platform                                                                           | Model                                                | Status                                                                                                            |
-| ---------------------------------------------------------------------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| iPhone 15 Pro+, iPad M1+, Apple silicon Macs (iOS/macOS 26, Apple Intelligence on) | Apple Foundation Models via `@react-native-ai/apple` | supported (~360 ms to first token, ~86 tok/s on Apple silicon) |
-| Android 14+ with AICore (Pixel 9+, Galaxy S26, …)                                  | Gemini Nano via `@react-native-ai/adk`               | supported                                 |
-| Any phone                                                                          | Llama via `@react-native-ai/llama`                   | not supported yet (llama.rn does not support React Native 0.88)                                                   |
-| Web / tests                                                                        | Scripted mock (a real AI SDK model)                  | the playground, Storybook-style stories and all tests                                                             |
+| Platform                                                                           | Model                                                | Status                                                                  |
+| ---------------------------------------------------------------------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------- |
+| iPhone 15 Pro+, iPad M1+, Apple silicon Macs (iOS/macOS 26, Apple Intelligence on) | Apple Foundation Models via `@react-native-ai/apple` | supported (~360 ms to first token, ~86 tok/s measured on Apple silicon) |
+| Android 14+ with AICore (Pixel 9+, Galaxy S26, …)                                  | Gemini Nano via `@react-native-ai/adk`               | supported                                                               |
+| Any phone                                                                          | Llama via `@react-native-ai/llama`                   | not supported yet (llama.rn does not support React Native 0.88)         |
+| Web / tests                                                                        | Scripted mock (a real AI SDK model)                  | the playground, Storybook-style stories and all tests                   |
 
 Details and caveats: [device support](https://ondai.dev/docs/device-support) and [providers](https://ondai.dev/docs/providers).
 
