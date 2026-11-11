@@ -13,6 +13,6 @@
   "files": ["voice-memo.tsx", "index.ts"],
   "runsOn": ["apple"],
   "limits": [
-    "iPhone only for now: it records through VoiceInput (Apple SpeechAnalyzer), with the recorder passed in by the app."
+    "Runs on iPhone: it records through VoiceInput (Apple SpeechAnalyzer), with the recorder passed in by the app."
   ]
 }

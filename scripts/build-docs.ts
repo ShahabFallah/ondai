@@ -297,7 +297,7 @@ for (const item of manifest.items) {
   }
   if (o.budget) lines.push('## Token budget', '', `Input budget: **${o.budget.input} tokens**. ${o.budget.strategy}`, '')
   lines.push('## Fallback', '', o.capabilities.length ? 'When no provider is ready the component renders the unavailable state (`AvailabilityGate` copy) and, where a deterministic path exists, keeps working without the model.' : 'Pure UI: no model required.', '')
-  lines.push('## Eval score', '', existsSync(join(root, 'evals', item.name, 'fixtures.json')) ? `Fixtures: \`evals/${item.name}/fixtures.json\`.` : '', '')
+  if (existsSync(join(root, 'evals', item.name, 'fixtures.json'))) lines.push('## Eval score', '', `Fixtures: \`evals/${item.name}/fixtures.json\`.`, '')
   lines.push('## Files', '', ...item.registryDependencies.length ? [`Registry dependencies: ${item.registryDependencies.map((d) => `[${d}](/docs/components/${d})`).join(', ')}`, ''] : [], `npm dependencies: ${item.dependencies.map((d) => `\`${d}\``).join(', ') || 'none'}`, '')
   writeFileSync(join(docsDir, `${item.name}.mdx`), lines.join('\n'))
   const readme = ['# ' + item.title, '', item.description, '', '```bash', `npx ondai add ${item.name}`, '```', '', ...(u ? ['```tsx', u.imports, '', u.code, '```', ''] : []), `Docs: https://ondai.dev/docs/components/${item.name}`, '']

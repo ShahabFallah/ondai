@@ -1,6 +1,6 @@
 /* ------------------------------------------------------------------ */
 /* "Watch them work": recorded reels of the AI components.             */
-/* One wide clip, then pairs of mixed widths. Tokens only (global.css). */
+/* The command bar wide, then portraits. Tokens only (global.css).    */
 /* ------------------------------------------------------------------ */
 
 .reels {
@@ -15,34 +15,27 @@
   --reel-stage: #090909;
 }
 
+/* Two columns: the command bar across the top, then the four portraits in pairs. */
 @media (min-width: 640px) {
   .reels {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .reel[data-reel='command-bar'],
-  .reel[data-reel='rewrite'] {
+  .reel[data-reel='command-bar'] {
     grid-column: span 2;
   }
 }
 
-/* Spans are matched to the clips' aspect ratios, so each row lines up at the full wrap width. */
+/* Twelve columns: the command bar (16:10) beside the first portrait (4:5) at the same height (8 + 4 */
+/* columns, as their aspect ratios are 2 : 1), then the other three portraits as a row of equals. */
 @media (min-width: 960px) {
   .reels {
     grid-template-columns: repeat(12, minmax(0, 1fr));
   }
-  .reel[data-reel='command-bar'],
-  .reel[data-reel='rewrite'] {
-    grid-column: span 8;
-  }
-  .reel[data-reel='smart-reply'],
-  .reel[data-reel='auto-tag'] {
+  .reel {
     grid-column: span 4;
   }
-  .reel[data-reel='smart-input'] {
-    grid-column: span 5;
-  }
-  .reel[data-reel='natural-filter'] {
-    grid-column: span 7;
+  .reel[data-reel='command-bar'] {
+    grid-column: span 8;
   }
 }
 

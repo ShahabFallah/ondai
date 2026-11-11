@@ -1,6 +1,6 @@
 ---
 title: "Providers"
-description: "Apple Foundation Models, Gemini Nano and cloud, through the Callstack react-native-ai providers. Llama is not supported yet."
+description: "Apple Foundation Models, Gemini Nano and cloud, through the Callstack react-native-ai providers. Llama is coming soon."
 ---
 
 Ondai reaches models only through `@ondai/core` adapters, which wrap the [Callstack react-native-ai](https://github.com/callstackincubator/ai) packages (0.12, Vercel AI SDK v6).
@@ -9,7 +9,7 @@ Ondai reaches models only through `@ondai/core` adapters, which wrap the [Callst
 | --- | --- | --- | --- |
 | Apple Foundation Models | `@react-native-ai/apple` | text, structured (constrained decoding), tools, embeddings, transcription, speech | iOS 26+, Apple Intelligence on. 4,096-token context. No image input: Apple's model takes images from iOS 27, but the 0.12 package does not pass them on. |
 | Gemini Nano | `@react-native-ai/adk` | text, structured (schema in the prompt, validated by Ondai), vision | Android 14+ physical device with AICore, foreground only, per-app quotas. Image input is in beta. Tool calling is an alpha preview, so Ondai does not route tools to Nano. |
-| Llama (not supported yet) | `@react-native-ai/llama` | text, structured (schema in the prompt), embeddings | The adapter exists, but `llama.rn` does not support the React Native version Ondai targets yet. Opt-in GGUF download (~1 GB). |
+| Llama (coming soon) | `@react-native-ai/llama` | text, structured (schema in the prompt), embeddings | The adapter is ready and ships as soon as `llama.rn` supports the React Native version Ondai targets. Opt-in GGUF download (~1 GB). |
 | Cloud | any AI SDK model | whatever the model supports | Only with `allowCloud: true`. |
 
 ```ts
@@ -32,8 +32,8 @@ import { cloudAdapter } from '@ondai/core'
 
 `isNanoSupported()` says whether the device can ever run Nano; `isAvailable('genai-nano')` says whether it is ready now (downloading shows as `preparing`). Add `minSdkVersion 26` and the packaging excludes from the ADK README through `expo-build-properties`.
 
-## Llama specifics (not supported yet)
+## Llama specifics (coming soon)
 
-`llama.rn` does not support the React Native version Ondai targets yet.
+The adapter is ready and ships as soon as `llama.rn` supports the React Native version Ondai targets.
 
 `llamaAdapter({ modelId: 'owner/repo/file.gguf', autoDownload: 'wifi-only' })` reports `unavailable: model-downloading` until the app calls `download()`. Keep it opt-in and show `ModelDownload`.

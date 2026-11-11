@@ -58,8 +58,8 @@ export function Hero() {
         </h1>
 
         <p className="hx-lead hx-in" style={{ '--i': 11 } as CSSProperties}>
-          Copy-paste React Native components that run on the phone&apos;s own model. Free, private,
-          and fast in airplane mode.
+          AI components that leverage the foundation models already on the device. Apple Intelligence
+          and Gemini Nano, wired into production-ready UI. Private, offline, instant.
         </p>
 
         <div className="hx-actions hx-in" style={{ '--i': 12 } as CSSProperties}>

@@ -83,123 +83,111 @@ const COL = '[data-capture-col]'
 // typing is brisk, camera moves are 0.5-0.7 s, holds are just long enough to read. The page plays them at
 // 1.15x on top (components/home/ReelVideo.tsx).
 const reels = {
+  // A sentence becomes an expense: the bar picks the action, and the list beside it gains the row and a new total.
   'command-bar': {
-    size: [600, 375],
-    w: 430,
-    scale: 2.6,
+    size: [640, 400],
+    w: 600,
+    scale: 2.4,
     async run(d) {
-      const push = d.cam.focus(`${COL} input`, { fill: 0.94, max: 1.32, ms: 650 })
-      await d.focusInput(`${COL} input`)
+      const input = '[data-testid="reel-bar"] input'
+      const push = d.cam.focus(input, { fill: 0.86, max: 1.5, ms: 650, x: 0.5 })
+      await d.focusInput(input)
       await d.wait(220)
-      await d.type('Remind me to call Sam tomorrow')
-      await d.wait(220)
+      await d.type("Dinner at Luigi's was 42 euros")
+      await d.wait(200)
       await push
       await d.page.keyboard.press('Enter')
-      await d.cam.focus(`${COL} input`, { s: 1.08, ms: 600, y: 0.24 })
-      await d.waitText('Call Sam · tomorrow')
-      await d.cam.focus(COL, { fill: 0.9, fillH: 0.62, max: 1.3, ms: 600 })
-      await d.wait(1100)
+      await d.cam.focus(input, { s: 1.2, ms: 600, y: 0.3 })
+      await d.waitText('Added €42.00')
+      await d.wait(250)
+      // Over to the list: the new row lands on top and the total moves.
+      await d.cam.focus('[data-testid="reel-expenses"]', { fill: 0.6, fillH: 0.9, max: 1.35, ms: 700 })
+      await d.wait(1500)
+      await d.cam.reset(650)
+      await d.wait(700)
     },
   },
-  'smart-reply': {
-    size: [380, 484],
-    w: 330,
+  // Two questions with none of the notes' words in them; the right note comes up first both times.
+  'semantic-search': {
+    size: [400, 500],
+    w: 360,
+    scale: 2,
+    async run(d) {
+      const input = `${COL} input`
+      const push = d.cam.focus(input, { fill: 0.86, max: 1.14, ms: 600, y: 0.3 })
+      await d.focusInput(input)
+      await d.wait(200)
+      await d.type('my trip to Portugal')
+      await push
+      await d.waitText('Flight to Lisbon')
+      await d.cam.focus(COL, { fill: 0.96, fillH: 0.92, max: 1.12, ms: 600, y: 0.5 })
+      await d.wait(1500)
+      await d.page.keyboard.press('ControlOrMeta+a')
+      await d.wait(80)
+      await d.cam.focus(input, { fill: 0.86, max: 1.14, ms: 550, y: 0.3 })
+      await d.type('something to cook for friends')
+      await d.waitText('lasagna')
+      await d.cam.focus(COL, { fill: 0.96, fillH: 0.92, max: 1.12, ms: 600, y: 0.5 })
+      await d.wait(1500)
+    },
+  },
+  // Tap, talk, stop: the transcript arrives, then the memo with its to-dos, added in one tap.
+  'voice-memo': {
+    size: [400, 500],
+    w: 360,
+    scale: 2,
+    async run(d) {
+      await d.cam.focus(COL, { fill: 0.96, max: 1.14, ms: 550, y: 0.42 })
+      await d.click('[aria-label="Start listening"]')
+      await d.wait(2600)
+      await d.click('[aria-label="Stop listening"]')
+      await d.waitText('Quick one after the client call', 20000)
+      await d.wait(1600)
+      await d.click('text=Use')
+      await d.cam.reset(550)
+      await d.waitText('Client call follow-ups')
+      await d.wait(200)
+      await d.cam.focus(COL, { fill: 0.96, fillH: 0.94, max: 1.12, ms: 600, y: 0.5 })
+      await d.wait(1300)
+      await d.click('text=Add to Reminders')
+      await d.wait(1200)
+    },
+  },
+  // A payment is proposed, read field by field, and approved; it runs and reports back.
+  'tool-confirm-card': {
+    size: [400, 500],
+    w: 360,
     scale: 2,
     async run(d) {
       await d.wait(150)
       await d.cue()
-      await d.cam.focus(COL, { fill: 0.96, fillH: 0.9, max: 1.12, ms: 550 })
-      await d.waitText('Sure. What time')
-      await d.cam.focus('[data-testid="reel-replies"]', { fill: 0.96, max: 1.16, ms: 600, y: 0.58 })
-      await d.wait(650)
-      await d.click("text=Yes, I'll bring it. A ride would be great, thanks!")
-      await d.wait(120)
-      await d.cam.reset(650)
-      await d.wait(1000)
-    },
-  },
-  'auto-tag': {
-    size: [380, 444],
-    w: 330,
-    scale: 2,
-    async run(d) {
-      const push = d.cam.focus(`${COL} textarea`, { fill: 0.96, max: 1.14, ms: 600, y: 0.42 })
-      await d.focusInput(`${COL} textarea`)
+      await d.waitText('Leaves your account')
       await d.wait(200)
-      await d.type('Train to Lyon for the workshop,')
-      await d.wait(560)
-      await d.type(' expense the tickets.')
-      await push
-      await d.wait(520)
-      await d.cam.focus('[data-testid="reel-tags"]', { fill: 0.96, max: 1.2, ms: 550, y: 0.56 })
-      await d.click('[aria-label="Add tag travel"]')
+      await d.cam.focus('[data-testid="reel-confirm"]', { fill: 0.94, fillH: 0.9, max: 1.08, ms: 650, y: 0.5 })
+      await d.wait(1700)
+      await d.click('text=Confirm')
       await d.wait(200)
-      await d.click('[aria-label="Add tag work"]')
-      await d.wait(200)
-      await d.click('[aria-label="Add tag finance"]')
-      await d.wait(900)
-    },
-  },
-  rewrite: {
-    size: [640, 366],
-    w: 440,
-    scale: 2.4,
-    async run(d) {
-      const push = d.cam.focus(`${COL} textarea`, { fill: 0.92, max: 1.3, ms: 650, y: 0.45 })
-      await d.focusInput(`${COL} textarea`)
-      await d.wait(200)
-      await d.type('got ur budget. marketing looks low, talk tmrw?')
-      await push
-      await d.wait(180)
-      void d.cam.reset(450)
-      await d.wait(180)
-      await d.click('text=Formal')
-      // Pull back so the whole answer card fits as it streams in (the column is centred in the frame).
-      await d.cam.to({ s: 0.88, x: 640 * 0.06, y: -4 }, 600)
-      await d.waitText('Use this')
-      await d.wait(900)
-      await d.click('text=Use this')
-      await d.wait(100)
-      await d.cam.focus(`${COL} textarea`, { fill: 0.9, max: 1.2, ms: 600, y: 0.42 })
-      await d.wait(500)
-    },
-  },
-  'smart-input': {
-    size: [480, 416],
-    w: 380,
-    scale: 2,
-    async run(d) {
-      const push = d.cam.focus(`${COL} input`, { fill: 0.94, max: 1.2, ms: 650 })
-      await d.focusInput(`${COL} input`)
-      await d.wait(200)
-      await d.type('Lunch with Sam at Nopa, 24 dollars')
-      await push
-      await d.wait(200)
-      await d.page.keyboard.press('Enter')
       await d.cam.reset(600)
-      await d.waitText('Merchant')
+      await d.waitText('Marco has his')
+      await d.wait(1300)
+    },
+  },
+  // The agent plans, runs two lookups on its own, stops for an OK on the invite, then answers.
+  'agent-run': {
+    size: [400, 500],
+    w: 360,
+    scale: 2,
+    async run(d) {
       await d.wait(150)
-      await d.cam.focus(COL, { fill: 0.9, fillH: 0.88, max: 1.12, ms: 600 })
-      await d.wait(1200)
-    },
-  },
-  'natural-filter': {
-    size: [600, 350],
-    w: 420,
-    scale: 2.4,
-    async run(d) {
-      const push = d.cam.focus(`${COL} input`, { fill: 0.92, max: 1.3, ms: 650, y: 0.4 })
-      await d.focusInput(`${COL} input`)
+      await d.click('[aria-label="Run"]')
+      await d.waitText('Confirm', 20000)
       await d.wait(200)
-      await d.type('cheap italian open now within 2 km')
-      await push
-      await d.wait(200)
-      await d.page.keyboard.press('Enter')
+      await d.cam.focus(COL, { fill: 0.96, fillH: 0.94, max: 1.1, ms: 650 })
+      await d.wait(1300)
+      await d.click('text=Confirm')
       await d.cam.reset(600)
-      await d.waitText('Within 2 km')
-      await d.wait(100)
-      await d.cam.focus(COL, { fill: 0.92, fillH: 0.9, max: 1.14, ms: 600 })
-      await d.wait(1200)
+      await d.waitText('sent her the invite', 20000)
+      await d.wait(1600)
     },
   },
 }

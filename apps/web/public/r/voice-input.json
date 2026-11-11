@@ -79,7 +79,7 @@
         "apple"
       ],
       "limits": [
-        "iPhone only for now (Apple SpeechAnalyzer). The app passes in the recorder (for example expo-audio); without one nothing is recorded."
+        "Runs on iPhone with Apple SpeechAnalyzer. The app passes in the recorder (for example expo-audio)."
       ]
     }
   }

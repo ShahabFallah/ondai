@@ -20,14 +20,14 @@ const SEARCH_SUGGESTIONS: [string, string][] = [
 const tokensCss = generateCss()
 
 export const metadata = {
-  title: { default: 'Ondai · AI that lives on the phone', template: '%s · Ondai' },
-  description: 'On-device AI components for React Native. Free, private, offline.',
+  title: { default: 'Ondai · AI components for on-device foundation models', template: '%s · Ondai' },
+  description: 'AI components that leverage the foundation models already on the device: Apple Intelligence and Gemini Nano, wired into production-ready UI. Private, offline, instant.',
   // Absolute URLs for link previews, whichever deployment serves the page.
   metadataBase: new URL('https://ondai.dev'),
   openGraph: {
     type: 'website',
     siteName: 'Ondai',
-    images: [{ url: '/og/site.jpg', width: 1200, height: 630, alt: 'Ondai: AI components that run on the phone' }],
+    images: [{ url: '/og/site.jpg', width: 1200, height: 630, alt: 'Ondai: AI components for on-device foundation models' }],
   },
   twitter: { card: 'summary_large_image', images: ['/og/site.jpg'] },
   icons: {

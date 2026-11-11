@@ -28,6 +28,6 @@
   "runsOn": ["nano", "cloud"],
   "docs": "Needs a provider with the `vision` capability. Pass `image` (uri, or base64 from expo-image-picker) or let the user take or choose one; `onUseAlt` receives the edited alt text.",
   "limits": [
-    "Not on iPhone yet: Apple's model takes images from iOS 27, and the provider package Ondai uses does not pass them on yet. Runs on Gemini Nano (Prompt API, beta) or a cloud model."
+    "Runs on Gemini Nano (Prompt API) or a cloud model today; iPhone arrives with image input in Apple's model on iOS 27."
   ]
 }

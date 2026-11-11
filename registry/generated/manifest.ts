@@ -95,7 +95,7 @@ export const manifest: ManifestEntry[] = [
       "cloud"
     ],
     "limits": [
-      "Tool calling runs on Apple's model or a cloud model. Gemini Nano's tool calling is still an alpha preview, so Ondai does not route tools to it yet."
+      "Tool calling runs on Apple's model or a cloud model. Gemini Nano joins as soon as its tool calling leaves preview."
     ],
     "dependencies": [
       "@ondai/core",
@@ -1056,7 +1056,7 @@ export const manifest: ManifestEntry[] = [
       "cloud"
     ],
     "limits": [
-      "Not on iPhone yet: Apple's model takes images from iOS 27, and the provider package Ondai uses does not pass them on yet. Runs on Gemini Nano (Prompt API, beta) or a cloud model."
+      "Runs on Gemini Nano (Prompt API) or a cloud model today; iPhone arrives with image input in Apple's model on iOS 27."
     ],
     "dependencies": [
       "@ondai/core",
@@ -2036,7 +2036,7 @@ export const manifest: ManifestEntry[] = [
       "apple"
     ],
     "limits": [
-      "iPhone only for now (Apple SpeechAnalyzer). The app passes in the recorder (for example expo-audio); without one nothing is recorded."
+      "Runs on iPhone with Apple SpeechAnalyzer. The app passes in the recorder (for example expo-audio)."
     ],
     "dependencies": [
       "@ondai/core",
@@ -2090,7 +2090,7 @@ export const manifest: ManifestEntry[] = [
       "apple"
     ],
     "limits": [
-      "iPhone only for now: it records through VoiceInput (Apple SpeechAnalyzer), with the recorder passed in by the app."
+      "Runs on iPhone: it records through VoiceInput (Apple SpeechAnalyzer), with the recorder passed in by the app."
     ],
     "dependencies": [
       "@ondai/core",

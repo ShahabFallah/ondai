@@ -16,6 +16,6 @@
   "runsOn": ["apple"],
   "docs": "Audio capture is not bundled: pass `recorder` (expo-audio, react-native-audio-record or your own module) with `start()`, `stop()` → WAV/PCM bytes and `onLevel()`. Without one a simulated recorder runs, so the mock and the playground just work.",
   "limits": [
-    "iPhone only for now (Apple SpeechAnalyzer). The app passes in the recorder (for example expo-audio); without one nothing is recorded."
+    "Runs on iPhone with Apple SpeechAnalyzer. The app passes in the recorder (for example expo-audio)."
   ]
 }

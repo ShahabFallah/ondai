@@ -158,6 +158,31 @@ const autoTag: ScriptSource = (call: MockCallInfo) => {
 // Embeddings come from the mock's pseudo-embedding model; no script step is needed.
 const semanticSearch: ScriptSource = () => mockScript.empty()
 
+/** The voice memo in the landing page reel: what was said, and what the model reads out of it. */
+export const reelMemo = {
+  transcript:
+    'Quick one after the client call. They loved the demo. I need to send Dana the pricing deck by Thursday, book a room for the kickoff next week, and ask Leo to fix the login bug before Friday.',
+  memo: {
+    title: 'Client call follow-ups',
+    summary: 'The client loved the demo. Three things to sort before the kickoff next week.',
+    actions: [
+      { text: 'Send Dana the pricing deck', due: 'by Thursday' },
+      { text: 'Book a room for the kickoff', due: 'next week' },
+      { text: 'Ask Leo to fix the login bug', due: 'before Friday' },
+    ],
+  },
+}
+export const voiceMemo: ScriptSource = () => mockScript.thinking(900).object(reelMemo.memo)
+
+// The agent-run sample (registry/components/agent-run): two lookups, then an event that waits for an OK.
+const agentRun: ScriptSource = (call: MockCallInfo) => {
+  const i = Math.min(call.callIndex, 3)
+  if (i === 0) return mockScript.thinking(700).toolCall('searchPlaces', { query: 'quiet dinner', near: 'Priya’s office' })
+  if (i === 1) return mockScript.thinking(600).toolCall('checkCalendar', { day: 'Friday' })
+  if (i === 2) return mockScript.thinking(700).toolCall('createEvent', { title: 'Dinner with Priya', when: 'Friday 19:30', where: 'Luigi’s Trattoria', invite: 'priya@example.com' })
+  return mockScript.thinking(400).text('Booked Friday at 19:30 at Luigi’s Trattoria, 300 m from Priya’s office, and sent her the invite.')
+}
+
 export const demos = {
   'command-bar': { script: commandBar, props: { presentation: 'inline', variant: 'solid', showKeyHints: true, autoFocus: false } },
   'smart-input': { script: smartInput, props: { presentation: 'field' } },
@@ -167,6 +192,9 @@ export const demos = {
   'smart-reply': { script: smartReply, props: { presentation: 'chips' } },
   'auto-tag': { script: autoTag, props: { presentation: 'chips' } },
   'semantic-search': { script: semanticSearch, props: { presentation: 'bar', resultStyle: 'list', initialQuery: 'trips and tickets', autoRun: true } },
+  'voice-memo': { script: voiceMemo },
+  'tool-confirm-card': {},
+  'agent-run': { script: agentRun, props: { presentation: 'card' } },
 
   // Primitives on the "Primitives, alive" row. The last three land with the registry build.
   'thinking-indicator': { props: { variant: 'orb', size: 'lg', state: 'thinking', label: '' } },
@@ -190,10 +218,9 @@ export interface Reel {
   top?: number
 }
 export const reels: Partial<Record<DemoName, Reel>> = {
-  'command-bar': { props: { showKeyHints: false, showBadge: false, autoFocus: false }, align: 'top', top: 96 },
-  'smart-input': { props: { presentation: 'field', showBadge: false, voice: false, camera: false, placeholder: 'Describe the expense' }, align: 'top', top: 48 },
-  'natural-filter': { props: { presentation: 'bar', showBadge: false, placeholder: 'Search in your own words' }, align: 'top', top: 22 },
-  'smart-reply': { props: { presentation: 'chips', showBadge: false, testID: 'reel-replies' }, align: 'top', top: 64 },
-  rewrite: { props: { presentation: 'toolbar', resultView: 'diff', showBadge: false, value: '', modes: ['shorten', 'friendlier', 'formal'], testID: 'reel-rewrite' }, align: 'top', top: 40 },
-  'auto-tag': { props: { presentation: 'chips', showBadge: false, testID: 'reel-tags' }, align: 'top', top: 64 },
+  'command-bar': { props: { showKeyHints: false, showBadge: false, showVoice: false, autoFocus: false, placeholder: 'Ask or do anything' }, align: 'top', top: 64 },
+  'semantic-search': { props: { presentation: 'bar', resultStyle: 'list', initialQuery: '', autoRun: false, showBadge: false, recent: false, placeholder: 'Search your notes by meaning' }, align: 'top', top: 28 },
+  'voice-memo': { props: { showBadge: false }, align: 'top', top: 40 },
+  'tool-confirm-card': { props: { testID: 'reel-confirm' }, align: 'top', top: 28 },
+  'agent-run': { props: { autoRun: false, showBadge: false }, align: 'top', top: 24 },
 }

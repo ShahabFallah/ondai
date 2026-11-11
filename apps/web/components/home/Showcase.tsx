@@ -15,14 +15,13 @@ interface Reel {
   size: [number, number]
 }
 
-// Order is the reading order; reels.css places them (one wide clip, then pairs of mixed widths).
+// Order is the reading order; reels.css places them (the command bar wide beside one portrait, then three portraits).
 const reels: Reel[] = [
-  { name: 'command-bar', title: 'Command bar', line: 'Say it. The app does it.', label: 'Typing "Remind me to call Sam tomorrow" into a command bar, which creates the task Call Sam, due tomorrow.', size: [600, 375] },
-  { name: 'smart-reply', title: 'Smart reply', line: 'The reply, already written.', label: 'A message arrives asking about a printout and a ride; three replies are suggested and the first is sent.', size: [380, 484] },
-  { name: 'auto-tag', title: 'Auto tag', line: 'Tags that pick themselves.', label: 'Writing a note about a train to Lyon for a workshop; the tags travel, work and finance are suggested and accepted.', size: [380, 444] },
-  { name: 'rewrite', title: 'Rewrite', line: 'Your draft, made better.', label: 'A rough draft about a budget is rewritten in a formal tone, shown as a diff, and accepted.', size: [640, 366] },
-  { name: 'smart-input', title: 'Smart input', line: 'Forms that fill themselves.', label: 'Typing "Lunch with Sam at Nopa, 24 dollars" fills merchant, amount, currency and category.', size: [480, 416] },
-  { name: 'natural-filter', title: 'Natural filter', line: 'Search the way you talk.', label: 'Typing "cheap italian open now within 2 km" becomes four filters and narrows the list to two restaurants.', size: [600, 350] },
+  { name: 'command-bar', title: 'Command bar', line: 'Say it. The app does it.', label: 'Typing "Dinner at Luigi\'s was 42 euros" into a command bar; it adds the expense, and the expense list beside it shows Luigi\'s, 42 euros, on top with the weekly total going from 86.40 to 128.40 euros.', size: [640, 400] },
+  { name: 'semantic-search', title: 'Semantic search', line: 'Find it by what it means.', label: 'Searching notes for "my trip to Portugal" finds the flight to Lisbon first; "something to cook for friends" finds Grandma\'s lasagna recipe. Neither note contains the words searched for.', size: [400, 500] },
+  { name: 'voice-memo', title: 'Voice memo', line: 'Talk. Get the to-dos.', label: 'Recording a voice memo about a client call; the transcript appears, then a summary with three to-dos (send Dana the pricing deck by Thursday, book a room for the kickoff, ask Leo to fix the login bug), which are added to Reminders.', size: [400, 500] },
+  { name: 'tool-confirm-card', title: 'Tool confirm card', line: 'Nothing risky without your OK.', label: 'Asking to send Marco half of a 64 euro dinner bill; a high-risk card shows the payment of 32 euros to Marco Rossi for review, it is confirmed, sends, and reports done.', size: [400, 500] },
+  { name: 'agent-run', title: 'Agent run', line: 'Many steps, one request.', label: 'An agent finds a quiet dinner spot near Priya\'s office and checks Friday evening on its own, asks for approval before creating the event, and once confirmed books Luigi\'s Trattoria at 19:30 and invites Priya.', size: [400, 500] },
 ]
 
 export function Showcase() {

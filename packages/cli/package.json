@@ -1,7 +1,7 @@
 {
   "name": "ondai",
   "version": "0.1.0",
-  "description": "Add beautiful on-device AI components to your React Native app. npx ondai add command-bar",
+  "description": "Add AI components that run on the device's own foundation model to your app. npx ondai add command-bar",
   "license": "MIT",
   "author": "Shahab Fallah",
   "homepage": "https://ondai.dev",

@@ -94,11 +94,11 @@ function SiteCard() {
       {/* Words. */}
       <div style={{ position: 'absolute', left: 72, top: 64, bottom: 64, width: 560, display: 'flex', flexDirection: 'column' }}>
         <Wordmark />
-        <h1 style={{ margin: '58px 0 0', fontSize: 66, lineHeight: 1.02, fontWeight: 600, letterSpacing: '-0.045em' }}>
-          AI components that run on the phone.
+        <h1 style={{ margin: '48px 0 0', fontSize: 54, lineHeight: 1.05, fontWeight: 600, letterSpacing: '-0.04em', maxWidth: 520 }}>
+          AI components for on-device foundation models.
         </h1>
         <p style={{ margin: '22px 0 0', fontSize: 23, lineHeight: 1.4, color: SOFT, letterSpacing: '-0.01em', maxWidth: 480 }}>
-          Copy-paste React Native components for Apple Intelligence and Gemini Nano. Private, offline, yours.
+          Production-ready UI that runs on Apple Intelligence and Gemini Nano. Private, offline, instant.
         </p>
         <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 14 }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', height: 46, padding: '0 18px', borderRadius: 12, background: INK, color: '#fff', fontFamily: 'var(--font-geist-mono), ui-monospace, monospace', fontSize: 19 }}>

@@ -1,92 +1,102 @@
 <p align="center">
-  <img src="assets/brand/wordmark-dark.svg" alt="ondai" width="260" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/wordmark-light.svg" />
+    <img src="assets/brand/wordmark-dark.svg" alt="ondai" width="220" />
+  </picture>
 </p>
 
-<p align="center"><strong>AI that lives on the phone.</strong><br/>Beautiful on-device AI components for React Native. Copy. Paste. Private AI.</p>
+<h3 align="center">AI components for on-device foundation models.</h3>
 
 <p align="center">
-  <a href="LICENSE"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-0E1013?labelColor=07080A" /></a>
-  <a href="#"><img alt="status" src="https://img.shields.io/badge/status-pre--release%200.1.0-8B7CFF?labelColor=07080A" /></a>
-  <a href="https://ondai.dev/docs/device-support"><img alt="runs on" src="https://img.shields.io/badge/runs%20on-Apple%20FM%20%C2%B7%20Gemini%20Nano-7CF7FF?labelColor=07080A" /></a>
+  Production-ready UI that runs on the model already inside the phone.<br/>
+  Apple Intelligence and Gemini Nano, wired into components you own.
 </p>
 
-<p align="center"><img src="assets/recordings/command-bar-web.gif" alt="CommandBar: a natural-language request becomes an action on the scripted mock (web playground recording)" width="420" /></p>
+<p align="center">
+  <a href="https://ondai.dev"><img alt="ondai.dev" src="https://img.shields.io/badge/ondai.dev-docs-0d0d0f?style=flat-square" /></a>
+  <a href="https://ondai.dev/docs/device-support"><img alt="Apple Intelligence" src="https://img.shields.io/badge/Apple%20Intelligence-supported-0d0d0f?style=flat-square&logo=apple&logoColor=white" /></a>
+  <a href="https://ondai.dev/docs/device-support"><img alt="Gemini Nano" src="https://img.shields.io/badge/Gemini%20Nano-supported-0d0d0f?style=flat-square&logo=google&logoColor=white" /></a>
+  <a href="https://ondai.dev/docs/installation"><img alt="React Native" src="https://img.shields.io/badge/React%20Native-Expo-0d0d0f?style=flat-square&logo=react&logoColor=white" /></a>
+  <a href="LICENSE"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-0d0d0f?style=flat-square" /></a>
+</p>
 
-Ondai is **shadcn/ui for on-device AI in React Native**: a registry of copy-paste components, each a complete AI feature powered by the model already on the user's phone (Apple Foundation Models on iOS 26, Gemini Nano on Android, a cloud model only if you allow it). Free: no API bill. Private: nothing leaves the device. Offline. Fast.
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/film/ondai-film-dark.gif" />
+    <img src="assets/film/ondai-film-light.gif" alt="A phone rises as the on-device models circle it; inside, Ondai components take a request, run an agent with an approval, search by meaning and turn a voice memo into to-dos." width="100%" />
+  </picture>
+</p>
+
+---
+
+Every phone shipping today carries a capable foundation model. Ondai turns it into product: commands that take action, agents that ask before they act, search that understands meaning, forms that fill themselves, voice that becomes tasks. Each component is a complete feature (the UI, the prompts, the schema, every state from thinking to refusal), and the code lands in your repo, so it is yours to shape.
+
+- **On-device first.** Requests run on Apple Intelligence or Gemini Nano. No API bill, no data leaving the phone, and it works in airplane mode. A cloud model joins only if you allow it.
+- **One router, every model.** `@ondai/core` picks the best model the device has for each capability (text, structured output, tools, vision, speech) and falls back to the next one on its own.
+- **Built for small models.** Prompts budgeted for a 4K context, output validated with zod, streaming, and calm states for refusals and devices without a model.
+- **Designed to the last state.** Eight skins, light and dark, every state designed, accessible, reduced motion respected.
+
+## Components
+
+| | |
+| --- | --- |
+| **Act and chat** | [Command bar](https://ondai.dev/docs/components/command-bar) · [Agent run](https://ondai.dev/docs/components/agent-run) · [Tool confirm card](https://ondai.dev/docs/components/tool-confirm-card) · [Chat](https://ondai.dev/docs/components/chat) · [Assistant message](https://ondai.dev/docs/components/assistant-message) · [Prompt composer](https://ondai.dev/docs/components/prompt-composer) |
+| **Search and ask** | [Semantic search](https://ondai.dev/docs/components/semantic-search) · [Ask page](https://ondai.dev/docs/components/ask-page) · [Natural filter](https://ondai.dev/docs/components/natural-filter) |
+| **See and hear** | [Voice memo](https://ondai.dev/docs/components/voice-memo) · [Voice input](https://ondai.dev/docs/components/voice-input) · [Scan to data](https://ondai.dev/docs/components/scan-to-data) · [Photo caption](https://ondai.dev/docs/components/photo-caption) |
+| **Fill and organize** | [Smart input](https://ondai.dev/docs/components/smart-input) · [Text to event](https://ondai.dev/docs/components/text-to-event) · [Auto tag](https://ondai.dev/docs/components/auto-tag) · [Inline suggest](https://ondai.dev/docs/components/inline-suggest) |
+| **Write and rewrite** | [Summarize](https://ondai.dev/docs/components/summarize) · [Rewrite](https://ondai.dev/docs/components/rewrite) · [Translate](https://ondai.dev/docs/components/translate) · [Tone check](https://ondai.dev/docs/components/tone-check) · [Smart reply](https://ondai.dev/docs/components/smart-reply) |
+
+Browse them live, in every variant and state, at **[ondai.dev/docs/components](https://ondai.dev/docs/components)**.
 
 ## Quickstart
 
-Ondai works with npm, pnpm, yarn and bun. The CLI detects your package manager and installs through `expo install` in Expo apps, so native modules match your SDK.
-
 ```bash
-npx ondai init                 # or: pnpm dlx ondai init · yarn dlx ondai init · bunx ondai init
-npx ondai add command-bar      # copies the component and its registry dependencies into components/ondai/
+npx ondai init                 # pnpm dlx · yarn dlx · bunx work too
+npx ondai add command-bar      # the component and everything it needs, in components/ondai/
 ```
 
 ```tsx
 import { CommandBar, defineActions, defineAction } from '@/components/ondai/command-bar'
 
 const actions = defineActions([
-  defineAction({ id: 'task.create', title: 'Create task', params: z.object({ title: z.string() }), run: (p) => tasks.add(p) }),
+  defineAction({ id: 'email.send', title: 'Send email', risk: 'high', params: z.object({ to: z.string(), subject: z.string() }), run: (p) => mail.send(p) }),
 ])
 
 <CommandBar actions={actions} presentation="spotlight" variant="bevel" />
 ```
 
-Wrap the app in `<OndaiProvider>` (generated by `init`), import the polyfills first, and build a development client (`npx expo prebuild`, or EAS): the model providers are native modules, so Expo Go cannot load them. Full steps: [installation](https://ondai.dev/docs/installation).
-
-**Requirements:** Expo SDK 54+ or React Native 0.76+ with the New Architecture, React 19, Node 22.13+ for the app toolchain (the CLI itself runs on Node 20.19+). With pnpm, Expo works best with `node-linker=hoisted` in `.npmrc`.
-
-## Components
-
-AI components, grouped by what they do. Every one ships a styled component (8 skins, sizes, slots), a headless hook, prompts, a zod schema where it parses model output, a playground with a mock script for every state, a README and tests.
-
-|                       |                                                                                                                                                                                                                                                                                                                                                                                                       |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Write and rewrite** | [Rewrite](https://ondai.dev/docs/components/rewrite) · [Smart reply](https://ondai.dev/docs/components/smart-reply) · [Summarize](https://ondai.dev/docs/components/summarize) · [Tone check](https://ondai.dev/docs/components/tone-check) · [Translate](https://ondai.dev/docs/components/translate)                                                                                                |
-| **Fill and organize** | [Auto tag](https://ondai.dev/docs/components/auto-tag) · [Inline suggest](https://ondai.dev/docs/components/inline-suggest) · [Smart input](https://ondai.dev/docs/components/smart-input) · [Text to event](https://ondai.dev/docs/components/text-to-event)                                                                                                                                         |
-| **Search and ask**    | [Ask page](https://ondai.dev/docs/components/ask-page) · [Natural filter](https://ondai.dev/docs/components/natural-filter) · [Semantic search](https://ondai.dev/docs/components/semantic-search)                                                                                                                                                                                                    |
-| **See and hear**      | [Photo caption](https://ondai.dev/docs/components/photo-caption) · [Scan to data](https://ondai.dev/docs/components/scan-to-data) · [Voice input](https://ondai.dev/docs/components/voice-input) · [Voice memo](https://ondai.dev/docs/components/voice-memo)                                                                                                                                         |
-| **Act and chat**      | [Agent run](https://ondai.dev/docs/components/agent-run) · [Assistant message](https://ondai.dev/docs/components/assistant-message) · [Chat](https://ondai.dev/docs/components/chat) · [Command bar](https://ondai.dev/docs/components/command-bar) · [Prompt composer](https://ondai.dev/docs/components/prompt-composer) · [Tool confirm card](https://ondai.dev/docs/components/tool-confirm-card) |
-
-Each component page lists the platforms it runs on.
+`init` writes the provider, the polyfills and `ondai.json`, and installs through `expo install` so native modules match your SDK. The models are native modules, so build a development client (`npx expo prebuild` or EAS). Full guide: **[ondai.dev/docs/installation](https://ondai.dev/docs/installation)**.
 
 ## Runs on
 
-| Platform                                                                           | Model                                                | Status                                                                  |
-| ---------------------------------------------------------------------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------- |
-| iPhone 15 Pro+, iPad M1+, Apple silicon Macs (iOS/macOS 26, Apple Intelligence on) | Apple Foundation Models via `@react-native-ai/apple` | supported (~360 ms to first token, ~86 tok/s measured on Apple silicon) |
-| Android 14+ with AICore (Pixel 9+, Galaxy S26, …)                                  | Gemini Nano via `@react-native-ai/adk`               | supported                                                               |
-| Any phone                                                                          | Llama via `@react-native-ai/llama`                   | not supported yet (llama.rn does not support React Native 0.88)         |
-| Web / tests                                                                        | Scripted mock (a real AI SDK model)                  | the playground, Storybook-style stories and all tests                   |
+| Device | Model |
+| --- | --- |
+| iPhone 15 Pro and newer, iPad and Mac with Apple silicon (iOS 26, Apple Intelligence on) | Apple Foundation Models |
+| Pixel 9 and newer, Galaxy S26, and other Android 14+ phones with AICore | Gemini Nano |
+| Anything, if you opt in | A cloud model of your choice |
 
-Details and caveats: [device support](https://ondai.dev/docs/device-support) and [providers](https://ondai.dev/docs/providers).
+Measured on Apple silicon: about 360 ms to the first token and 86 tokens per second. Device lists: [device support](https://ondai.dev/docs/device-support).
+
+## What's next
+
+Ondai starts with React Native and Expo. The same components, prompts and router are coming to more of the stack:
+
+- **More platforms:** SwiftUI, Jetpack Compose, and the web with the browser's built-in model.
+- **More models:** Llama, Gemma and Qwen through llama.cpp and LiteRT, for phones without a built-in model.
+- **More components:** an agent sheet, smart paste, redact private data, explain this, key points, and natural date input.
+- **More ways in:** a Figma kit, and an MCP server so your coding assistant can add components for you.
 
 ## Built on
 
-[Callstack react-native-ai](https://github.com/callstackincubator/ai) · [Vercel AI SDK](https://ai-sdk.dev) · [Expo](https://expo.dev) · [Reanimated](https://docs.swmansion.com/react-native-reanimated/). When their engines improve, Ondai improves.
-
-## Run it locally
-
-```bash
-pnpm install && pnpm dev     # website + playground at http://localhost:3000 (no device needed)
-pnpm dev:gallery             # Expo gallery (iOS 26 simulator / device)
-pnpm test && pnpm test:visual
-```
-
-- `/docs/components`: every component, with a live preview and its variants.
-- `/review`: everything in Void and Paper on one page.
-- `/docs/theming`: themes, accents and token export.
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the setup and the checks.
-
-## Roadmap
-
-P1: AgentSheet, ActionSuggestions, HowDoI, NaturalDateInput, GhostText, SmartPaste, VoiceToForm, Proofread, ExplainThis, KeyPoints, TaskExtractor, EventExtractor, AskYourData, RedactPII, VoiceCommand, CleanDictation, DigestCard; the `expo-ai` provider when it ships; Android Nano validation on hardware. See the full plan in the repository history.
+[Callstack react-native-ai](https://github.com/callstackincubator/ai) · [Vercel AI SDK](https://ai-sdk.dev) · [Expo](https://expo.dev) · [Reanimated](https://docs.swmansion.com/react-native-reanimated/)
 
 ## Contributing
 
-Issues and pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) for the setup and the checklist for a new component, and the [Code of Conduct](CODE_OF_CONDUCT.md). Report security issues privately: [SECURITY.md](SECURITY.md).
+Issues and pull requests are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md) (setup, checks, and the checklist for a new component) and the [Code of Conduct](CODE_OF_CONDUCT.md). Report security issues privately: [SECURITY.md](SECURITY.md).
+
+```bash
+pnpm install && pnpm dev      # the website and every component preview at http://localhost:3000
+```
 
 ## License
 

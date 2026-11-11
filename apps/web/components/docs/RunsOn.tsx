@@ -20,8 +20,8 @@ function CloudMark() {
 export const PROVIDERS: { id: Provider; name: string; maker: string; Mark: (props: { className?: string }) => ReactNode }[] = [
   { id: 'apple', name: 'Apple FM', maker: 'Apple Foundation Models', Mark: AppleMark },
   { id: 'nano', name: 'Gemini Nano', maker: 'Gemini Nano', Mark: GoogleMark },
-  // Llama (llama.rn) has an adapter but is not yet compatible with the React Native version Ondai targets.
-  { id: 'llama', name: 'Llama', maker: 'Llama (not yet supported)', Mark: MetaMark },
+  // Llama (llama.rn): adapter ready, arriving with llama.rn support for the React Native version Ondai targets.
+  { id: 'llama', name: 'Llama', maker: 'Llama (coming soon)', Mark: MetaMark },
   { id: 'cloud', name: 'Cloud', maker: 'A cloud model', Mark: CloudMark },
 ]
 

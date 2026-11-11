@@ -20,6 +20,6 @@
   "files": ["agent-run.tsx", "index.ts"],
   "runsOn": ["apple", "cloud"],
   "limits": [
-    "Tool calling runs on Apple's model or a cloud model. Gemini Nano's tool calling is still an alpha preview, so Ondai does not route tools to it yet."
+    "Tool calling runs on Apple's model or a cloud model. Gemini Nano joins as soon as its tool calling leaves preview."
   ]
 }

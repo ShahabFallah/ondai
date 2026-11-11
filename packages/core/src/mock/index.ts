@@ -19,7 +19,7 @@ export interface MockAdapterOptions {
   script?: ScriptSource
   clock?: Clock
   speed?: number
-  /** Which real provider to impersonate in badges (locality stays honest via `simulated`). */
+  /** Which real provider to impersonate in badges (locality stays accurate via `simulated`). */
   simulate?: SimulatedDevice
   /** Explicit availability override (wins over the script's). */
   availability?: Availability
