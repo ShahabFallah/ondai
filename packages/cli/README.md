@@ -1,11 +1,15 @@
 # ondai
 
+**AI components for on-device foundation models.** Apple Intelligence and Gemini Nano, wired into production-ready React Native UI. Private, offline, instant.
+
 ```bash
-npx ondai init
-npx ondai add command-bar summarize
-npx ondai list
-npx ondai diff command-bar
-npx ondai doctor
+npx ondai init                        # provider, polyfills and ondai.json
+npx ondai add command-bar summarize   # the components and everything they need
+npx ondai list                        # every component in the registry
+npx ondai diff command-bar            # what changed upstream since you added it
+npx ondai doctor                      # checks your Expo setup
 ```
 
-Copies on-device AI components from the Ondai registry into your React Native app, shadcn-style. Set `ONDAI_REGISTRY` or `--registry` to point at another registry (including `file:///…/public/r` while developing).
+The code lands in your repo (`components/ondai/`), so it is yours to shape. Works with npm, pnpm, yarn and bun. Set `ONDAI_REGISTRY` or `--registry` to use another registry.
+
+Docs and live previews: https://ondai.dev

@@ -45,7 +45,8 @@ export default function Layout({ children }: LayoutProps<'/'>) {
       <head>
         <style id="ondai-tokens" dangerouslySetInnerHTML={{ __html: tokensCss }} />
       </head>
-      <body className="flex flex-col min-h-screen">
+      {/* Browser extensions (ColorZilla, Grammarly…) add attributes to <body> before React loads. */}
+      <body className="flex flex-col min-h-screen" suppressHydrationWarning>
         <RootProvider theme={{ defaultTheme: 'system', enableSystem: true }} search={{ links: SEARCH_SUGGESTIONS }}>
           <Ambient />
           {children}

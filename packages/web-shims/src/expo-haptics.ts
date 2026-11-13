@@ -17,7 +17,11 @@ export enum AndroidHaptics {
 }
 const vibrate = (pattern: number | number[]) => {
   try {
-    if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') navigator.vibrate(pattern)
+    if (typeof navigator === 'undefined' || typeof navigator.vibrate !== 'function') return
+    // Browsers only allow vibration after the person has interacted with the page; scripted demos stay silent.
+    const activation = (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation
+    if (activation && !activation.hasBeenActive) return
+    navigator.vibrate(pattern)
   } catch {
     /* ignore */
   }
