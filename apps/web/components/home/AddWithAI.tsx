@@ -3,16 +3,17 @@ import { useEffect, useRef, useState, type ComponentType, type CSSProperties, ty
 import { Check, Copy } from 'lucide-react'
 import { AI_MARK_EVEN_ODD, AI_MARK_PATHS, ClaudeMark, GeminiMark, GrokMark, OpenAIMark, type AiMark } from '@/components/site/BrandMarks'
 import { CHIP_CORE, CHIP_RING } from '@/components/site/Logo'
-import { ease, useCanvasLoop } from '@/components/fx/visible'
+import { devicePixelRatioCapped, ease, useCanvasLoop } from '@/components/fx/visible'
 import { Reveal } from './Reveal'
 import './add-with-ai.css'
 
 /**
  * "Add it with your assistant": four cards, one per assistant, each on its own brand field.
  *
- * Each card draws the assistant's mark as a field of fine dots. Hovering it runs the install: the dots
- * leave the mark, nearest the pointer first, and gather into Ondai's chip, which then pulses at its core.
- * Leaving the card sends them home. The pointer parts the dots it passes over. Below the mark: the prompt
+ * At rest each card shows the assistant's mark as a solid, lit shape: it floats, glows, and a band of light
+ * sweeps across it. Hovering runs the install: the mark breaks into fine dots, nearest the pointer first,
+ * they fly into Ondai's chip, and the chip sets solid and pulses at its core. Leaving reverses it. The pointer parts the dots it passes over. On touch screens the install
+ * plays as the card reaches the middle of the screen, and a tap plays it again. Below the mark: the prompt
  * to paste, and the assistant's own transcript of running the install.
  *
  * The brand colours are the one exception to the site's black and white.
@@ -128,6 +129,15 @@ type Field = {
   glyph: Rect
   rgb: string
   colorAt: number
+  /** One anti-aliased dot, pre-drawn in the brand colour at device resolution and stamped for every point. */
+  sprite: HTMLCanvasElement | null
+  spriteKey: string
+  /** The solid shapes, drawn into `solid` (glyph-sized, device pixels) and lit before they go on screen. */
+  solid: HTMLCanvasElement | null
+  markPath: Path2D | null
+  markEvenOdd: boolean
+  ringPath: Path2D | null
+  corePath: Path2D | null
   /** The install, 0 (the mark) to 1 (the chip), moved at a constant speed and eased per dot. */
   p: number
   pTo: number
@@ -157,6 +167,13 @@ function emptyField(): Field {
     glyph: { x: 0, y: 0, w: 0, h: 0 },
     rgb: '255,255,255',
     colorAt: -1,
+    sprite: null,
+    spriteKey: '',
+    solid: null,
+    markPath: null,
+    markEvenOdd: false,
+    ringPath: null,
+    corePath: null,
     p: 0,
     pTo: 0,
     px: 0,
@@ -189,10 +206,30 @@ const STAGGER = 0.5
 const PUSH_R = 52
 const PUSH = 12
 
+/** A round dot with a soft rim, drawn at 2x its on-screen size so stamping it down keeps the edge smooth. */
+function dotSprite(rgb: string, dot: number) {
+  const px = Math.max(4, Math.ceil(dot * devicePixelRatioCapped() * 2))
+  const c = document.createElement('canvas')
+  c.width = c.height = px
+  const g = c.getContext('2d')
+  if (!g) return null
+  const r = px / 2
+  const grad = g.createRadialGradient(r, r, 0, r, r, r)
+  grad.addColorStop(0, `rgba(${rgb},1)`)
+  grad.addColorStop(0.62, `rgba(${rgb},1)`)
+  grad.addColorStop(1, `rgba(${rgb},0)`)
+  g.fillStyle = grad
+  g.beginPath()
+  g.arc(r, r, r, 0, Math.PI * 2)
+  g.fill()
+  return c
+}
+
 /** Points on a pitch-spaced grid inside `paths` (drawn into `rect` at `scale` from their own box). */
 function sample(paths: Array<{ d: string; evenodd: boolean; tag: number }>, rect: Rect, scale: number, pitch: number) {
   const w = Math.ceil(rect.w)
   const h = Math.ceil(rect.h)
+  if (!(w > 0 && h > 0)) return { x: [] as number[], y: [] as number[], tag: [] as number[] }
   const c = document.createElement('canvas')
   c.width = w
   c.height = h
@@ -230,6 +267,63 @@ function byAngle(x: number[], y: number[], ox: number, oy: number) {
     })
 }
 
+const smooth01 = (v: number) => {
+  const x = Math.min(1, Math.max(0, v))
+  return x * x * (3 - 2 * x)
+}
+
+type Shape = { path: Path2D | null; evenOdd: boolean; vb: number; scale: number; alpha: number }
+
+/**
+ * Draws shapes solid into the field's glyph box: the brand ink, lit from above, with a band of light sweeping
+ * across every few seconds, then a soft glow of its own colour around it.
+ */
+function drawSolid(ctx: CanvasRenderingContext2D, s: Field, t: number, moving: boolean, alpha: number, shapes: Shape[], glow: number) {
+  const o = s.solid
+  const g = o?.getContext('2d')
+  if (!o || !g) return
+  const dpr = o.width / s.glyph.w
+  const size = s.glyph.w
+  g.setTransform(1, 0, 0, 1, 0, 0)
+  g.globalCompositeOperation = 'source-over'
+  g.globalAlpha = 1
+  g.clearRect(0, 0, o.width, o.height)
+  for (const sh of shapes) {
+    if (!sh.path) continue
+    const off = (size - sh.scale * sh.vb) / 2
+    g.setTransform(dpr * sh.scale, 0, 0, dpr * sh.scale, dpr * off, dpr * off)
+    g.globalAlpha = sh.alpha
+    g.fillStyle = `rgb(${s.rgb})`
+    g.fill(sh.path, sh.evenOdd ? 'evenodd' : 'nonzero')
+  }
+  // Light: brighter at the top, a little shade at the foot, and the sweeping band.
+  g.globalAlpha = 1
+  g.globalCompositeOperation = 'source-atop'
+  g.setTransform(dpr, 0, 0, dpr, 0, 0)
+  const shade = g.createLinearGradient(0, 0, 0, size)
+  shade.addColorStop(0, 'rgba(255,255,255,0.22)')
+  shade.addColorStop(0.55, 'rgba(255,255,255,0)')
+  shade.addColorStop(1, 'rgba(0,0,0,0.16)')
+  g.fillStyle = shade
+  g.fillRect(0, 0, size, size)
+  if (moving) {
+    const cycle = (t % 4.2) / 4.2
+    const x = -size * 0.6 + cycle * size * 2.6
+    const band = g.createLinearGradient(x - size * 0.3, 0, x + size * 0.3, size * 0.5)
+    band.addColorStop(0, 'rgba(255,255,255,0)')
+    band.addColorStop(0.5, 'rgba(255,255,255,0.55)')
+    band.addColorStop(1, 'rgba(255,255,255,0)')
+    g.fillStyle = band
+    g.fillRect(0, 0, size, size)
+  }
+  ctx.save()
+  ctx.globalAlpha = alpha
+  ctx.shadowColor = `rgba(${s.rgb},${glow})`
+  ctx.shadowBlur = size * 0.12
+  ctx.drawImage(o, s.glyph.x, s.glyph.y, size, size)
+  ctx.restore()
+}
+
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2)
 
 function AssistantCard({ a }: { a: Assistant }) {
@@ -239,10 +333,12 @@ function AssistantCard({ a }: { a: Assistant }) {
   const f = useRef<Field>(emptyField())
   const [copied, setCopied] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const replay = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(
     () => () => {
       if (timer.current) clearTimeout(timer.current)
+      if (replay.current) clearTimeout(replay.current)
     },
     [],
   )
@@ -257,9 +353,12 @@ function AssistantCard({ a }: { a: Assistant }) {
     const cr = card.getBoundingClientRect()
     const sr = stage.getBoundingClientRect()
     const size = Math.min(sr.width * 0.8, sr.height * 0.84, 250)
+    // Mid-resize the stage can measure nothing; keep the last field until it has room again.
+    if (!(size >= 24)) return
     const glyph = { x: sr.left - cr.left + (sr.width - size) / 2, y: sr.top - cr.top + (sr.height - size) / 2, w: size, h: size }
-    const pitch = Math.max(4, Math.round(size / 46))
-    const dot = Math.max(1.4, pitch * 0.34)
+    // A fine, even grid: about 60 dots across the mark.
+    const pitch = Math.max(3, size / 60)
+    const dot = Math.max(1.6, pitch * 0.58)
 
     const mark = sample([{ d: AI_MARK_PATHS[a.id], evenodd: AI_MARK_EVEN_ODD[a.id], tag: 2 }], glyph, size / 24, pitch)
     // The chip a little smaller than the mark, so the field gathers in as it installs.
@@ -297,7 +396,15 @@ function AssistantCard({ a }: { a: Assistant }) {
       core[i] = chip.tag[c] === 1 ? 1 : 0
       phase[i] = r()
     }
-    Object.assign(s, { ready: true, w, h, n, mx, my, cx, cy, core, phase, dot, glyph, delay: new Float32Array(n), colorAt: -1 })
+    const solid = s.solid ?? document.createElement('canvas')
+    solid.width = solid.height = Math.ceil(size * devicePixelRatioCapped())
+    Object.assign(s, {
+      ready: true, w, h, n, mx, my, cx, cy, core, phase, dot, glyph, delay: new Float32Array(n), colorAt: -1, spriteKey: '', solid,
+      markPath: new Path2D(AI_MARK_PATHS[a.id]),
+      markEvenOdd: AI_MARK_EVEN_ODD[a.id],
+      ringPath: new Path2D(CHIP_RING),
+      corePath: new Path2D(CHIP_CORE),
+    })
     aim(s.px || ox, s.py || oy + size)
   }
 
@@ -325,6 +432,13 @@ function AssistantCard({ a }: { a: Assistant }) {
         if (v) s.rgb = v.replace(/\s+/g, ',')
         s.colorAt = t
       }
+      const key = `${s.rgb}/${s.dot}/${devicePixelRatioCapped()}`
+      if (s.spriteKey !== key) {
+        s.sprite = dotSprite(s.rgb, s.dot)
+        s.spriteKey = key
+      }
+      const sprite = s.sprite
+      if (!sprite) return
       // The install runs at a constant speed in both directions; under reduced motion it jumps.
       if (dt === 0) s.p = s.pTo
       else s.p = Math.min(1, Math.max(0, s.p + (s.pTo > s.p ? dt : -dt) / TRAVEL))
@@ -333,10 +447,33 @@ function AssistantCard({ a }: { a: Assistant }) {
       s.fy = ease(s.fy, s.py, dt, 0.12)
 
       ctx.clearRect(0, 0, w, h)
-      ctx.fillStyle = `rgb(${s.rgb})`
+      const moving = dt !== 0
+      // The mark breaks into dots as the install starts; the chip sets solid as the last dots land.
+      const shatter = smooth01(s.p / 0.1)
+      const set = smooth01((s.p - 0.86) / 0.14)
+      // The whole stage floats, slowly.
+      const g = s.glyph
+      const gx = g.x + g.w / 2
+      const gy = g.y + g.h / 2
+      const breathe = moving ? 1 + 0.014 * Math.sin(t * 1.3) : 1
+      ctx.save()
+      ctx.translate(gx, gy + (moving ? Math.sin(t * 0.9) * 3 : 0))
+      ctx.scale(breathe, breathe)
+      ctx.translate(-gx, -gy)
+      const glow = 0.5 + 0.5 * Math.sin(t * 1.6)
+      if (shatter < 1) drawSolid(ctx, s, t, moving, 1 - shatter, [{ path: s.markPath, evenOdd: s.markEvenOdd, vb: 24, scale: g.w / 24, alpha: 1 }], 0.32 + 0.18 * glow)
+      if (set > 0)
+        drawSolid(ctx, s, t, moving, set, [
+          { path: s.ringPath, evenOdd: true, vb: 100, scale: (g.w * 0.8) / 100, alpha: 1 },
+          { path: s.corePath, evenOdd: false, vb: 100, scale: (g.w * 0.8) / 100, alpha: 0.55 + 0.45 * glow },
+        ], 0.4 + 0.3 * glow)
+      const dotsOn = shatter * (1 - set)
+      if (dotsOn <= 0.001) {
+        ctx.restore()
+        return
+      }
       const span = 1 + STAGGER
       const dot = s.dot
-      const half = dot / 2
       const swirl = s.glyph.w * 0.16
       const pulse = 0.55 + 0.45 * (0.5 + 0.5 * Math.sin(t * 2.6))
       const push = s.near > 0.01 && dt !== 0
@@ -354,12 +491,6 @@ function AssistantCard({ a }: { a: Assistant }) {
         const bow = Math.sin(Math.PI * e) * swirl * (0.6 + 0.4 * s.phase[i]!)
         let x = ax + lx * e - (ly / len) * bow
         let y = ay + ly * e + (lx / len) * bow
-        // At rest the mark breathes, barely.
-        if (dt !== 0 && (e === 0 || e === 1)) {
-          const ph = s.phase[i]! * 6.283
-          x += Math.sin(t * 0.9 + ph) * 0.45
-          y += Math.cos(t * 1.1 + ph) * 0.45
-        }
         if (push) {
           const dx = x - s.fx
           const dy = y - s.fy
@@ -370,12 +501,15 @@ function AssistantCard({ a }: { a: Assistant }) {
             y += (dy / d) * k
           }
         }
-        let alpha = e === 0 ? 0.62 : e === 1 ? 0.92 : 0.95
+        // In flight the dots swell and brighten.
+        let alpha = (0.8 + 0.2 * s.phase[i]!) * dotsOn
         if (e === 1 && s.core[i]) alpha *= pulse
+        const k = dot * (1 + 0.5 * Math.sin(Math.PI * e))
         ctx.globalAlpha = alpha
-        ctx.fillRect(x - half, y - half, dot, dot)
+        ctx.drawImage(sprite, x - k / 2, y - k / 2, k, k)
       }
       ctx.globalAlpha = 1
+      ctx.restore()
     },
   })
 
@@ -437,6 +571,74 @@ function AssistantCard({ a }: { a: Assistant }) {
     loop.invalidate()
   }
 
+  const install = (x: number, y: number) => {
+    const s = f.current
+    if (s.p === 0) aim(x, y)
+    s.pTo = 1
+    cardRef.current?.style.setProperty('--mx', `${x}px`)
+    cardRef.current?.style.setProperty('--my', `${y}px`)
+    cardRef.current?.setAttribute('data-active', '')
+    loop.invalidate()
+  }
+  /** A tap on a touch screen sends the dots home and plays the install again from where the finger was. */
+  const onTap = (e: ReactPointerEvent<HTMLElement>) => {
+    if (e.pointerType !== 'touch' || (e.target as Element).closest('button')) return
+    const p = point(e)
+    if (!p) return
+    const s = f.current
+    if (s.pTo === 1 && s.p > 0.5) {
+      s.pTo = 0
+      cardRef.current?.removeAttribute('data-active')
+      loop.invalidate()
+      if (replay.current) clearTimeout(replay.current)
+      replay.current = setTimeout(() => install(p.x, p.y), TRAVEL * 1000 * 0.9)
+    } else install(p.x, p.y)
+  }
+
+  // Touch screens have no hover: while the card is on screen the install plays on its own, over and over.
+  // Mark, dots, chip, a beat, and back, each time from a different edge.
+  const cycle = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => {
+    const card = cardRef.current
+    if (!card || typeof IntersectionObserver === 'undefined' || !window.matchMedia('(hover: none)').matches) return
+    let turn = 0
+    const stop = () => {
+      if (cycle.current) clearTimeout(cycle.current)
+      cycle.current = null
+    }
+    const forward = () => {
+      const w = card.clientWidth
+      const from = [
+        [w / 2, 0],
+        [w, card.clientHeight * 0.3],
+        [w / 2, card.clientHeight * 0.6],
+        [0, card.clientHeight * 0.3],
+      ][turn++ % 4]!
+      install(from[0]!, from[1]!)
+      cycle.current = setTimeout(back, (TRAVEL + 2.2) * 1000)
+    }
+    const back = () => {
+      onLeave()
+      cycle.current = setTimeout(forward, (TRAVEL + 1.4) * 1000)
+    }
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry) return
+        stop()
+        if (entry.isIntersecting) cycle.current = setTimeout(forward, 350)
+        else onLeave()
+      },
+      { threshold: 0.45 },
+    )
+    io.observe(card)
+    return () => {
+      stop()
+      io.disconnect()
+    }
+    // Set up once; the handlers only touch refs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const copy = () => {
     const origin = typeof window !== 'undefined' ? window.location.origin : ''
     const text = `${a.prompt} Read ${origin}/llms.txt, then run npx ondai add ${a.component}.`
@@ -449,7 +651,7 @@ function AssistantCard({ a }: { a: Assistant }) {
   const call = `npx ondai add ${a.component}`
   const Mark = a.Mark
   return (
-    <article ref={cardRef} className="aiadd-card" data-brand={a.id} aria-labelledby={`aiadd-${a.id}`} onPointerEnter={onEnter} onPointerMove={move} onPointerLeave={onLeave}>
+    <article ref={cardRef} className="aiadd-card" data-brand={a.id} aria-labelledby={`aiadd-${a.id}`} onPointerEnter={onEnter} onPointerMove={move} onPointerLeave={(e) => e.pointerType !== 'touch' && onLeave()} onPointerUp={onTap}>
       <span className="aiadd-field" aria-hidden />
       <span className="aiadd-glow" aria-hidden />
       <canvas ref={canvasRef} className="aiadd-canvas" aria-hidden />

@@ -18,6 +18,8 @@ const shims = {
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
+  // Let a phone on the same network open the dev server (http://<your-mac-ip>:3000) with scripts running.
+  allowedDevOrigins: ['192.168.*.*', '10.*.*.*', '*.local'],
   env: { EXPO_OS: 'web' },
   transpilePackages: [
     'react-native-reanimated',

@@ -429,6 +429,35 @@
   }
 }
 
+/* Touch: the install plays while the card holds the middle of the screen; the light rises with it. */
+@media (hover: none) {
+  .aiadd-card {
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      transform 0.5s var(--ease-lux),
+      box-shadow 1s var(--ease-lux);
+  }
+  .aiadd-card:active {
+    transform: scale(0.985);
+  }
+  .aiadd-card[data-active] {
+    box-shadow:
+      inset 0 0 0 1px var(--ai-ring),
+      0 1px 2px rgba(0, 0, 0, 0.06),
+      0 34px 60px -32px var(--ai-shadow);
+  }
+  .aiadd-card[data-active] .aiadd-glow {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .aiadd-card[data-active] .aiadd-sheen {
+    opacity: 0.8;
+  }
+  .aiadd-card[data-active] .aiadd-result {
+    animation: aiadd-arrive 1.3s var(--ease-lux) 0.35s both;
+  }
+}
+
 @media (max-width: 599.98px) {
   .aiadd-card {
     min-height: 460px;
