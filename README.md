@@ -20,6 +20,13 @@
   <a href="LICENSE"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-0d0d0f?style=flat-square" /></a>
 </p>
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/film/ondai-film-dark.webp" />
+    <img src="assets/film/ondai-film-light.webp" alt="A phone rises as the on-device models circle it; inside, Ondai components take a request, run an agent with an approval, search by meaning and turn a voice memo into to-dos." width="100%" />
+  </picture>
+</p>
+
 ---
 
 Every phone shipping today carries a capable foundation model. Ondai turns it into product: commands that take action, agents that ask before they act, search that understands meaning, forms that fill themselves, voice that becomes tasks. Each component is a complete feature (the UI, the prompts, the schema, every state from thinking to refusal), and the code lands in your repo, so it is yours to shape.
