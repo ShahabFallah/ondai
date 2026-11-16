@@ -1,0 +1,46 @@
+name: Bug report
+description: Something does not work as documented.
+labels: [bug]
+body:
+  - type: input
+    id: component
+    attributes:
+      label: Component or package
+      placeholder: summarize, @ondai/core, ondai (CLI)…
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what you expected
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: The smaller the better. A snippet or a repo link is ideal.
+    validations:
+      required: true
+  - type: dropdown
+    id: provider
+    attributes:
+      label: Model provider
+      options:
+        [
+          Apple Foundation Models (iPhone),
+          Gemini Nano (Android),
+          Cloud,
+          Mock / playground,
+          Not sure,
+        ]
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: Paste the output of `npx ondai doctor`, plus the device and OS version.
+      render: text
+    validations:
+      required: true
